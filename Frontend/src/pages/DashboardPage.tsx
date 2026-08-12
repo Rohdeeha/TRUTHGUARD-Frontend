@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase'; // Adjust path as needed
+import { getTriageQueue, updateTicketStatus } from '../services/api';
 import { useLanguage } from './LanguageContext';
 import { useTranslation } from 'react-i18next'; // Import language hook
 import {
@@ -49,27 +49,18 @@ export default function DashboardPage() {
     // 3. SUPABASE FETCH LOGIC
     const fetchReports = async (limit: number) => {
         setLoading(true);
+        try {
+            const data = await getTriageQueue();
+            const results = Array.isArray(data) ? data : data.results || [];
+            const count = Array.isArray(data) ? data.length : data.count || results.length;
 
-        const { count, error: countError } = await supabase
-            .from('reports')
-            .select('*', { count: 'exact', head: true });
-
-        if (!countError && count !== null) {
             setTotalCount(count);
-        }
-
-        const { data, error } = await supabase
-            .from('reports')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .range(0, limit - 1);
-
-        if (!error && data) {
-            setReports(data as DashboardReport[]);
-        } else if (error) {
+            setReports(results.slice(0, limit));
+        } catch (error) {
             console.error('Error fetching reports:', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     useEffect(() => {
@@ -86,12 +77,9 @@ export default function DashboardPage() {
             prev.map((item) => (item.id === id ? { ...item, verdict: newVerdict } : item))
         );
 
-        const { error } = await supabase
-            .from('reports')
-            .update({ verdict: newVerdict })
-            .eq('id', id);
-
-        if (error) {
+        try {
+            await updateTicketStatus(id, newVerdict);
+        } catch (error) {
             console.error('Failed to update verdict in database:', error);
         }
     };

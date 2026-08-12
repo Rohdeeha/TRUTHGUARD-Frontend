@@ -1,50 +1,141 @@
-import axios from 'axios';
+// src/services/api.ts
 
-// We use an environment variable for the API base URL. 
-// In development, this might be http://localhost:8000/api/v1
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.truthguard.org/v1';
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 
-// Create a configured Axios instance
-const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+// Helper to get stored auth token
+const getAuthHeader = (tokenKey = 'token') => {
+    const token = localStorage.getItem(tokenKey);
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
-// Interceptor: Automatically attach the Admin Auth Token to every request
-apiClient.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('truthguard_admin_token');
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+// Helper to parse DRF response errors gracefully
+const handleResponse = async (res: Response, fallbackMessage: string) => {
+    if (!res.ok) {
+        let errorMessage = fallbackMessage;
+        try {
+            const errorData = await res.json();
+            if (errorData.detail) {
+                errorMessage = errorData.detail;
+            } else if (typeof errorData === 'object') {
+                const firstKey = Object.keys(errorData)[0];
+                if (firstKey && Array.isArray(errorData[firstKey])) {
+                    errorMessage = `${firstKey}: ${errorData[firstKey][0]}`;
+                }
+            }
+        } catch (_) {
+            // Non-JSON error response
+        }
+        throw new Error(errorMessage);
     }
-    return config;
-});
+    return res.json();
+};
 
-// API Methods organized by feature
-export const api = {
-    // --- PUBLIC ENDPOINTS ---
-    reports: {
-        submit: (formData: FormData) =>
-            apiClient.post('/reports', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }),
-    },
+// --- Public Endpoints ---
 
-    debunks: {
-        getLive: (page = 1, limit = 10) =>
-            apiClient.get(`/debunks?page=${page}&limit=${limit}`),
-    },
+/** 1. Submit Citizen Report (Supports both FormData with media files and JSON) */
+export const submitReport = async (data: FormData | Record<string, any>) => {
+    const isFormData = data instanceof FormData;
 
-    // --- ADMIN / SITUATION ROOM ENDPOINTS ---
-    auth: {
-        login: (passcode: string) =>
-            apiClient.post('/auth/login', { passcode }),
-    },
+    const res = await fetch(`${API_BASE_URL}/incidents/report/`, {
+        method: 'POST',
+        // Omit 'Content-Type' header when passing FormData so browser sets multipart/form-data boundary
+        headers: isFormData
+            ? {}
+            : { 'Content-Type': 'application/json' },
+        body: isFormData ? data : JSON.stringify(data),
+    });
 
-    tickets: {
-        getAll: () => apiClient.get('/admin/tickets'),
-        updateStatus: (id: string, status: string) =>
-            apiClient.patch(`/admin/tickets/${id}`, { status }),
-    }
+    return handleResponse(res, 'Failed to submit report');
+};
+
+/** 2. Fetch Public Debunked Feed */
+export const getDebunkedFeed = async (page = 1) => {
+    const res = await fetch(`${API_BASE_URL}/incidents/feed/debunked/?page=${page}`);
+    return handleResponse(res, 'Failed to fetch debunked feed');
+};
+
+// --- Fact-Checker Authenticated Endpoints ---
+
+/** 3. Fetch Triage Kanban Board Queue */
+export const getTriageQueue = async (search = '', status = '') => {
+    const query = new URLSearchParams();
+    if (search) query.append('search', search);
+    if (status) query.append('status', status);
+
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+
+    const res = await fetch(`${API_BASE_URL}/incidents/triage/${queryString}`, {
+        headers: {
+            ...getAuthHeader('fact_checker_token'),
+        },
+    });
+
+    return handleResponse(res, 'Failed to fetch triage queue');
+};
+
+/** 4. Update Report Ticket Status */
+export const updateTicketStatus = async (
+    id: string,
+    status: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING'
+) => {
+    const res = await fetch(`${API_BASE_URL}/incidents/triage/${id}/status/`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader('fact_checker_token'),
+        },
+        body: JSON.stringify({ status }),
+    });
+
+    return handleResponse(res, 'Failed to update ticket status');
+};
+
+/** 5. Fetch Social Listening Feed */
+export const getSocialListeningFeed = async () => {
+    const res = await fetch(`${API_BASE_URL}/incidents/social-listening/`, {
+        headers: {
+            ...getAuthHeader('fact_checker_token'),
+        },
+    });
+
+    return handleResponse(res, 'Failed to fetch social listening feed');
+};
+
+/** 6. Fetch Analytics / Situation Room Data */
+export const getAnalyticsData = async () => {
+    const res = await fetch(`${API_BASE_URL}/incidents/analytics/`, {
+        headers: {
+            ...getAuthHeader('fact_checker_token'),
+        },
+    });
+
+    return handleResponse(res, 'Failed to fetch analytics');
+};
+
+/** 7. Generate Cloudinary Debunk Card (Backend Generator) */
+export const generateCloudinaryCard = async (claim: string, fact: string) => {
+    const res = await fetch(`${API_BASE_URL}/incidents/generate-card/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader('fact_checker_token'),
+        },
+        body: JSON.stringify({ claim, fact }),
+    });
+
+    return handleResponse(res, 'Failed to generate Cloudinary card');
+};
+
+// --- Legal Expert Authenticated Endpoint ---
+
+/** 8. Fetch TFGBV Queue */
+export const getTFGBVQueue = async () => {
+    const res = await fetch(`${API_BASE_URL}/incidents/tfgbv/queue/`, {
+        headers: {
+            ...getAuthHeader('legal_expert_token'),
+        },
+    });
+
+    return handleResponse(res, 'Failed to fetch TFGBV queue');
 };
