@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+    /* Brand Palette derived from TruthGuard Logo */
+    --color-brand-navy: #071D38;
+    /* Primary Dark Background / Text */
+    --color-brand-teal: #00B8C4;
+    /* Accent / Shield Border / Verification Teal */
+    --color-brand-coral: #E05A2B;
+    /* Alert Orange / "TRUTH" Text / Fake Warning */
+    --color-brand-shield: #0B131D;
+    /* Shield Dark Interior Background */
+    --color-brand-surface: #0E243F;
+    /* Card Backgrounds on Dark Mode */
+
+    /* Status Colors */
+    --color-status-new: #3B82F6;
+    /* Blue */
+    --color-status-investigating: #F59E0B;
+    /* Amber */
+    --color-status-verified: #10B981;
+    /* Green */
+    --color-status-debunked: #EF4444;
+    /* Red */
+    --color-status-dismissed: #6B7280;
+    /* Gray */
+}
+
+/* Global Reset & Base Styling */
+:root {
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-brand-navy, #071D38);
+    color: #FFFFFF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}

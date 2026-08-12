@@ -1,0 +1,27 @@
+{
+    "nav": {
+        "debunks": "Awọn Otitọ",
+        "report": "Sọ Nipa Isẹlẹ",
+        "tagline": "FactCheck Africa"
+    },
+    "home": {
+        "filterAll": "Gbogbo Fact-Check",
+        "filterVoterSuppression": "Ìdènà Ìdìbò",
+        "filterDisinformation": "Ìròyìn Èké",
+        "filterTFGBV": "Ìwà-ipá Ayélujára (TFGBV)",
+        "filterLogistics": "Àìṣedéédé Ẹrọ/Ètò",
+        "filterViolence": "Ìwà Ipá / Ìdẹ́rùbà"
+    },
+    "report": {
+        "title": "Sọ Nipa Iroyin Eke",
+        "subtitle": "Wọn yoo fi ijabọ rẹ ránṣẹ lẹsẹkẹsẹ si TruthGuard Situation Room fun ayẹwo.",
+        "incidentType": "Arufin Isẹlẹ",
+        "description": "Apejuwe Isẹlẹ",
+        "placeholder": "Fún wa ni ẹkunrẹrẹ alaye, awọn asopọ tabi nkan ti wọn sọ...",
+        "anonymous": "Mu orukọ mi pamọ",
+        "submit": "Ránṣẹ Ijabọ Isẹlẹ",
+        "successTitle": "A ti gba ijabọ rẹ pẹlu aṣeyọri!",
+        "successMsg": "Ẹ ṣeun fun iranlọwọ lati jẹ ki idibo #OsunDecides2026 wa ni gbangba.",
+        "another": "Sọ Nipa Isẹlẹ Miran"
+    }
+}

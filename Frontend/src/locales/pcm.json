@@ -1,0 +1,27 @@
+{
+  "home": {
+    "heroSubtitle": "Real-time news check, fake story debunk, and official info for Osun 2026.",
+    "searchPlaceholder": "Search news, candidate name, or fake story...",
+    "filterAll": "All Check-Am",
+    "filterVoterSuppression": "Block Dem Vote",
+    "filterDisinformation": "Fake News / Lie Lie",
+    "filterTFGBV": "Online Harassment (TFGBV)",
+    "filterLogistics": "Machine Spoil / Arrange",
+    "filterViolence": "Vawulence / Threat",
+    "statusFalse": "NO BE TRUE",
+    "statusMisleading": "E NO CLEAR / CORNER-CORNER",
+    "statusVerified": "CONFIRM TRUE",
+    "claimLabel": "WETIN DEM TALK: ",
+    "readFull": "Read Full Story",
+    "shareReport": "Share This Check",
+    "loadMore": "Load More Story",
+    "noReports": "No story match wetin you dey find."
+  },
+  "time": {
+    "justNow": "Just now",
+    "minsAgo": "mins ago",
+    "hoursAgo": "hours ago",
+    "daysAgo": "days ago",
+    "recently": "Recently"
+  }
+}

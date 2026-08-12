@@ -1,0 +1,27 @@
+{
+    "nav": {
+        "debunks": "Debunks",
+        "report": "Report Incident",
+        "tagline": "FactCheck Africa"
+    },
+    "home": {
+        "filterAll": "All Fact-Checks",
+        "filterVoterSuppression": "Voter Suppression",
+        "filterDisinformation": "Disinformation / Fake News",
+        "filterTFGBV": "TFGBV",
+        "filterLogistics": "Logistics Failure",
+        "filterViolence": "Violence / Intimidation"
+    },
+    "report": {
+        "title": "Report Electoral Misinformation",
+        "subtitle": "Submissions are instantly routed to the TruthGuard Situation Room for verification.",
+        "incidentType": "Incident Type",
+        "description": "Description",
+        "placeholder": "Provide context, links, or details about the claim...",
+        "anonymous": "Keep My Report Anonymous",
+        "submit": "Send Incident Report",
+        "successTitle": "Report Successfully Submitted!",
+        "successMsg": "Thank you for helping keep the #OsunDecides2026 elections transparent. Our fact-checkers are investigating.",
+        "another": "Submit Another Report"
+    }
+}
