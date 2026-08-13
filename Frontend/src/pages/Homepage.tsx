@@ -8,7 +8,6 @@ import {
     CheckCircle2,
     XCircle,
     AlertTriangle,
-    ChevronDown,
     Loader2,
     ArrowLeft,
     X,
@@ -18,7 +17,7 @@ import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
 import { getDebunkedFeed } from '../services/api';
 
 // --- Types & Constants ---
-export type Verdict = 'FALSE' | 'MISLEADING' | 'VERIFIED' | 'PENDING';
+export type Verdict = 'FALSE' | 'MISLEADING' | 'VERIFIED' | 'PENDING' | string;
 
 export type Category =
     | 'ALL'
@@ -39,9 +38,9 @@ export interface PublicReport {
     timestamp: string;
     summary: string;
     rawCreatedAt?: string;
+    content?: string;
+    [key: string]: any;
 }
-
-
 
 const FILTER_CATEGORIES: { id: Category; labelKey: string; fallback: string }[] = [
     { id: 'ALL', labelKey: 'home.filterAll', fallback: 'All Fact-Checks' },
@@ -57,8 +56,9 @@ const FILTER_CATEGORIES: { id: Category; labelKey: string; fallback: string }[] 
 
 const VerdictBadge = ({ verdict }: { verdict: Verdict }) => {
     const { t } = useTranslation();
+    const normalizedVerdict = String(verdict || '').toUpperCase();
 
-    switch (verdict) {
+    switch (normalizedVerdict) {
         case 'FALSE':
             return (
                 <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
@@ -72,13 +72,18 @@ const VerdictBadge = ({ verdict }: { verdict: Verdict }) => {
                 </span>
             );
         case 'VERIFIED':
+        case 'TRUE':
             return (
                 <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     <CheckCircle2 className="w-4 h-4" /> {t('home.statusVerified', 'CONFIRM TRUE')}
                 </span>
             );
         default:
-            return null;
+            return (
+                <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-slate-500/20 text-slate-300 border border-slate-500/30">
+                    {verdict || 'UNVERIFIED'}
+                </span>
+            );
     }
 };
 
@@ -131,26 +136,28 @@ const ReportCard = ({
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                 <div className="space-y-3">
                     <div className="flex flex-wrap items-center gap-3">
-                        <VerdictBadge verdict={report.verdict} />
+                        {report.verdict && <VerdictBadge verdict={report.verdict} />}
                         <span className="text-xs text-gray-400 font-medium">
-                            {report.timestamp} • {report.location}
+                            {report.timestamp} {report.location ? `• ${report.location}` : ''}
                         </span>
                     </div>
                     <h2 className="text-xl font-bold text-white leading-snug">{report.title}</h2>
                 </div>
             </div>
 
-            <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352] mb-4">
-                <p className="text-sm text-gray-300">
-                    <strong className="text-gray-400 uppercase text-xs tracking-wider">
-                        {t('home.claimLabel', 'WETIN DEM TALK: ')}
-                    </strong>
-                    {report.claim}
-                </p>
-            </div>
+            {report.claim && (
+                <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352] mb-4">
+                    <p className="text-sm text-gray-300">
+                        <strong className="text-gray-400 uppercase text-xs tracking-wider">
+                            {t('home.claimLabel', 'WETIN DEM TALK: ')}
+                        </strong>
+                        {report.claim}
+                    </p>
+                </div>
+            )}
 
             <p className="text-sm text-gray-300 leading-relaxed mb-6 line-clamp-3">
-                {report.summary}
+                {report.summary || report.content}
             </p>
 
             <div className="flex items-center justify-between pt-4 border-t border-[#1A3352]">
@@ -158,7 +165,7 @@ const ReportCard = ({
                     onClick={() => onSelect(report.id)}
                     className="text-[#1CB5BE] hover:text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                    {t('home.readFull', 'Read Full Story')}
+                    {t('home.readFull', 'Read Full Story')} →
                 </button>
                 <button
                     onClick={() => onShare(report)}
@@ -202,9 +209,9 @@ const ReportDetailView = ({
 
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 sm:p-8 rounded-2xl space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
-                    <VerdictBadge verdict={report.verdict} />
+                    {report.verdict && <VerdictBadge verdict={report.verdict} />}
                     <span className="text-xs text-gray-400 font-medium">
-                        {report.timestamp} • {report.location}
+                        {report.timestamp} {report.location ? `• ${report.location}` : ''}
                     </span>
                 </div>
 
@@ -212,18 +219,20 @@ const ReportDetailView = ({
                     {report.title}
                 </h1>
 
-                <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352]">
-                    <p className="text-sm text-gray-300">
-                        <strong className="text-[#E55322] uppercase text-xs tracking-wider block mb-1">
-                            {t('home.claimLabel', 'WETIN DEM TALK: ')}
-                        </strong>
-                        "{report.claim}"
-                    </p>
-                </div>
+                {report.claim && (
+                    <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352]">
+                        <p className="text-sm text-gray-300">
+                            <strong className="text-[#E55322] uppercase text-xs tracking-wider block mb-1">
+                                {t('home.claimLabel', 'WETIN DEM TALK: ')}
+                            </strong>
+                            "{report.claim}"
+                        </p>
+                    </div>
+                )}
 
                 <div className="border-t border-[#1A3352] pt-6">
                     <p className="text-gray-200 leading-relaxed text-base whitespace-pre-wrap">
-                        {report.summary}
+                        {report.summary || report.content}
                     </p>
                 </div>
 
@@ -304,7 +313,7 @@ const ShareCardModal = ({
 export default function HomePage() {
     const { t, i18n } = useTranslation();
 
-    // Ref & State for Client-Side Card Capture
+    // Ref & State for Canvas Capture
     const cardRef = useRef<HTMLDivElement>(null);
     const [selectedShareReport, setSelectedShareReport] = useState<PublicReport | null>(null);
 
@@ -347,32 +356,34 @@ export default function HomePage() {
         [t]
     );
 
-    // Helper: Record Formatter for API Response
+    // Helper: Resilient Record Formatter for direct API responses
     const formatApiRecord = useCallback(
         (item: any): PublicReport => {
             const lang = i18n.language || 'en';
-            const dbTitle = item[`title_${lang}`];
-            const dbClaim = item[`claim_${lang}`];
-            const dbSummary = item[`summary_${lang}`];
+
+            const dbTitle = item[`title_${lang}`] || item.title || '';
+            const dbClaim = item[`claim_${lang}`] || item.claim || item.summary || '';
+            const dbSummary = item[`summary_${lang}`] || item.summary || item.content || item.fact || '';
 
             return {
                 id: String(item.id),
-                title: dbTitle || item.title || '',
-                claim: dbClaim || item.claim || '',
-                verdict: item.verdict,
-                category: item.category,
+                title: dbTitle,
+                claim: dbClaim,
+                verdict: item.verdict || '',
+                category: item.category || 'ALL',
                 location: item.location || '',
                 timestamp: item.created_at
                     ? getRelativeTime(item.created_at)
                     : t('time.recently', 'Recently'),
-                summary: dbSummary || item.summary || item.fact || '',
+                summary: dbSummary,
+                content: item.content || dbSummary,
                 rawCreatedAt: item.created_at
             };
         },
         [i18n.language, getRelativeTime, t]
     );
 
-    // Sync URL state with selected report
+    // Sync URL state with selected report ID
     const handleSelectReport = (id: string | null) => {
         setSelectedReportId(id);
         const url = new URL(window.location.href);
@@ -384,32 +395,47 @@ export default function HomePage() {
         window.history.pushState({}, '', url.toString());
     };
 
-    // Step 2 Integration: Fetch Public Debunked Feed (`GET feed/debunked/`)
-    const fetchDebunkedFeed = useCallback(async (pageNum: number, append = false) => {
-        setIsLoading(true);
-        setErrorMsg(null);
+    // Fetch Feed with Language Query & Pagination
+    const fetchDebunkedFeed = useCallback(
+        async (pageNum: number, append = false) => {
+            setIsLoading(true);
+            setErrorMsg(null);
 
-        try {
-            const data = await getDebunkedFeed(pageNum);
+            const currentLang = i18n.language || 'en';
 
-            // Handles both paginated objects ({ results: [], next: "..." }) and standard arrays
-            const apiResults = Array.isArray(data) ? data : data.results || [];
-            const formatted = apiResults.map(formatApiRecord);
+            try {
+                let data: any;
 
-            setReports((prev) => (append ? [...prev, ...formatted] : formatted));
-            setHasMorePages(data.next !== null && data.next !== undefined);
-        } catch (err: any) {
-            console.error('Error fetching debunked feed from API:', err);
-            setErrorMsg(t('home.fetchError', 'Failed to load fact-checks. Please try again.'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [formatApiRecord, t]);
+                if (typeof getDebunkedFeed === 'function') {
+                    data = await getDebunkedFeed(pageNum);
+                } else {
+                    const res = await fetch(
+                        `https://truthguard-api-sut7.onrender.com/api/incidents/feed/debunked/?lang=${currentLang}&page=${pageNum}`
+                    );
+                    if (!res.ok) throw new Error('Failed to fetch debunked feed.');
+                    data = await res.json();
+                }
 
-    // Initial Fetch on Component Mount
+                const apiResults = Array.isArray(data) ? data : data.results || [];
+                const formatted = apiResults.map(formatApiRecord);
+
+                setReports((prev) => (append ? [...prev, ...formatted] : formatted));
+                setHasMorePages(data.next !== null && data.next !== undefined);
+            } catch (err: any) {
+                console.error('Error fetching debunked feed from API:', err);
+                setErrorMsg(t('home.fetchError', 'Failed to load fact-checks. Please try again.'));
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [formatApiRecord, i18n.language, t]
+    );
+
+    // Trigger Fetch on Initial Mount & whenever Language changes
     useEffect(() => {
-        fetchDebunkedFeed(1);
-    }, [fetchDebunkedFeed]);
+        setCurrentPage(1);
+        fetchDebunkedFeed(1, false);
+    }, [i18n.language, fetchDebunkedFeed]);
 
     // Load More Handler (Pagination)
     const handleLoadMore = () => {
@@ -418,29 +444,28 @@ export default function HomePage() {
         fetchDebunkedFeed(nextPage, true);
     };
 
-    // Handle Sharing (Client-Side html-to-image Fallback)
+    // Handle Share (Native Share with HTML-to-Image Fallback)
     const handleShareCard = async (report: PublicReport) => {
         if (navigator.share) {
             try {
                 await navigator.share({
                     title: report.title,
-                    text: `[Fact-Check: ${report.verdict}] ${report.claim}`,
+                    text: `[Fact-Check: ${report.verdict}] ${report.claim || report.title}`,
                     url: `${window.location.origin}/?report=${report.id}`
                 });
                 return;
             } catch (e) {
-                // Fallback to graphic modal if native share is cancelled or unsupported
+                // Fallback to graphic modal if cancelled or unsupported
             }
         }
 
-        // Render report into offscreen component and convert to PNG
         setSelectedShareReport(report);
         setGeneratingCardId(report.id);
 
         setTimeout(async () => {
             if (cardRef.current) {
                 try {
-                    const dataUrl = await htmlToImage.toPng(cardRef.current, { cacheBust: true });
+                    const dataUrl = await htmlToImage.toPng(cardRef.current, { cacheBust: true, quality: 0.95 });
                     setPreviewCardUrl(dataUrl);
                 } catch (err) {
                     console.error('Failed to capture card image:', err);
@@ -451,19 +476,21 @@ export default function HomePage() {
         }, 100);
     };
 
-    // Selected Report Memo
+    // Derived Selected Report Memo
     const selectedReport = useMemo(() => {
-        return reports.find((r) => r.id === selectedReportId);
+        if (!selectedReportId) return null;
+        return reports.find((r) => String(r.id) === String(selectedReportId)) || null;
     }, [reports, selectedReportId]);
 
-    // Filtered Reports Memo
+    // Derived Filtered Reports Memo
     const filteredReports = useMemo(() => {
         const q = searchQuery.toLowerCase().trim();
         return reports.filter((report) => {
             const matchesSearch =
                 !q ||
                 report.title.toLowerCase().includes(q) ||
-                report.claim.toLowerCase().includes(q);
+                report.claim.toLowerCase().includes(q) ||
+                report.summary.toLowerCase().includes(q);
 
             const matchesFilter =
                 activeFilter === 'ALL' || report.category === activeFilter;
@@ -475,8 +502,15 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-[#061528] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
             {/* Hidden graphic component target for html-to-image canvas capture */}
-            {selectedShareReport && (
-                <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />
+            <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] pointer-events-none opacity-0">
+                {selectedShareReport && (
+                    <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />
+                )}
+            </div>
+
+            {/* Share Modal Preview */}
+            {previewCardUrl && (
+                <ShareCardModal cardUrl={previewCardUrl} onClose={() => setPreviewCardUrl(null)} />
             )}
 
             <div className="max-w-4xl mx-auto space-y-10">
@@ -524,17 +558,18 @@ export default function HomePage() {
                             />
                         </div>
 
-                        {/* Reports List / Feed */}
+                        {/* Reports Feed */}
                         <div className="space-y-6">
                             {isLoading && reports.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-[#1CB5BE]">
+                                <div className="flex flex-col items-center justify-center py-16 text-[#1CB5BE]">
                                     <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                                    <p className="text-sm text-gray-400">{t('home.loading', 'Fetching verified reports...')}</p>
                                 </div>
                             ) : errorMsg && reports.length === 0 ? (
                                 <div className="text-center py-12 text-rose-400 border border-dashed border-rose-500/30 rounded-2xl space-y-4">
                                     <p>{errorMsg}</p>
                                     <button
-                                        onClick={() => fetchDebunkedFeed(1)}
+                                        onClick={() => fetchDebunkedFeed(1, false)}
                                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#0E243F] text-[#1CB5BE] rounded-xl text-xs font-bold border border-[#1CB5BE]/30 hover:bg-[#1CB5BE]/10 transition-colors cursor-pointer"
                                     >
                                         <RefreshCw className="w-4 h-4" /> {t('home.retry', 'Retry')}
@@ -561,21 +596,18 @@ export default function HomePage() {
                             )}
                         </div>
 
-                        {/* Pagination Button connected to feed/debunked/ page parameters */}
+                        {/* Pagination Controls */}
                         {hasMorePages && (
                             <div className="flex justify-center pt-4">
                                 <button
                                     onClick={handleLoadMore}
                                     disabled={isLoading}
-                                    className="flex items-center gap-2 px-6 py-3 bg-[#0E243F] border border-[#1CB5BE]/30 text-[#1CB5BE] hover:bg-[#1CB5BE]/10 rounded-xl font-bold text-sm transition-all cursor-pointer disabled:opacity-50"
+                                    className="px-6 py-3 bg-[#0E243F] hover:bg-[#1A3352] text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                     ) : (
-                                        <>
-                                            {t('home.loadMore', 'Load More Story')}{' '}
-                                            <ChevronDown className="w-4 h-4" />
-                                        </>
+                                        t('home.loadMore', 'Load More Fact-Checks')
                                     )}
                                 </button>
                             </div>
@@ -583,14 +615,6 @@ export default function HomePage() {
                     </>
                 )}
             </div>
-
-            {/* Share Preview Modal */}
-            {previewCardUrl && (
-                <ShareCardModal
-                    cardUrl={previewCardUrl}
-                    onClose={() => setPreviewCardUrl(null)}
-                />
-            )}
         </div>
     );
 }

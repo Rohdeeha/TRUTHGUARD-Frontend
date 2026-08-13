@@ -100,7 +100,7 @@ export const updateTicketStatus = async (
             'Content-Type': 'application/json',
             ...getAuthHeader('fact_checker_token'),
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, verdict: status }),
     });
 
     return handleResponse(res, 'Failed to update ticket status');
