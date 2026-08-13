@@ -46,6 +46,9 @@ const resources = {
                 successMessage: 'Thank you for helping keep the Osun 2026 elections transparent. Our verification team is reviewing your submission.',
                 submitAnother: 'Submit Another Report'
             },
+            dashboard: {
+                controlPanel: 'Situation Room Dashboard'
+            },
             dynamic: {
                 "e2e40b9f-a292-40db-9907-7e77dacdc537": {
                     title: "INEC Extends Voting Time Across All Osun Central Polling Units",

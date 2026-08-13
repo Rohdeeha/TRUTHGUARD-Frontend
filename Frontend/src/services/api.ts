@@ -39,7 +39,6 @@ export const submitReport = async (data: FormData | Record<string, any>) => {
 
     const res = await fetch(`${API_BASE_URL}/incidents/report/`, {
         method: 'POST',
-        // Omit 'Content-Type' header when passing FormData so browser sets multipart/form-data boundary
         headers: isFormData
             ? {}
             : { 'Content-Type': 'application/json' },
@@ -61,7 +60,7 @@ export const getDebunkedFeed = async (page = 1) => {
 export const getTriageQueue = async (search = '', status = '') => {
     const query = new URLSearchParams();
     if (search) query.append('search', search);
-    if (status) query.append('status', status);
+    if (status && status !== 'ALL') query.append('status', status);
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
 
@@ -72,6 +71,11 @@ export const getTriageQueue = async (search = '', status = '') => {
     });
 
     return handleResponse(res, 'Failed to fetch triage queue');
+};
+
+/** Alias function for components referencing KanbanTriageView */
+export const getKanbanTriageQueue = async (_limit = 10, search = '', status = '') => {
+    return getTriageQueue(search, status);
 };
 
 /** 4. Update Report Ticket Status */
