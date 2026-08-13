@@ -1,19 +1,13 @@
 // src/pages/DashboardPage.tsx
 
 import { useEffect, useState } from 'react';
-import { getTriageQueue, updateTicketStatus, DashboardReport } from '../services/api';
+import { getTriageQueue, updateTicketStatus, type DashboardReport } from "../services/api";
 import { useLanguage } from './LanguageContext';
 import { useTranslation } from 'react-i18next';
 import {
-    Shield,
     Share2,
-    AlertTriangle,
-    CheckCircle2,
-    XCircle,
     Search,
     Filter,
-    Clock,
-    FileText,
     Radio,
     Globe
 } from 'lucide-react';
@@ -23,22 +17,22 @@ export default function DashboardPage() {
     const { language, setLanguage } = useLanguage();
     const { t } = useTranslation();
 
-    const [reports, setReports] = useState<any[]>([]);
+    const [reports, setReports] = useState<DashboardReport[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('ALL');
-    const [selectedReportForBroadcast, setSelectedReportForBroadcast] = useState<any | null>(null);
+    const [selectedReportForBroadcast, setSelectedReportForBroadcast] = useState<DashboardReport | null>(null);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
     // Dynamic translation helper to resolve database language fields safely
     const getLocalizedContent = (report: any, field: 'title' | 'summary', currentLang: string) => {
         if (!report) return '';
-        
+
         // 1. Check nested object format from DRF: report.translations.yo.title
         if (report.translations && report.translations[currentLang] && report.translations[currentLang][field]) {
             return report.translations[currentLang][field];
         }
-        
+
         // 2. Check flat field format: report.title_yo
         const flatKey = `${field}_${currentLang}`;
         if (report[flatKey]) {
@@ -58,11 +52,11 @@ export default function DashboardPage() {
             try {
                 // Calls getTriageQueue from api.ts
                 const data = await getTriageQueue(searchQuery, selectedFilter);
-                
+
                 if (isMounted) {
                     const results = Array.isArray(data) ? data : data.results || [];
                     const count = data.count || results.length;
-                    
+
                     setReports(results);
                     setTotalCount(count);
                 }
@@ -88,7 +82,7 @@ export default function DashboardPage() {
     }, [searchQuery, selectedFilter]);
 
     // 2. Patch verdict changes in database
-    const handleVerdictChange = async (id: string, newVerdict: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING') => {
+    const handleVerdictChange = async (id: string | number, newVerdict: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING') => {
         const previousReports = [...reports];
 
         // Optimistic UI update
@@ -116,7 +110,7 @@ export default function DashboardPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A3352] pb-6">
                 <div>
                     <div className="flex items-center gap-2 text-[#1CB5BE] font-bold text-xs uppercase tracking-wider mb-1">
-                        <Radio className="w-4 h-4 animate-pulse text-emerald-400" />
+                        <Radio className={`w-4 h-4 text-emerald-400 ${loading ? 'animate-ping' : 'animate-pulse'}`} />
                         <h1 className="text-2xl sm:text-3xl font-black text-white">
                             {t('dashboard.pageTitle', 'Situation Room Dashboard')}
                         </h1>
@@ -139,6 +133,12 @@ export default function DashboardPage() {
 
                         <span className="bg-[#1CB5BE] text-[#061528] font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
                             Live Reports: {totalCount}
+                        </span>
+                        <span className="bg-yellow-500 text-[#061528] font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                            Pending: {pendingCount}
+                        </span>
+                        <span className="bg-emerald-500 text-[#061528] font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                            Debunked: {debunkedCount}
                         </span>
                     </div>
                 </div>
@@ -163,11 +163,10 @@ export default function DashboardPage() {
                         <button
                             key={statusOption}
                             onClick={() => setSelectedFilter(statusOption)}
-                            className={`px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer ${
-                                selectedFilter === statusOption
-                                    ? 'bg-[#1CB5BE] text-[#061528]'
-                                    : 'bg-[#061528] text-gray-300 border border-[#1A3352]'
-                            }`}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer ${selectedFilter === statusOption
+                                ? 'bg-[#1CB5BE] text-[#061528]'
+                                : 'bg-[#061528] text-gray-300 border border-[#1A3352]'
+                                }`}
                         >
                             {statusOption}
                         </button>
@@ -232,7 +231,13 @@ export default function DashboardPage() {
             {/* Broadcast Modal */}
             {selectedReportForBroadcast && (
                 <BroadcastModal
-                    report={selectedReportForBroadcast}
+                    report={{
+                        id: String(selectedReportForBroadcast.id),
+                        title: getLocalizedContent(selectedReportForBroadcast, 'title', language),
+                        claim: selectedReportForBroadcast.claim || getLocalizedContent(selectedReportForBroadcast, 'title', language),
+                        verdict: (selectedReportForBroadcast.status || selectedReportForBroadcast.verdict || 'PENDING') as 'FALSE' | 'MISLEADING' | 'VERIFIED' | 'PENDING',
+                        summary: getLocalizedContent(selectedReportForBroadcast, 'summary', language),
+                    }}
                     onClose={() => setSelectedReportForBroadcast(null)}
                 />
             )}
