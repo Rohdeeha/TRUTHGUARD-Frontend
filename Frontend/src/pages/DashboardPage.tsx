@@ -79,7 +79,7 @@ export default function DashboardPage() {
             isMounted = false;
             clearInterval(intervalId);
         };
-    }, [searchQuery, selectedFilter]);
+    }, [searchQuery, selectedFilter, language]);
 
     // 2. Patch verdict changes in database
     const handleVerdictChange = async (id: string | number, newVerdict: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING') => {

@@ -48,12 +48,6 @@ const resources = {
             },
             dashboard: {
                 controlPanel: 'Situation Room Dashboard'
-            },
-            dynamic: {
-                "e2e40b9f-a292-40db-9907-7e77dacdc537": {
-                    title: "INEC Extends Voting Time Across All Osun Central Polling Units",
-                    summary: "Official channels from the electoral commission have debunked this claim. Voting closing times remain strictly as scheduled."
-                }
             }
         }
     },
@@ -80,9 +74,31 @@ const resources = {
                 shareReport: 'Pín Fact-Check Yìí',
                 statusFalse: 'EKE NI',
                 statusMisleading: 'Ó Ń SI NI LỌ̀NA',
-                statusVerified: 'LÓÒTỌ́ NI',
-                claimLabel: 'WẸ́TÌN DẸ́M TÁLK: '
-
+                statusVerified: 'LÓÒTỌ́ NI'
+            },
+            report: {
+                title: 'Sọ̀jásí Ìṣẹ̀lẹ̀ Tàbí Ìròyìn Eke',
+                subtitle: 'Ràn wá lọ́wọ́ láti pa ìbo Osun 2026 mọ́ kúrò nínú ìròyìn eke.',
+                incidentType: 'Irúfẹ́ Ìṣẹ̀lẹ̀',
+                types: {
+                    fakeNews: 'Ìròyìn Eke / Ìròyìn Láìsí Ẹ̀rí',
+                    suppression: 'Dídènà Oǹdībò / Ìbànẹ́rù',
+                    falseResults: 'Àbájáde Ìbo Eke',
+                    technical: 'Àìṣedeede Ẹ̀rọ BVAS / Network',
+                    other: 'Òmíràn'
+                },
+                description: 'Àlàyé Ìṣẹ̀lẹ̀',
+                placeholder: 'Kọ àwọn àlàyé nípa ìròyìn eke tàbí ibi tí ó ti ṣẹ́lẹ̀...',
+                uploadLabel: 'Fi Ẹ̀rí Awòrán/Fídíò Mọ́ Ọ́n (Aṣàyàn)',
+                uploadHint: 'Tẹ̀ ẹ́ láti fi àwòrán tabi fídíò rẹ ránṣẹ́',
+                anonymous: 'Fipamọ́ orukọ mi',
+                submit: 'Fi Ìròyìn Ránṣẹ́',
+                successTitle: 'A ti gba ìròyìn rẹ!',
+                successMessage: 'Ẹ ṣeun fún ìrànlọ́wọ́ rẹ láti jẹ́ kí ìdībò Osun 2026 jẹ́ mọ́gaara.',
+                submitAnother: 'Sọ Ìròyìn Mìíràn'
+            },
+            dashboard: {
+                controlPanel: 'Agbègbè Dashboard Situation Room'
             }
         }
     },
@@ -130,11 +146,8 @@ const resources = {
                 successMessage: 'Thank you as you dey help make Osun 2026 election clean. Our people dey check am now.',
                 submitAnother: 'Report Another Mata'
             },
-            dynamic: {
-                "e2e40b9f-a292-40db-9907-7e77dacdc537": {
-                    title: "INEC Don Extend Voting Time For All Osun Central Polling Units",
-                    summary: "INEC don comot talk say dis na fake news. Voting closing time never change at all."
-                }
+            dashboard: {
+                controlPanel: 'Situation Room Dashboard'
             }
         }
     }

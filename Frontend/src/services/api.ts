@@ -91,7 +91,7 @@ export const getKanbanTriageQueue = async (_limit = 10, search = '', status = ''
 
 /** 4. Update Report Ticket Status */
 export const updateTicketStatus = async (
-    id: string,
+    id: string | number,
     status: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING'
 ) => {
     const res = await fetch(`${API_BASE_URL}/incidents/triage/${id}/status/`, {

@@ -158,20 +158,6 @@ export default function ReportPage() {
                     </div>
 
                     {/* Claim / Rumor Text */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.claimLabel', 'Wetin Dem Talk (The Specific Claim)')}
-                        </label>
-                        <textarea
-                            rows={2}
-                            required
-                            value={claim}
-                            onChange={(e) => setClaim(e.target.value)}
-                            placeholder={t('report.claimPlaceholder', 'Quote the exact claim, social media post, or statement...')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
-                        />
-                    </div>
-
                     {/* Location Field */}
                     <div>
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
