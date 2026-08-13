@@ -1,5 +1,16 @@
 // src/services/api.ts
+// Add this near the top of src/services/api.ts (e.g., right above your endpoints)
 
+export interface DashboardReport {
+    id: string | number;
+    title?: string;
+    summary?: string;
+    status?: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING';
+    verdict?: string;
+    location?: string;
+    translations?: Record<string, any>;
+    [key: string]: any; // Allows flexible indexing for dynamic language keys
+}
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 
