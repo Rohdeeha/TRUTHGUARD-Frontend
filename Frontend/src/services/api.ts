@@ -1,5 +1,4 @@
 // src/services/api.ts
-// Add this near the top of src/services/api.ts (e.g., right above your endpoints)
 
 export interface DashboardReport {
     id: string | number;
@@ -11,6 +10,21 @@ export interface DashboardReport {
     translations?: Record<string, any>;
     [key: string]: any; // Allows flexible indexing for dynamic language keys
 }
+
+// Added this interface for strict typing on the Incident Form and Situation Room feeds
+export interface IncidentReport {
+    id?: string | number;
+    title: string;
+    category: string;
+    location: string;
+    details: string;
+    is_anonymous: boolean;
+    media?: File | null;           // The raw file we append to FormData
+    media_url?: string | null;     // The URL returned from your colleague's Django backend
+    media_type?: 'image' | 'video' | 'audio' | '';
+    created_at?: string;
+}
+
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 

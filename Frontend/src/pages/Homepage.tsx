@@ -11,7 +11,10 @@ import {
     Loader2,
     ArrowLeft,
     X,
-    RefreshCw
+    RefreshCw,
+    MapPin,
+    Clock,
+    Play
 } from 'lucide-react';
 import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
 import { getDebunkedFeed } from '../services/api';
@@ -39,6 +42,8 @@ export interface PublicReport {
     summary: string;
     rawCreatedAt?: string;
     content?: string;
+    media_url?: string;
+    media_type?: 'image' | 'video' | string;
     [key: string]: any;
 }
 
@@ -132,34 +137,76 @@ const ReportCard = ({
     const { t } = useTranslation();
 
     return (
-        <article className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl shadow-xl hover:border-[#1CB5BE]/50 transition-colors">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-                <div className="space-y-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                        {report.verdict && <VerdictBadge verdict={report.verdict} />}
-                        <span className="text-xs text-gray-400 font-medium">
-                            {report.timestamp} {report.location ? `• ${report.location}` : ''}
-                        </span>
-                    </div>
-                    <h2 className="text-xl font-bold text-white leading-snug">{report.title}</h2>
+        <article className="bg-[#0E243F] border border-[#1A3352] p-5 sm:p-6 rounded-2xl shadow-xl hover:border-[#1CB5BE]/50 transition-colors flex flex-col gap-4">
+            {/* Top Row: Badges and Location */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    {report.verdict && <VerdictBadge verdict={report.verdict} />}
+                    <span className="inline-flex items-center gap-1 text-xs text-gray-400 font-medium">
+                        <Clock className="w-3.5 h-3.5 text-gray-500" />
+                        {report.timestamp}
+                    </span>
                 </div>
+
+                {report.location && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#E55322] bg-[#E55322]/10 border border-[#E55322]/20 px-2.5 py-1 rounded-lg">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {report.location}
+                    </span>
+                )}
             </div>
 
-            {report.claim && (
-                <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352] mb-4">
-                    <p className="text-sm text-gray-300">
-                        <strong className="text-gray-400 uppercase text-xs tracking-wider">
-                            {t('home.claimLabel', 'WETIN DEM TALK: ')}
-                        </strong>
-                        {report.claim}
+            {/* Main Content Layout: Text + Optional Media Preview */}
+            <div className="flex flex-col md:flex-row gap-4 items-start justify-between">
+                <div className="flex-1 space-y-3">
+                    <h2
+                        onClick={() => onSelect(report.id)}
+                        className="text-xl font-bold text-white leading-snug hover:text-[#1CB5BE] cursor-pointer transition-colors"
+                    >
+                        {report.title}
+                    </h2>
+
+                    {report.claim && (
+                        <div className="bg-[#061528] rounded-xl p-3.5 border border-[#1A3352]">
+                            <p className="text-xs sm:text-sm text-gray-300">
+                                <strong className="text-gray-400 uppercase text-xs tracking-wider">
+                                    {t('home.claimLabel', 'WETIN DEM TALK: ')}
+                                </strong>
+                                {report.claim}
+                            </p>
+                        </div>
+                    )}
+
+                    <p className="text-sm text-gray-300 leading-relaxed line-clamp-3">
+                        {report.summary || report.content}
                     </p>
                 </div>
-            )}
 
-            <p className="text-sm text-gray-300 leading-relaxed mb-6 line-clamp-3">
-                {report.summary || report.content}
-            </p>
+                {/* Media Thumbnail (If situation room media exists) */}
+                {report.media_url && (
+                    <div
+                        onClick={() => onSelect(report.id)}
+                        className="w-full md:w-44 h-32 flex-shrink-0 bg-[#061528] rounded-xl overflow-hidden border border-[#1A3352] relative cursor-pointer group"
+                    >
+                        {report.media_type === 'video' ? (
+                            <div className="w-full h-full relative flex items-center justify-center bg-black">
+                                <video src={report.media_url} className="w-full h-full object-cover opacity-80" />
+                                <div className="absolute p-2 rounded-full bg-[#1CB5BE] text-[#061528] shadow-lg group-hover:scale-110 transition-transform">
+                                    <Play className="w-4 h-4 fill-current" />
+                                </div>
+                            </div>
+                        ) : (
+                            <img
+                                src={report.media_url}
+                                alt={report.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        )}
+                    </div>
+                )}
+            </div>
 
+            {/* Footer Actions */}
             <div className="flex items-center justify-between pt-4 border-t border-[#1A3352]">
                 <button
                     onClick={() => onSelect(report.id)}
@@ -208,16 +255,35 @@ const ReportDetailView = ({
             </button>
 
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 sm:p-8 rounded-2xl space-y-6">
-                <div className="flex flex-wrap items-center gap-3">
-                    {report.verdict && <VerdictBadge verdict={report.verdict} />}
-                    <span className="text-xs text-gray-400 font-medium">
-                        {report.timestamp} {report.location ? `• ${report.location}` : ''}
-                    </span>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        {report.verdict && <VerdictBadge verdict={report.verdict} />}
+                        <span className="text-xs text-gray-400 font-medium">
+                            {report.timestamp}
+                        </span>
+                    </div>
+                    {report.location && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#E55322] bg-[#E55322]/10 border border-[#E55322]/20 px-3 py-1 rounded-lg">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {report.location}
+                        </span>
+                    )}
                 </div>
 
                 <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
                     {report.title}
                 </h1>
+
+                {/* Media Preview in Detail View */}
+                {report.media_url && (
+                    <div className="rounded-xl overflow-hidden border border-[#1A3352] max-h-96 bg-[#061528] flex items-center justify-center">
+                        {report.media_type === 'video' ? (
+                            <video src={report.media_url} controls className="w-full max-h-96 object-contain" />
+                        ) : (
+                            <img src={report.media_url} alt={report.title} className="w-full max-h-96 object-contain" />
+                        )}
+                    </div>
+                )}
 
                 {report.claim && (
                     <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352]">
@@ -377,7 +443,9 @@ export default function HomePage() {
                     : t('time.recently', 'Recently'),
                 summary: dbSummary,
                 content: item.content || dbSummary,
-                rawCreatedAt: item.created_at
+                rawCreatedAt: item.created_at,
+                media_url: item.media_url || item.image_url || item.media || item.image || null,
+                media_type: item.media_type || (item.video_url ? 'video' : 'image')
             };
         },
         [i18n.language, getRelativeTime, t]
@@ -524,7 +592,7 @@ export default function HomePage() {
                 ) : (
                     <>
                         {/* Hero Section */}
-                        <div className="text-center space-y-4">
+                        <div className="text-center space-y-[#061528] space-y-4">
                             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                                 {t('home.heroTitle', 'Live Election Fact-Checks')}
                             </h1>
@@ -558,7 +626,7 @@ export default function HomePage() {
                             />
                         </div>
 
-                        {/* Reports Feed */}
+                        {/* Situation Room Reports Feed */}
                         <div className="space-y-6">
                             {isLoading && reports.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-16 text-[#1CB5BE]">
