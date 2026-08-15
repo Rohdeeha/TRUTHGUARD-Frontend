@@ -13,15 +13,24 @@
         "filterViolence": "Violence / Intimidation"
     },
     "report": {
-        "title": "Report Electoral Misinformation",
-        "subtitle": "Submissions are instantly routed to the TruthGuard Situation Room for verification.",
-        "incidentType": "Incident Type",
-        "description": "Description",
-        "placeholder": "Provide context, links, or details about the claim...",
-        "anonymous": "Keep My Report Anonymous",
-        "submit": "Send Incident Report",
-        "successTitle": "Report Successfully Submitted!",
-        "successMsg": "Thank you for helping keep the #OsunDecides2026 elections transparent. Our fact-checkers are investigating.",
-        "another": "Submit Another Report"
+        "title": "Report Fake News or Incident",
+        "subtitle": "Help keep Osun clean from fake news. Send suspicious news, fake results, or voting trouble straight to our Situation Room.",
+        "titleLabel": "Report Headline / Title",
+        "titlePlaceholder": "e.g., Fake election result sheet circulating online",
+        "categoryLabel": "Incident Category",
+        "claimLabel": "What is the Rumor or Claim?",
+        "claimPlaceholder": "e.g., They are saying ballot boxes were snatched at Ward 4...",
+        "locationLabel": "Location / LGA / Polling Unit",
+        "locationPlaceholder": "e.g., Osogbo LGA, Ward 4, PU 008",
+        "detailsLabel": "Additional Context / Details",
+        "detailsPlaceholder": "Describe what happened in detail or include links to social media posts...",
+        "uploadLabel": "Upload Media Evidence (Optional)",
+        "uploadClick": "Click or drag to attach screenshot, audio, or video evidence",
+        "anonymous": "Keep my report anonymous",
+        "submit": "Submit Incident Report",
+        "submitError": "Could not submit report. Please check your network and try again.",
+        "receivedTitle": "Report Received!",
+        "receivedMsg": "Thank you for helping keep the Osun elections transparent. Our verification team in the Situation Room is reviewing your submission.",
+        "submitAnother": "Submit Another Report"
     }
 }

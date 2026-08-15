@@ -23,5 +23,26 @@
     "hoursAgo": "hours ago",
     "daysAgo": "days ago",
     "recently": "Recently"
+  },
+  "report": {
+    "title": "Report Fake News or Incident Wey Happen",
+    "subtitle": "Help keep Osun clean from fake news. Send suspicious news, fake results, or voting trouble straight to our Situation Room.",
+    "titleLabel": "Report Headline / Title",
+    "titlePlaceholder": "e.g., Fake election result sheet circulating online",
+    "categoryLabel": "Incident Category",
+    "claimLabel": "Wetin be the Rumor or Claim?",
+    "claimPlaceholder": "e.g., Dem say dem snatch ballot box for Ward 4...",
+    "locationLabel": "Location / LGA / Polling Unit",
+    "locationPlaceholder": "e.g., Osogbo LGA, Ward 4, PU 008",
+    "detailsLabel": "Additional Context / Details",
+    "detailsPlaceholder": "Describe wetin happen well well or drop links to social media posts...",
+    "uploadLabel": "Upload Media Evidence (Optional)",
+    "uploadClick": "Click or drag to attach screenshot, audio, or video evidence",
+    "anonymous": "Make nobody know say na me send am",
+    "submit": "Submit Incident Report",
+    "submitError": "Report no gree go. Abeg check your network try again.",
+    "receivedTitle": "We Don See Your Report!",
+    "receivedMsg": "Thank you for helping keep Osun elections transparent. Our verification team for Situation Room dey review am now.",
+    "submitAnother": "Submit Another Report"
   }
 }

@@ -13,15 +13,24 @@
         "filterViolence": "Ìwà Ipá / Ìdẹ́rùbà"
     },
     "report": {
-        "title": "Sọ Nipa Iroyin Eke",
-        "subtitle": "Wọn yoo fi ijabọ rẹ ránṣẹ lẹsẹkẹsẹ si TruthGuard Situation Room fun ayẹwo.",
-        "incidentType": "Arufin Isẹlẹ",
-        "description": "Apejuwe Isẹlẹ",
-        "placeholder": "Fún wa ni ẹkunrẹrẹ alaye, awọn asopọ tabi nkan ti wọn sọ...",
-        "anonymous": "Mu orukọ mi pamọ",
-        "submit": "Ránṣẹ Ijabọ Isẹlẹ",
-        "successTitle": "A ti gba ijabọ rẹ pẹlu aṣeyọri!",
-        "successMsg": "Ẹ ṣeun fun iranlọwọ lati jẹ ki idibo #OsunDecides2026 wa ni gbangba.",
-        "another": "Sọ Nipa Isẹlẹ Miran"
+        "title": "Fi Ìròyìn Irọ́ tàbí Ìṣẹ̀lẹ̀ Tó Ṣẹlẹ̀ Ránṣẹ́",
+        "subtitle": "Ṣe ìrànlọ́wọ́ láti jẹ́ kí ìdìbò Ọ̀ṣun wà ní mímọ́ kúrò nínú ìròyìn irọ́. Fi ìròyìn tí kò dánilójú, èsì ìdìbò ayédèrú, tàbí wàhálà ìdìbò ránṣẹ́ sí Gbọ̀ngàn Ìṣọ́ wa.",
+        "titleLabel": "Àkọlé Ìròyìn / Ìṣẹ̀lẹ̀",
+        "titlePlaceholder": "Apeere: Èsì ìdìbò ayédèrú tó ń tàn kálẹ̀ lórí ayélujára",
+        "categoryLabel": "Irúfẹ́ Ìṣẹ̀lẹ̀",
+        "claimLabel": "Kí ni Àhesọ tàbí Ìròyìn náà?",
+        "claimPlaceholder": "Apeere: Wọ́n ní wọ́n gbé àpótí ìdìbò ní Ward 4...",
+        "locationLabel": "Agbègbè / LGA / Ilé Ìdìbò",
+        "locationPlaceholder": "Apeere: Osogbo LGA, Ward 4, PU 008",
+        "detailsLabel": "Àlàyé Kíkún",
+        "detailsPlaceholder": "Ṣe àlàyé ohun tó ṣẹlẹ̀ ní kíkún tàbí fi línkì (link) ìròyìn ayélujára kún un...",
+        "uploadLabel": "Fi Fọ́tò tàbí Fídíò ránṣẹ́ (Tí o bá fẹ́)",
+        "uploadClick": "Tẹ ibí tàbí fa fọ́tò, ohùn (audio), tàbí fídíò rẹ sínú ibí",
+        "anonymous": "Boji bò orúkọ mi",
+        "submit": "Fi Ìròyìn Ránṣẹ́",
+        "submitError": "A kò le fi ìròyìn ránṣẹ́. Ẹ jọ̀wọ́, ṣayẹ̀wò nẹ́tíwọ́ọ̀kì (network) yín kí ẹ tún gbìyànjú.",
+        "receivedTitle": "A ti rí Ìròyìn Yín!",
+        "receivedMsg": "Ẹ ṣeun fún ìrànlọ́wọ́ yín láti jẹ́ kí ìdìbò Ọ̀ṣun lẹ́tọ̀ọ́. Ẹgbẹ́ wa ní Gbọ̀ngàn Ìṣọ́ ń ṣàyẹ̀wò ìròyìn yín lọ́wọ́.",
+        "submitAnother": "Fi Ìròyìn Míì Ránṣẹ́"
     }
 }

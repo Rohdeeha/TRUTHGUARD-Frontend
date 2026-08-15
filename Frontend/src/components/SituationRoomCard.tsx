@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, MapPin, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
 interface Report {
     id: string | number;
