@@ -101,8 +101,7 @@ export default function DashboardPage() {
 
     // Analytics counters
     const pendingCount = reports.filter((r) => (r.status || r.verdict) === 'PENDING').length;
-    const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict)).length;
-
+const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
     return (
         // Scope text color to text-slate-200 to prevent global cyan inheritance
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-slate-200">
