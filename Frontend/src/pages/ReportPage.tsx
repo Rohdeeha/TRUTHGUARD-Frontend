@@ -53,7 +53,8 @@ export default function ReportPage() {
         formData.append('is_anonymous', String(isAnonymous));
 
         if (selectedFile) {
-            formData.append('media_attachment', selectedFile);
+            // UPDATED: Using 'evidence_file' exactly as the backend requested
+            formData.append('evidence_file', selectedFile);
         }
 
         try {
@@ -157,7 +158,21 @@ export default function ReportPage() {
                         </select>
                     </div>
 
-                    {/* Claim / Rumor Text */}
+                    {/* Claim / Rumor Text (RESTORED) */}
+                    <div>
+                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                            {t('report.claimLabel', 'What is the Rumor or Claim?')}
+                        </label>
+                        <textarea
+                            rows={2}
+                            required
+                            value={claim}
+                            onChange={(e) => setClaim(e.target.value)}
+                            placeholder={t('report.claimPlaceholder', 'e.g., They are saying ballot boxes were snatched at Ward 4...')}
+                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
+                        />
+                    </div>
+
                     {/* Location Field */}
                     <div>
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">

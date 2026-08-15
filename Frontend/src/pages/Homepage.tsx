@@ -111,8 +111,8 @@ const FilterTabs = ({
                         key={tab.id}
                         onClick={() => onSelectFilter(tab.id)}
                         className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${isActive
-                                ? 'bg-[#1CB5BE] text-[#061528]'
-                                : 'bg-[#0E243F] text-gray-300 border border-[#1A3352] hover:text-white'
+                            ? 'bg-[#1CB5BE] text-[#061528]'
+                            : 'bg-[#0E243F] text-gray-300 border border-[#1A3352] hover:text-white'
                             }`}
                     >
                         {t(tab.labelKey, tab.fallback)}
@@ -422,11 +422,11 @@ export default function HomePage() {
         [t]
     );
 
+    const lang = i18n.language || 'en';
+
     // Helper: Resilient Record Formatter for direct API responses
     const formatApiRecord = useCallback(
         (item: any): PublicReport => {
-            const lang = i18n.language || 'en';
-
             const dbTitle = item[`title_${lang}`] || item.title || '';
             const dbClaim = item[`claim_${lang}`] || item.claim || item.summary || '';
             const dbSummary = item[`summary_${lang}`] || item.summary || item.content || item.fact || '';
@@ -442,247 +442,247 @@ export default function HomePage() {
                     ? getRelativeTime(item.created_at)
                     : t('time.recently', 'Recently'),
                 summary: dbSummary,
-                content: item.content || dbSummary,
+                content: item.content || item[`content_${lang}`] || dbSummary,
                 rawCreatedAt: item.created_at,
-                media_url: item.media_url || item.image_url || item.media || item.image || null,
+                media_url: item.media_url || item.evidence_file || item.image_url || item.media || item.image || null,
                 media_type: item.media_type || (item.video_url ? 'video' : 'image')
             };
         },
-        [i18n.language, getRelativeTime, t]
+        [lang, getRelativeTime, t]
     );
 
-    // Sync URL state with selected report ID
-    const handleSelectReport = (id: string | null) => {
-        setSelectedReportId(id);
-        const url = new URL(window.location.href);
-        if (id) {
-            url.searchParams.set('report', id);
-        } else {
-            url.searchParams.delete('report');
+// Sync URL state with selected report ID
+const handleSelectReport = (id: string | null) => {
+    setSelectedReportId(id);
+    const url = new URL(window.location.href);
+    if (id) {
+        url.searchParams.set('report', id);
+    } else {
+        url.searchParams.delete('report');
+    }
+    window.history.pushState({}, '', url.toString());
+};
+
+// Fetch Feed with Language Query & Pagination
+const fetchDebunkedFeed = useCallback(
+    async (pageNum: number, append = false) => {
+        setIsLoading(true);
+        setErrorMsg(null);
+
+        const currentLang = i18n.language || 'en';
+
+        try {
+            let data: any;
+
+            if (typeof getDebunkedFeed === 'function') {
+                data = await getDebunkedFeed(pageNum);
+            } else {
+                const res = await fetch(
+                    `https://truthguard-api-sut7.onrender.com/api/incidents/feed/debunked/?lang=${currentLang}&page=${pageNum}`
+                );
+                if (!res.ok) throw new Error('Failed to fetch debunked feed.');
+                data = await res.json();
+            }
+
+            const apiResults = Array.isArray(data) ? data : data.results || [];
+            const formatted = apiResults.map(formatApiRecord);
+
+            setReports((prev) => (append ? [...prev, ...formatted] : formatted));
+            setHasMorePages(data.next !== null && data.next !== undefined);
+        } catch (err: any) {
+            console.error('Error fetching debunked feed from API:', err);
+            setErrorMsg(t('home.fetchError', 'Failed to load fact-checks. Please try again.'));
+        } finally {
+            setIsLoading(false);
         }
-        window.history.pushState({}, '', url.toString());
-    };
+    },
+    [formatApiRecord, i18n.language, t]
+);
 
-    // Fetch Feed with Language Query & Pagination
-    const fetchDebunkedFeed = useCallback(
-        async (pageNum: number, append = false) => {
-            setIsLoading(true);
-            setErrorMsg(null);
+// Trigger Fetch on Initial Mount & whenever Language changes
+useEffect(() => {
+    setCurrentPage(1);
+    fetchDebunkedFeed(1, false);
+}, [i18n.language, fetchDebunkedFeed]);
 
-            const currentLang = i18n.language || 'en';
+// Load More Handler (Pagination)
+const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    fetchDebunkedFeed(nextPage, true);
+};
 
+// Handle Share (Native Share with HTML-to-Image Fallback)
+const handleShareCard = async (report: PublicReport) => {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: report.title,
+                text: `[Fact-Check: ${report.verdict}] ${report.claim || report.title}`,
+                url: `${window.location.origin}/?report=${report.id}`
+            });
+            return;
+        } catch (e) {
+            // Fallback to graphic modal if cancelled or unsupported
+        }
+    }
+
+    setSelectedShareReport(report);
+    setGeneratingCardId(report.id);
+
+    setTimeout(async () => {
+        if (cardRef.current) {
             try {
-                let data: any;
-
-                if (typeof getDebunkedFeed === 'function') {
-                    data = await getDebunkedFeed(pageNum);
-                } else {
-                    const res = await fetch(
-                        `https://truthguard-api-sut7.onrender.com/api/incidents/feed/debunked/?lang=${currentLang}&page=${pageNum}`
-                    );
-                    if (!res.ok) throw new Error('Failed to fetch debunked feed.');
-                    data = await res.json();
-                }
-
-                const apiResults = Array.isArray(data) ? data : data.results || [];
-                const formatted = apiResults.map(formatApiRecord);
-
-                setReports((prev) => (append ? [...prev, ...formatted] : formatted));
-                setHasMorePages(data.next !== null && data.next !== undefined);
-            } catch (err: any) {
-                console.error('Error fetching debunked feed from API:', err);
-                setErrorMsg(t('home.fetchError', 'Failed to load fact-checks. Please try again.'));
+                const dataUrl = await htmlToImage.toPng(cardRef.current, { cacheBust: true, quality: 0.95 });
+                setPreviewCardUrl(dataUrl);
+            } catch (err) {
+                console.error('Failed to capture card image:', err);
             } finally {
-                setIsLoading(false);
-            }
-        },
-        [formatApiRecord, i18n.language, t]
-    );
-
-    // Trigger Fetch on Initial Mount & whenever Language changes
-    useEffect(() => {
-        setCurrentPage(1);
-        fetchDebunkedFeed(1, false);
-    }, [i18n.language, fetchDebunkedFeed]);
-
-    // Load More Handler (Pagination)
-    const handleLoadMore = () => {
-        const nextPage = currentPage + 1;
-        setCurrentPage(nextPage);
-        fetchDebunkedFeed(nextPage, true);
-    };
-
-    // Handle Share (Native Share with HTML-to-Image Fallback)
-    const handleShareCard = async (report: PublicReport) => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: report.title,
-                    text: `[Fact-Check: ${report.verdict}] ${report.claim || report.title}`,
-                    url: `${window.location.origin}/?report=${report.id}`
-                });
-                return;
-            } catch (e) {
-                // Fallback to graphic modal if cancelled or unsupported
+                setGeneratingCardId(null);
             }
         }
+    }, 100);
+};
 
-        setSelectedShareReport(report);
-        setGeneratingCardId(report.id);
+// Derived Selected Report Memo
+const selectedReport = useMemo(() => {
+    if (!selectedReportId) return null;
+    return reports.find((r) => String(r.id) === String(selectedReportId)) || null;
+}, [reports, selectedReportId]);
 
-        setTimeout(async () => {
-            if (cardRef.current) {
-                try {
-                    const dataUrl = await htmlToImage.toPng(cardRef.current, { cacheBust: true, quality: 0.95 });
-                    setPreviewCardUrl(dataUrl);
-                } catch (err) {
-                    console.error('Failed to capture card image:', err);
-                } finally {
-                    setGeneratingCardId(null);
-                }
-            }
-        }, 100);
-    };
+// Derived Filtered Reports Memo
+const filteredReports = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return reports.filter((report) => {
+        const matchesSearch =
+            !q ||
+            report.title.toLowerCase().includes(q) ||
+            report.claim.toLowerCase().includes(q) ||
+            report.summary.toLowerCase().includes(q);
 
-    // Derived Selected Report Memo
-    const selectedReport = useMemo(() => {
-        if (!selectedReportId) return null;
-        return reports.find((r) => String(r.id) === String(selectedReportId)) || null;
-    }, [reports, selectedReportId]);
+        const matchesFilter =
+            activeFilter === 'ALL' || report.category === activeFilter;
 
-    // Derived Filtered Reports Memo
-    const filteredReports = useMemo(() => {
-        const q = searchQuery.toLowerCase().trim();
-        return reports.filter((report) => {
-            const matchesSearch =
-                !q ||
-                report.title.toLowerCase().includes(q) ||
-                report.claim.toLowerCase().includes(q) ||
-                report.summary.toLowerCase().includes(q);
+        return matchesSearch && matchesFilter;
+    });
+}, [reports, searchQuery, activeFilter]);
 
-            const matchesFilter =
-                activeFilter === 'ALL' || report.category === activeFilter;
-
-            return matchesSearch && matchesFilter;
-        });
-    }, [reports, searchQuery, activeFilter]);
-
-    return (
-        <div className="min-h-screen bg-[#061528] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
-            {/* Hidden graphic component target for html-to-image canvas capture */}
-            <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] pointer-events-none opacity-0">
-                {selectedShareReport && (
-                    <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />
-                )}
-            </div>
-
-            {/* Share Modal Preview */}
-            {previewCardUrl && (
-                <ShareCardModal cardUrl={previewCardUrl} onClose={() => setPreviewCardUrl(null)} />
+return (
+    <div className="min-h-screen bg-[#061528] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
+        {/* Hidden graphic component target for html-to-image canvas capture */}
+        <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] pointer-events-none opacity-0">
+            {selectedShareReport && (
+                <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />
             )}
+        </div>
 
-            <div className="max-w-4xl mx-auto space-y-10">
-                {selectedReportId && selectedReport ? (
-                    <ReportDetailView
-                        report={selectedReport}
-                        onBack={() => handleSelectReport(null)}
-                        onShare={handleShareCard}
-                        isGeneratingCard={generatingCardId === selectedReport.id}
-                    />
-                ) : (
-                    <>
-                        {/* Hero Section */}
-                        <div className="text-center space-y-[#061528] space-y-4">
-                            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                                {t('home.heroTitle', 'Live Election Fact-Checks')}
-                            </h1>
-                            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                                {t(
-                                    'home.heroSubtitle',
-                                    'Real-time news check, fake story debunk, and official info for Osun 2026.'
+        {/* Share Modal Preview */}
+        {previewCardUrl && (
+            <ShareCardModal cardUrl={previewCardUrl} onClose={() => setPreviewCardUrl(null)} />
+        )}
+
+        <div className="max-w-4xl mx-auto space-y-10">
+            {selectedReportId && selectedReport ? (
+                <ReportDetailView
+                    report={selectedReport}
+                    onBack={() => handleSelectReport(null)}
+                    onShare={handleShareCard}
+                    isGeneratingCard={generatingCardId === selectedReport.id}
+                />
+            ) : (
+                <>
+                    {/* Hero Section */}
+                    <div className="text-center space-y-[#061528] space-y-4">
+                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+                            {t('home.heroTitle', 'Live Election Fact-Checks')}
+                        </h1>
+                        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                            {t(
+                                'home.heroSubtitle',
+                                'Real-time news check, fake story debunk, and official info for Osun 2026.'
+                            )}
+                        </p>
+                    </div>
+
+                    {/* Controls Section */}
+                    <div className="space-y-4">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder={t(
+                                    'home.searchPlaceholder',
+                                    'Search news, candidate name, or fake story...'
                                 )}
-                            </p>
-                        </div>
-
-                        {/* Controls Section */}
-                        <div className="space-y-4">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder={t(
-                                        'home.searchPlaceholder',
-                                        'Search news, candidate name, or fake story...'
-                                    )}
-                                    className="w-full bg-[#0E243F] border border-[#1A3352] rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500 shadow-lg"
-                                />
-                            </div>
-
-                            <FilterTabs
-                                activeFilter={activeFilter}
-                                onSelectFilter={(cat) => setActiveFilter(cat)}
+                                className="w-full bg-[#0E243F] border border-[#1A3352] rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500 shadow-lg"
                             />
                         </div>
 
-                        {/* Situation Room Reports Feed */}
-                        <div className="space-y-6">
-                            {isLoading && reports.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-16 text-[#1CB5BE]">
-                                    <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                                    <p className="text-sm text-gray-400">{t('home.loading', 'Fetching verified reports...')}</p>
-                                </div>
-                            ) : errorMsg && reports.length === 0 ? (
-                                <div className="text-center py-12 text-rose-400 border border-dashed border-rose-500/30 rounded-2xl space-y-4">
-                                    <p>{errorMsg}</p>
-                                    <button
-                                        onClick={() => fetchDebunkedFeed(1, false)}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#0E243F] text-[#1CB5BE] rounded-xl text-xs font-bold border border-[#1CB5BE]/30 hover:bg-[#1CB5BE]/10 transition-colors cursor-pointer"
-                                    >
-                                        <RefreshCw className="w-4 h-4" /> {t('home.retry', 'Retry')}
-                                    </button>
-                                </div>
-                            ) : (
-                                <>
-                                    {filteredReports.map((report) => (
-                                        <ReportCard
-                                            key={report.id}
-                                            report={report}
-                                            onSelect={(id) => handleSelectReport(id)}
-                                            onShare={handleShareCard}
-                                            isGeneratingCard={generatingCardId === report.id}
-                                        />
-                                    ))}
+                        <FilterTabs
+                            activeFilter={activeFilter}
+                            onSelectFilter={(cat) => setActiveFilter(cat)}
+                        />
+                    </div>
 
-                                    {filteredReports.length === 0 && (
-                                        <div className="text-center py-12 text-gray-400 border border-dashed border-[#1A3352] rounded-2xl">
-                                            {t('home.noReports', 'No story match wetin you dey find.')}
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </div>
-
-                        {/* Pagination Controls */}
-                        {hasMorePages && (
-                            <div className="flex justify-center pt-4">
+                    {/* Situation Room Reports Feed */}
+                    <div className="space-y-6">
+                        {isLoading && reports.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-16 text-[#1CB5BE]">
+                                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                                <p className="text-sm text-gray-400">{t('home.loading', 'Fetching verified reports...')}</p>
+                            </div>
+                        ) : errorMsg && reports.length === 0 ? (
+                            <div className="text-center py-12 text-rose-400 border border-dashed border-rose-500/30 rounded-2xl space-y-4">
+                                <p>{errorMsg}</p>
                                 <button
-                                    onClick={handleLoadMore}
-                                    disabled={isLoading}
-                                    className="px-6 py-3 bg-[#0E243F] hover:bg-[#1A3352] text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                                    onClick={() => fetchDebunkedFeed(1, false)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#0E243F] text-[#1CB5BE] rounded-xl text-xs font-bold border border-[#1CB5BE]/30 hover:bg-[#1CB5BE]/10 transition-colors cursor-pointer"
                                 >
-                                    {isLoading ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        t('home.loadMore', 'Load More Fact-Checks')
-                                    )}
+                                    <RefreshCw className="w-4 h-4" /> {t('home.retry', 'Retry')}
                                 </button>
                             </div>
+                        ) : (
+                            <>
+                                {filteredReports.map((report) => (
+                                    <ReportCard
+                                        key={report.id}
+                                        report={report}
+                                        onSelect={(id) => handleSelectReport(id)}
+                                        onShare={handleShareCard}
+                                        isGeneratingCard={generatingCardId === report.id}
+                                    />
+                                ))}
+
+                                {filteredReports.length === 0 && (
+                                    <div className="text-center py-12 text-gray-400 border border-dashed border-[#1A3352] rounded-2xl">
+                                        {t('home.noReports', 'No story match wetin you dey find.')}
+                                    </div>
+                                )}
+                            </>
                         )}
-                    </>
-                )}
-            </div>
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {hasMorePages && (
+                        <div className="flex justify-center pt-4">
+                            <button
+                                onClick={handleLoadMore}
+                                disabled={isLoading}
+                                className="px-6 py-3 bg-[#0E243F] hover:bg-[#1A3352] text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    t('home.loadMore', 'Load More Fact-Checks')
+                                )}
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
-    );
+    </div>
+);
 }
