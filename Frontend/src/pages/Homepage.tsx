@@ -116,98 +116,149 @@ const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; 
     );
 };
 
-/* --- CORRECTED REPORT CARD LAYOUT --- */
+/* --- UPDATED REPORT CARD LAYOUT --- */
+
+// 1. We define the ReportCard component and specify the data (props) it needs to work.
 const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: PublicReport; onSelect: (id: string) => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
+
+    // 2. We bring in the translation function 't' to handle dynamic language switching.
     const { t } = useTranslation();
 
+    // 3. The 'return' statement dictates what HTML/UI is actually drawn on the screen.
     return (
+        // 4. The main card wrapper (`article`). It sets a dark background, a border, padding, rounded corners, and uses 'flex-col' to stack items vertically with a gap of 4 units.
         <article className="bg-[#0E243F] border border-[#1A3352] p-5 sm:p-6 rounded-2xl shadow-xl hover:border-[#1CB5BE]/50 transition-colors flex flex-col gap-4">
 
-            {/* Top Row: Date & Location */}
+            {/* --- TOP HEADER ROW --- */}
+            // 5. A flex container for the top row, spreading items to the far left and right (justify-between).
             <div className="flex items-center justify-between text-xs text-gray-400">
+
+                // 6. The wrapper for the timestamp on the left side.
                 <span className="inline-flex items-center gap-1.5 font-medium">
+                    // 7. Renders the Clock icon from Lucide.
                     <Clock className="w-3.5 h-3.5" />
+                    // 8. Displays the relative time string (e.g., "20 hours ago").
                     {report.timestamp}
                 </span>
+
+                // 9. A wrapper for the right side of the header, holding the Location and Verdict badge.
                 <div className="flex items-center gap-2">
+                    // 10. Conditional check: Only render the location if the report has one.
                     {report.location && (
+                        // 11. The visual styling for the orange location pill.
                         <span className="inline-flex items-center gap-1 text-[#E55322] border border-[#E55322]/20 bg-[#E55322]/10 px-2 py-1 rounded-md">
+                            // 12. Renders the MapPin icon.
                             <MapPin className="w-3.5 h-3.5" />
+                            // 13. Displays the actual location text.
                             {report.location}
                         </span>
+                    )}
+                    // 14. Conditional check: Only render the VerdictBadge if a verdict exists. (Moved here to match your image).
+                    {report.verdict && (
+                        // 15. Calls your existing VerdictBadge component to render the colored status pill.
+                        <VerdictBadge verdict={report.verdict} />
                     )}
                 </div>
             </div>
 
-            {/* Title (Always on top) */}
+            {/* --- TITLE --- */}
+            // 16. The heading element for the fact-check title.
             <h2
+                // 17. When clicked, it triggers the 'onSelect' function to open the full detail view.
                 onClick={() => onSelect(report.id)}
+                // 18. Styling for the text: large, bold, white, and turns teal on hover.
                 className="text-lg sm:text-xl font-bold text-white leading-snug hover:text-[#1CB5BE] cursor-pointer transition-colors"
             >
+                // 19. Displays the actual title text from the database.
                 {report.title}
             </h2>
 
-            {/* Verdict Badge - Moved under title for visibility */}
-            {report.verdict && (
-                <div><VerdictBadge verdict={report.verdict} /></div>
-            )}
-
-            {/* Image (Left) + Claim Box (Right) - Side by Side Guaranteed */}
+            {/* --- CONTENT AREA (IMAGE + CLAIM) --- */}
+            // 20. A flex container to place the image and the claim box side-by-side (flex-row).
             <div className="flex flex-row gap-3 sm:gap-4 items-stretch mt-2">
 
-                {/* Image Thumbnail - Fixed Square */}
+                // 21. Conditional check: Only render the media block if an image/video URL exists.
                 {report.media_url && (
+                    // 22. A fixed-size square container for the thumbnail. Hides anything that overflows outside its rounded borders.
                     <div
+                        // 23. Clicking the image also opens the full report.
                         onClick={() => onSelect(report.id)}
+                        // 24. Styling to keep it a fixed size (24x24 or 32x32 on larger screens) and act as a group for hover effects.
                         className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-[#061528] rounded-xl overflow-hidden border border-[#1A3352] relative cursor-pointer group"
                     >
+                        // 25. Checks if the media is a video.
                         {report.media_type === 'video' ? (
+                            // 26. Container for video styling.
                             <div className="w-full h-full relative flex items-center justify-center bg-black">
+                                // 27. Renders the video element.
                                 <video src={report.media_url} className="w-full h-full object-cover opacity-80" />
+                                // 28. Overlays a Play icon on top of the video thumbnail.
                                 <Play className="w-6 h-6 absolute text-white opacity-70" />
                             </div>
                         ) : (
+                            // 29. If it's an image, render the standard <img> tag.
                             <img
+                                // 30. Sets the source URL.
                                 src={report.media_url}
+                                // 31. Uses the title as alt text for accessibility.
                                 alt={report.title}
+                                // 32. Ensures the image covers the box and zooms slightly when hovered.
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                // 33. If the image link is broken (404), it hides the entire image container automatically.
                                 onError={(e) => { (e.target as HTMLElement).parentElement!.style.display = 'none'; }}
                             />
                         )}
                     </div>
                 )}
 
-                {/* Claim Box - Fills Remaining Space */}
+                // 34. The Claim Box container. `flex-1` tells it to fill all the remaining space next to the image.
                 <div className="flex-1 bg-[#061528] rounded-xl p-3 sm:p-4 border border-[#1A3352] flex flex-col justify-center">
+                    // 35. The label above the claim text.
                     <span className="text-gray-400 font-bold text-xs mb-1 block">
-                        {t('home.claimLabel', 'CLAIM:')}
+                        // 36. Uses the translation hook. I updated the fallback to "Wetin dem talk:" to match your image.
+                        {t('home.claimLabel', 'Wetin dem talk:')}
                     </span>
+                    // 37. The actual claim text styling. `line-clamp-3` cuts off the text with an ellipsis (...) if it's too long.
                     <p className="text-xs sm:text-sm text-gray-300 leading-relaxed line-clamp-3">
+                        // 38. Fallback logic: Try to show the claim first, if empty show summary, if empty show content.
                         {report.claim || report.summary || report.content}
                     </p>
                 </div>
             </div>
 
-            {/* Footer Actions */}
+            {/* --- FOOTER ACTIONS --- */}
+            // 39. The bottom row container, separated by a thin top border.
             <div className="flex items-center justify-between pt-4 mt-2 border-t border-[#1A3352]">
+                // 40. The "Read Full Story" button on the left.
                 <button
+                    // 41. Clicking it opens the full report view.
                     onClick={() => onSelect(report.id)}
+                    // 42. Teal text styling.
                     className="text-[#1CB5BE] hover:text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                    {t('home.readFull', 'Read Full Analysis')} →
+                    // 43. Uses the translation hook, updated to match your design.
+                    {t('home.readFull', 'Read Full Story →')}
                 </button>
 
+                // 44. The Share button on the right.
                 <button
+                    // 45. Triggers the screenshot/native share function when clicked.
                     onClick={() => onShare(report)}
+                    // 46. Disables the button while a screenshot is actively being generated.
                     disabled={isGeneratingCard}
+                    // 47. Button styling, with lower opacity if it's disabled.
                     className="text-gray-400 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                 >
+                    // 48. Conditional rendering based on loading state.
                     {isGeneratingCard ? (
+                        // 49. If generating, show a spinning loader icon.
                         <Loader2 className="w-4 h-4 animate-spin text-[#1CB5BE]" />
                     ) : (
+                        // 50. If not generating, show the standard Share icon.
                         <Share2 className="w-4 h-4" />
                     )}
-                    {t('home.shareReport', 'Share Fact-Check')}
+                    // 51. The button text.
+                    {t('home.shareReport', 'Share This Check')}
                 </button>
             </div>
         </article>
