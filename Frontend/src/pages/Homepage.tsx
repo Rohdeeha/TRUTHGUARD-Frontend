@@ -209,7 +209,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
     const { t } = useTranslation();
     return (
         <div className="space-y-6">
-            <button onClick={onBack} className="inline-flex items-center gap-2 text-[#1CB5BE] hover:text-white font-bold text-sm cursor-pointer mb-2">
+            <button onClick={onBack} className="inline-fle  x items-center gap-2 text-[#1CB5BE] hover:text-white font-bold text-sm cursor-pointer mb-2">
                 <ArrowLeft className="w-4 h-4" /> {t('home.backToFeed', 'Back to Feed')}
             </button>
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 sm:p-8 rounded-2xl space-y-6">
