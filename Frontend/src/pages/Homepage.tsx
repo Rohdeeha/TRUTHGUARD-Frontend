@@ -119,27 +119,34 @@ const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; 
 const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: PublicReport; onSelect: (id: string) => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
     const { t } = useTranslation();
 
+    // Fallback chain guarantees the claim box is never empty
+    const claimText = report.claim || report.summary || report.content || report.title;
+
     return (
         <article className="bg-[#0E243F] border border-[#1A3352] p-5 sm:p-6 rounded-2xl shadow-xl hover:border-[#1CB5BE]/50 transition-colors flex flex-col gap-4">
 
-            <div className="flex items-center justify-between text-xs text-gray-400">
-                <span className="inline-flex items-center gap-1.5 font-medium">
-                    <Clock className="w-3.5 h-3.5" />
-                    {report.timestamp}
-                </span>
-                <div className="flex items-center gap-2">
+            {/* Top Row: Timestamp, Location & Always-Visible Verdict Badge */}
+            <div className="flex items-center justify-between text-xs text-gray-400 gap-2 flex-wrap">
+                <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1.5 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        {report.timestamp}
+                    </span>
                     {report.location && (
                         <span className="inline-flex items-center gap-1 text-[#E55322] border border-[#E55322]/20 bg-[#E55322]/10 px-2 py-1 rounded-md">
                             <MapPin className="w-3.5 h-3.5" />
                             {report.location}
                         </span>
                     )}
-                    {report.verdict && (
-                        <VerdictBadge verdict={report.verdict} />
-                    )}
+                </div>
+
+                {/* Render Verdict Badge unconditionally so status is always visible */}
+                <div>
+                    <VerdictBadge verdict={report.verdict} />
                 </div>
             </div>
 
+            {/* Title */}
             <h2
                 onClick={() => onSelect(report.id)}
                 className="text-lg sm:text-xl font-bold text-white leading-snug hover:text-[#1CB5BE] cursor-pointer transition-colors"
@@ -147,7 +154,8 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                 {report.title}
             </h2>
 
-            <div className="flex flex-row gap-3 sm:gap-4 items-stretch mt-2">
+            {/* Image + Claim Box */}
+            <div className="flex flex-row gap-3 sm:gap-4 items-stretch mt-1">
                 {report.media_url && (
                     <div
                         onClick={() => onSelect(report.id)}
@@ -174,11 +182,12 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                         {t('home.claimLabel', 'Wetin dem talk:')}
                     </span>
                     <p className="text-xs sm:text-sm text-gray-300 leading-relaxed line-clamp-3">
-                        {report.claim || report.summary || report.content}
+                        {claimText}
                     </p>
                 </div>
             </div>
 
+            {/* Footer Actions */}
             <div className="flex items-center justify-between pt-4 mt-2 border-t border-[#1A3352]">
                 <button
                     onClick={() => onSelect(report.id)}
@@ -203,7 +212,6 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
         </article>
     );
 };
-
 // ... [Detail View and remaining components identical to previous implementation logic]
 const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { report: PublicReport; onBack: () => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
     const { t } = useTranslation();
