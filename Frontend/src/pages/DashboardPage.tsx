@@ -1,6 +1,6 @@
 // src/pages/DashboardPage.tsx
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getTriageQueue, updateTicketStatus, type DashboardReport } from "../services/api";
 import { useLanguage } from './LanguageContext';
 import { useTranslation } from 'react-i18next';
@@ -9,9 +9,12 @@ import {
     Search,
     Filter,
     Radio,
-    Globe
+    Globe,
+    Plus,
+    Edit3
 } from 'lucide-react';
 import BroadcastModal from '../components/BroadcastModal';
+import { SituationRoomAdminForm, type AdminFormState } from './SituationRoomAdminPage';
 
 export default function DashboardPage() {
     const { language, setLanguage } = useLanguage();
@@ -21,6 +24,10 @@ export default function DashboardPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('ALL');
     const [selectedReportForBroadcast, setSelectedReportForBroadcast] = useState<DashboardReport | null>(null);
+    const [adminFormModal, setAdminFormModal] = useState<{ isOpen: boolean; data: AdminFormState | null }>({
+        isOpen: false,
+        data: null,
+    });
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -43,43 +50,33 @@ export default function DashboardPage() {
         return report[field] || '';
     };
 
-    // 1. Synchronize live reports with Django DB via polling
+    // 1. Synchronize live reports with Django DB
+    const loadReports = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await getTriageQueue(searchQuery, selectedFilter);
+            const results = Array.isArray(data) ? data : data.results || [];
+            const count = data.count || results.length;
+
+            setReports(results);
+            setTotalCount(count);
+        } catch (error) {
+            console.error('Error syncing reports from Django API:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [searchQuery, selectedFilter, language]);
+
     useEffect(() => {
-        let isMounted = true;
-
-        const loadReports = async () => {
-            setLoading(true);
-            try {
-                // Calls getTriageQueue from api.ts
-                const data = await getTriageQueue(searchQuery, selectedFilter);
-
-                if (isMounted) {
-                    const results = Array.isArray(data) ? data : data.results || [];
-                    const count = data.count || results.length;
-
-                    setReports(results);
-                    setTotalCount(count);
-                }
-            } catch (error) {
-                console.error('Error syncing reports from Django API:', error);
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        // Initial Load
         loadReports();
 
         // 15-second polling loop for live telemetry updates
         const intervalId = setInterval(loadReports, 15000);
 
         return () => {
-            isMounted = false;
             clearInterval(intervalId);
         };
-    }, [searchQuery, selectedFilter, language]);
+    }, [loadReports]);
 
     // 2. Patch verdict changes in database
     const handleVerdictChange = async (id: string | number, newVerdict: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING') => {
@@ -101,7 +98,8 @@ export default function DashboardPage() {
 
     // Analytics counters
     const pendingCount = reports.filter((r) => (r.status || r.verdict) === 'PENDING').length;
-const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
+    const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
+
     return (
         // Scope text color to text-slate-200 to prevent global cyan inheritance
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-slate-200">
@@ -140,6 +138,16 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                             Debunked: {debunkedCount}
                         </span>
                     </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setAdminFormModal({ isOpen: true, data: null })}
+                        className="bg-[#1CB5BE] hover:bg-[#189ea6] text-[#061528] font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all cursor-pointer"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Create Incident
+                    </button>
                 </div>
             </div>
 
@@ -190,6 +198,11 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                                     <span className="text-xs text-gray-400">
                                         {report.location || 'Unknown Location'}
                                     </span>
+                                    {report.category && (
+                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#061528] text-amber-400 border border-[#1A3352]">
+                                            {report.category}
+                                        </span>
+                                    )}
                                 </div>
 
                                 <h3 className="text-base font-bold text-white">
@@ -202,7 +215,7 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3">
                                 <select
                                     value={currentStatus}
                                     onChange={(e) => handleVerdictChange(report.id, e.target.value as any)}
@@ -213,6 +226,29 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                                     <option value="FALSE">FALSE</option>
                                     <option value="MISLEADING">MISLEADING</option>
                                 </select>
+
+                                <button
+                                    onClick={() => setAdminFormModal({
+                                        isOpen: true,
+                                        data: {
+                                            id: report.id,
+                                            title: report.title || '',
+                                            claim: report.claim || report.title || '',
+                                            description: report.details || report.description || report.summary || '',
+                                            category: report.category || 'Disinformation',
+                                            status: report.status || report.verdict || 'Pending',
+                                            location: report.location || '',
+                                            is_eligible: report.is_eligible ?? true,
+                                            is_anonymous: report.is_anonymous ?? false,
+                                            evidence_file: report.evidence_file || report.media_url || null,
+                                            reporter: report.author_name || (typeof report.reporter === 'string' ? report.reporter : (typeof report.reporter === 'number' ? String(report.reporter) : '')),
+                                        }
+                                    })}
+                                    className="bg-[#1A3352] hover:bg-[#22436c] text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+                                >
+                                    <Edit3 className="w-3.5 h-3.5" />
+                                    Edit
+                                </button>
 
                                 <button
                                     onClick={() => setSelectedReportForBroadcast(report)}
@@ -226,6 +262,22 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                     );
                 })}
             </div>
+
+            {/* Admin Incident Form Modal */}
+            {adminFormModal.isOpen && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <SituationRoomAdminForm
+                            initialData={adminFormModal.data}
+                            onClose={() => setAdminFormModal({ isOpen: false, data: null })}
+                            onSuccess={() => {
+                                loadReports();
+                                setAdminFormModal({ isOpen: false, data: null });
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Broadcast Modal */}
             {selectedReportForBroadcast && (
@@ -242,4 +294,4 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
             )}
         </div>
     );
-}
+}
