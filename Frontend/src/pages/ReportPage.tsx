@@ -105,7 +105,7 @@ export default function ReportPage() {
                 <div className="mb-6">
                     <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 mb-2">
                         <Shield className="w-6 h-6 text-[#1CB5BE]" />
-                        {t('report.title', 'Report Fake News or Incident Wey Happen')}
+                        {t('report.title', 'Report Fake News/Misinformation')}
                     </h1>
                     <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
                         {t(
@@ -134,7 +134,7 @@ export default function ReportPage() {
                             required
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder={t('report.titlePlaceholder', 'e.g., Fake election result sheet circulating online')}
+                            placeholder={t('report.titlePlaceholder', 'e.g., Fake news circulating online')}
                             className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
                         />
                     </div>
@@ -144,18 +144,6 @@ export default function ReportPage() {
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
                             {t('report.categoryLabel', 'Incident Category')}
                         </label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
-                        >
-                            <option value="DISINFORMATION">Disinformation / Fake News</option>
-                            <option value="VOTER_SUPPRESSION">Voter Suppression / Intimidation</option>
-                            <option value="LOGISTICS_FAILURE">Logistics / BVAS Issue</option>
-                            <option value="VIOLENCE">Violence / Security Incident</option>
-                            <option value="TFGBV">Targeted Online Harassment (TFGBV)</option>
-                            <option value="INEC">INEC Official Info Discrepancy</option>
-                        </select>
                     </div>
 
                     {/* Claim / Rumor Text (RESTORED) */}
@@ -176,32 +164,17 @@ export default function ReportPage() {
                     {/* Location Field */}
                     <div>
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.locationLabel', 'Location / LGA / Polling Unit')}
+                            {t('report.locationLabel', 'Location /Address')}
                         </label>
                         <input
                             type="text"
                             required
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder={t('report.locationPlaceholder', 'e.g., Osogbo LGA, Ward 4, PU 008')}
+                            placeholder={t('report.locationPlaceholder', 'e.g., Oke-fia Junction, Osogbo, Osun State')}
                             className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
                         />
                     </div>
-
-                    {/* Detailed Context */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.detailsLabel', 'Additional Context / Details')}
-                        </label>
-                        <textarea
-                            rows={3}
-                            value={details}
-                            onChange={(e) => setDetails(e.target.value)}
-                            placeholder={t('report.detailsPlaceholder', 'Describe what happened in detail or include links to social media posts...')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
-                        />
-                    </div>
-
                     {/* Upload Evidence Box */}
                     <div>
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
