@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, FileText, LayoutDashboard, Globe, LogOut } from 'lucide-react';
-import { useLanguage } from './pages/LanguageContext';
-import { useTranslation } from 'react-i18next';
+import { Shield, FileText, LayoutDashboard, LogOut } from 'lucide-react';
 import HomePage from './pages/Homepage';
 import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
@@ -11,10 +9,6 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<'home' | 'report' | 'dashboard'>('home');
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [isAdminMode, setIsAdminMode] = useState(false);
-
-    // Connects to LanguageContext (which syncs with i18next & localStorage)
-    const { language, setLanguage } = useLanguage();
-    const { t } = useTranslation();
 
     // Check URL and Session Storage on load
     useEffect(() => {
@@ -72,12 +66,12 @@ export default function App() {
                                 <span className="text-[#E55322]">GUARD</span>
                             </span>
                             <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
-                                {t('nav.tagline', 'Osun 2026 Fact Check')}
+                                Osun 2026 Fact Check
                             </span>
                         </div>
                     </div>
 
-                    {/* Navigation Controls & Language Switcher */}
+                    {/* Navigation Controls */}
                     <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
                         <nav className="flex items-center gap-1.5 bg-[#061528] p-1.5 rounded-xl border border-[#1A3352] shrink-0">
 
@@ -90,7 +84,7 @@ export default function App() {
                                     }`}
                             >
                                 <FileText className="w-4 h-4" />
-                                {t('nav.debunks', 'Live Fact-Checks')}
+                                Live Fact-Checks
                             </button>
 
                             {/* Report Incident */}
@@ -102,7 +96,7 @@ export default function App() {
                                     }`}
                             >
                                 <Shield className="w-4 h-4" />
-                                {t('nav.report', 'Report Incident')}
+                                Report Incident
                             </button>
 
                             {/* Situation Room (Admin Mode) */}
@@ -115,7 +109,7 @@ export default function App() {
                                         }`}
                                 >
                                     <LayoutDashboard className="w-4 h-4" />
-                                    {t('nav.situationRoom', 'Situation Room')}
+                                    Situation Room
                                 </button>
                             )}
 
@@ -124,33 +118,12 @@ export default function App() {
                                 <button
                                     onClick={handleLogout}
                                     className="px-2.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 ml-1"
-                                    title={t('nav.lockRoom', 'Lock Situation Room')}
+                                    title="Lock Situation Room"
                                 >
                                     <LogOut className="w-4 h-4" />
                                 </button>
                             )}
                         </nav>
-
-                        {/* Language Selector */}
-                        <div className="flex items-center gap-1 bg-[#061528] px-2.5 py-1.5 rounded-xl border border-[#1A3352] text-xs shrink-0">
-                            <Globe className="w-4 h-4 text-[#1CB5BE]" />
-                            {[
-                                { code: 'en', label: 'EN' },
-                                { code: 'yo', label: 'YO' },
-                                { code: 'pcm', label: 'PCM' }
-                            ].map((lang) => (
-                                <button
-                                    key={lang.code}
-                                    onClick={() => setLanguage(lang.code)}
-                                    className={`px-2 py-1 rounded-md font-bold cursor-pointer transition-colors ${language === lang.code
-                                        ? 'bg-[#1CB5BE] text-[#061528]'
-                                        : 'text-gray-400 hover:text-white'
-                                        }`}
-                                >
-                                    {lang.label}
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 </div>
             </header>
@@ -176,7 +149,7 @@ export default function App() {
 
             {/* Footer */}
             <footer className="border-t border-[#1A3352] bg-[#0E243F] py-6 text-center text-xs text-gray-400">
-                <p>{t('nav.footer', '© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group')}</p>
+                <p>© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group</p>
             </footer>
         </div>
     );

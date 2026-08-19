@@ -26,7 +26,7 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
                     {/* Claim Section */}
                     <div className="space-y-3">
                         <span className="text-xs font-bold text-[#E55322] uppercase tracking-widest">
-                            WETIN DEM TALK (CLAIM)
+                            CLAIM UNDER REVIEW
                         </span>
                         <p className="text-2xl font-semibold text-gray-200 leading-snug">
                             "{report.claim}"

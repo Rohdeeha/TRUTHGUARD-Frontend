@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import * as htmlToImage from 'html-to-image';
 import {
     Search,
@@ -47,40 +46,39 @@ export interface PublicReport {
     [key: string]: any;
 }
 
-const FILTER_CATEGORIES: { id: Category; labelKey: string; fallback: string }[] = [
-    { id: 'ALL', labelKey: 'home.filterAll', fallback: 'All Debunks' },
-    { id: 'VOTER_SUPPRESSION', labelKey: 'home.filterVoterSuppression', fallback: 'Voter Suppression' },
-    { id: 'DISINFORMATION', labelKey: 'home.filterDisinformation', fallback: 'Disinformation' },
-    { id: 'TFGBV', labelKey: 'home.filterTFGBV', fallback: 'TFGBV' },
-    { id: 'LOGISTICS_FAILURE', labelKey: 'home.filterLogistics', fallback: 'Logistics' },
-    { id: 'VIOLENCE', labelKey: 'home.filterViolence', fallback: 'Violence' },
-    { id: 'INEC', labelKey: 'home.filterINEC', fallback: 'INEC' },
+const FILTER_CATEGORIES: { id: Category; label: string }[] = [
+    { id: 'ALL', label: 'All Debunks' },
+    { id: 'VOTER_SUPPRESSION', label: 'Voter Suppression' },
+    { id: 'DISINFORMATION', label: 'Disinformation' },
+    { id: 'TFGBV', label: 'TFGBV' },
+    { id: 'LOGISTICS_FAILURE', label: 'Logistics' },
+    { id: 'VIOLENCE', label: 'Violence' },
+    { id: 'INEC', label: 'INEC' },
 ];
 
 // --- Sub-Components ---
 
 const VerdictBadge = ({ verdict }: { verdict: Verdict }) => {
-    const { t } = useTranslation();
     const normalizedVerdict = String(verdict || '').toUpperCase();
 
     switch (normalizedVerdict) {
         case 'FALSE':
             return (
                 <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black px-2 py-1 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-wide">
-                    <XCircle className="w-3.5 h-3.5" /> {t('home.statusFalse', 'FALSE')}
+                    <XCircle className="w-3.5 h-3.5" /> FALSE
                 </span>
             );
         case 'MISLEADING':
             return (
                 <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black px-2 py-1 rounded bg-[#E55322]/20 text-[#E55322] border border-[#E55322]/30 uppercase tracking-wide">
-                    <AlertTriangle className="w-3.5 h-3.5" /> {t('home.statusMisleading', 'MISLEADING')}
+                    <AlertTriangle className="w-3.5 h-3.5" /> MISLEADING
                 </span>
             );
         case 'VERIFIED':
         case 'TRUE':
             return (
                 <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-black px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wide">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> {t('home.statusVerified', 'VERIFIED')}
+                    <CheckCircle2 className="w-3.5 h-3.5" /> VERIFIED
                 </span>
             );
         default:
@@ -93,7 +91,6 @@ const VerdictBadge = ({ verdict }: { verdict: Verdict }) => {
 };
 
 const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; onSelectFilter: (cat: Category) => void; }) => {
-    const { t } = useTranslation();
     return (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <Filter className="w-4 h-4 text-[#1CB5BE] shrink-0 mr-1" />
@@ -108,7 +105,7 @@ const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; 
                             : 'bg-[#0E243F] text-gray-300 border border-[#1A3352] hover:text-white'
                             }`}
                     >
-                        {t(tab.labelKey, tab.fallback)}
+                        {tab.label}
                     </button>
                 );
             })}
@@ -117,14 +114,10 @@ const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; 
 };
 
 const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: PublicReport; onSelect: (id: string) => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
-    const { t } = useTranslation();
-
-    // Fallback chain guarantees the claim box is never empty
     const claimText = report.claim || report.summary || report.content || report.title;
 
     return (
         <article className="bg-[#0E243F] border border-[#1A3352] p-5 sm:p-6 rounded-2xl shadow-xl hover:border-[#1CB5BE]/50 transition-colors flex flex-col gap-4">
-
             {/* Top Row: Timestamp, Location & Always-Visible Verdict Badge */}
             <div className="flex items-center justify-between text-xs text-gray-400 gap-2 flex-wrap">
                 <div className="flex items-center gap-3">
@@ -140,7 +133,6 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                     )}
                 </div>
 
-                {/* Render Verdict Badge unconditionally so status is always visible */}
                 <div>
                     <VerdictBadge verdict={report.verdict} />
                 </div>
@@ -179,7 +171,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
 
                 <div className="flex-1 bg-[#061528] rounded-xl p-3 sm:p-4 border border-[#1A3352] flex flex-col justify-center">
                     <span className="text-gray-400 font-bold text-xs mb-1 block">
-                        {t('home.claimLabel', 'Wetin dem talk:')}
+                        Claim Under Review:
                     </span>
                     <p className="text-xs sm:text-sm text-gray-300 leading-relaxed line-clamp-3">
                         {claimText}
@@ -193,7 +185,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                     onClick={() => onSelect(report.id)}
                     className="text-[#1CB5BE] hover:text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                    {t('home.readFull', 'Read Full Story →')}
+                    Read Full Story →
                 </button>
 
                 <button
@@ -206,19 +198,18 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                     ) : (
                         <Share2 className="w-4 h-4" />
                     )}
-                    {t('home.shareReport', 'Share This Check')}
+                    Share This Check
                 </button>
             </div>
         </article>
     );
 };
-// ... [Detail View and remaining components identical to previous implementation logic]
+
 const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { report: PublicReport; onBack: () => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
-    const { t } = useTranslation();
     return (
         <div className="space-y-6">
-            <button onClick={onBack} className="inline-fle  x items-center gap-2 text-[#1CB5BE] hover:text-white font-bold text-sm cursor-pointer mb-2">
-                <ArrowLeft className="w-4 h-4" /> {t('home.backToFeed', 'Back to Feed')}
+            <button onClick={onBack} className="inline-flex items-center gap-2 text-[#1CB5BE] hover:text-white font-bold text-sm cursor-pointer mb-2">
+                <ArrowLeft className="w-4 h-4" /> Back to Feed
             </button>
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 sm:p-8 rounded-2xl space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -245,7 +236,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 {report.claim && (
                     <div className="bg-[#061528] rounded-xl p-4 border border-[#1A3352]">
                         <p className="text-sm text-gray-300">
-                            <strong className="text-gray-400 font-bold text-xs block mb-1">{t('home.claimLabel', 'CLAIM:')}</strong>
+                            <strong className="text-gray-400 font-bold text-xs block mb-1">CLAIM:</strong>
                             "{report.claim}"
                         </p>
                     </div>
@@ -256,7 +247,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 <div className="pt-4 border-t border-[#1A3352] flex justify-end">
                     <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-gray-400 hover:text-white text-xs font-bold flex items-center gap-2 bg-[#061528] px-4 py-2 rounded-xl border border-[#1A3352] cursor-pointer disabled:opacity-50 transition-colors">
                         {isGeneratingCard ? <Loader2 className="w-4 h-4 animate-spin text-[#1CB5BE]" /> : <Share2 className="w-4 h-4" />}
-                        {t('home.shareReport', 'Share Fact-Check')}
+                        Share Fact-Check
                     </button>
                 </div>
             </div>
@@ -265,21 +256,20 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
 };
 
 const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => void; }) => {
-    const { t } = useTranslation();
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer">
                     <X className="w-5 h-5" />
                 </button>
-                <h3 className="text-lg font-bold text-white pt-2">{t('home.generatedCardTitle', 'Fact-Check Card')}</h3>
+                <h3 className="text-lg font-bold text-white pt-2">Fact-Check Card</h3>
                 <div className="overflow-hidden rounded-xl border border-[#1A3352] bg-[#061528] p-2">
                     <img src={cardUrl} alt="Fact Check Graphic Card" className="w-full h-auto rounded-lg object-contain" />
                 </div>
                 <div className="flex items-center gap-3 justify-end pt-2">
-                    <button onClick={onClose} className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer">{t('home.close', 'Close')}</button>
+                    <button onClick={onClose} className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer">Close</button>
                     <a href={cardUrl} target="_blank" rel="noopener noreferrer" download="fact-check-card.png" className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer">
-                        {t('home.downloadCard', 'Download Card')}
+                        Download Card
                     </a>
                 </div>
             </div>
@@ -289,7 +279,6 @@ const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => 
 
 // --- Main Page Component ---
 export default function HomePage() {
-    const { t, i18n } = useTranslation();
     const cardRef = useRef<HTMLDivElement>(null);
     const [selectedShareReport, setSelectedShareReport] = useState<PublicReport | null>(null);
     const [selectedReportId, setSelectedReportId] = useState<string | null>(() => {
@@ -311,38 +300,36 @@ export default function HomePage() {
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-        if (isNaN(date.getTime()) || diffInSeconds < 0) return t('time.recently', 'Recently');
-        if (diffInSeconds < 60) return t('time.justNow', 'Just now');
+        if (isNaN(date.getTime()) || diffInSeconds < 0) return 'Recently';
+        if (diffInSeconds < 60) return 'Just now';
         const diffInMinutes = Math.floor(diffInSeconds / 60);
-        if (diffInMinutes < 60) return `${diffInMinutes} ${t('time.minsAgo', 'mins ago')}`;
+        if (diffInMinutes < 60) return `${diffInMinutes} mins ago`;
         const diffInHours = Math.floor(diffInMinutes / 60);
-        if (diffInHours < 24) return `${diffInHours} ${t('time.hoursAgo', 'hours ago')}`;
+        if (diffInHours < 24) return `${diffInHours} hours ago`;
         const diffInDays = Math.floor(diffInHours / 24);
-        return `${diffInDays} ${t('time.daysAgo', 'days ago')}`;
-    }, [t]);
-
-    const lang = i18n.language || 'en';
+        return `${diffInDays} days ago`;
+    }, []);
 
     const formatApiRecord = useCallback((item: any): PublicReport => {
-        const dbTitle = item[`title_${lang}`] || item.title || '';
-        const dbClaim = item[`claim_${lang}`] || item.claim || item.summary || '';
-        const dbSummary = item[`summary_${lang}`] || item.summary || item.content || item.fact || '';
+        const dbTitle = item.title || '';
+        const dbClaim = item.claim || item.summary || item.details || '';
+        const dbSummary = item.summary || item.content || item.details || item.fact || '';
 
         return {
             id: String(item.id),
             title: dbTitle,
             claim: dbClaim,
-            verdict: item.verdict || '',
+            verdict: item.verdict || item.status || '',
             category: item.category || 'ALL',
             location: item.location || '',
-            timestamp: item.created_at ? getRelativeTime(item.created_at) : t('time.recently', 'Recently'),
+            timestamp: item.created_at ? getRelativeTime(item.created_at) : 'Recently',
             summary: dbSummary,
-            content: item.content || item[`content_${lang}`] || dbSummary,
+            content: item.content || dbSummary,
             rawCreatedAt: item.created_at,
             media_url: item.media_url || item.evidence_file || item.image_url || item.media || item.image || null,
             media_type: item.media_type || (item.video_url ? 'video' : 'image')
         };
-    }, [lang, getRelativeTime, t]);
+    }, [getRelativeTime]);
 
     const handleSelectReport = (id: string | null) => {
         setSelectedReportId(id);
@@ -355,13 +342,12 @@ export default function HomePage() {
     const fetchDebunkedFeed = useCallback(async (pageNum: number, append = false) => {
         setIsLoading(true);
         setErrorMsg(null);
-        const currentLang = i18n.language || 'en';
         try {
             let data: any;
             if (typeof getDebunkedFeed === 'function') {
                 data = await getDebunkedFeed(pageNum);
             } else {
-                const res = await fetch(`https://truthguard-api-sut7.onrender.com/api/incidents/feed/debunked/?lang=${currentLang}&page=${pageNum}`);
+                const res = await fetch(`https://truthguard-api-sut7.onrender.com/api/incidents/feed/debunked/?page=${pageNum}`);
                 if (!res.ok) throw new Error('Failed to fetch debunked feed.');
                 data = await res.json();
             }
@@ -371,16 +357,16 @@ export default function HomePage() {
             setHasMorePages(data.next !== null && data.next !== undefined);
         } catch (err: any) {
             console.error('Error fetching debunked feed from API:', err);
-            setErrorMsg(t('home.fetchError', 'Failed to load fact-checks. Please try again.'));
+            setErrorMsg('Failed to load fact-checks. Please try again.');
         } finally {
             setIsLoading(false);
         }
-    }, [formatApiRecord, i18n.language, t]);
+    }, [formatApiRecord]);
 
     useEffect(() => {
         setCurrentPage(1);
         fetchDebunkedFeed(1, false);
-    }, [i18n.language, fetchDebunkedFeed]);
+    }, [fetchDebunkedFeed]);
 
     const handleLoadMore = () => {
         const nextPage = currentPage + 1;
@@ -437,12 +423,12 @@ export default function HomePage() {
                 ) : (
                     <>
                         <div className="text-center space-y-4">
-                            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">{t('home.heroTitle', 'Live Election Fact-Checks')}</h1>
+                            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">Live Election Fact-Checks</h1>
                         </div>
                         <div className="space-y-4">
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('home.searchPlaceholder', 'Search verified claims, candidates, or rumors...')} className="w-full bg-[#0E243F] border border-[#1A3352] rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#1CB5BE] shadow-lg" />
+                                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search verified claims, candidates, or rumors..." className="w-full bg-[#0E243F] border border-[#1A3352] rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#1CB5BE] shadow-lg" />
                             </div>
                             <FilterTabs activeFilter={activeFilter} onSelectFilter={(cat) => setActiveFilter(cat)} />
                         </div>
@@ -455,7 +441,7 @@ export default function HomePage() {
                                 <div className="text-center py-12 text-rose-400 border border-dashed border-rose-500/30 rounded-2xl space-y-4">
                                     <p>{errorMsg}</p>
                                     <button onClick={() => fetchDebunkedFeed(1, false)} className="inline-flex items-center gap-2 px-4 py-2 bg-[#0E243F] text-[#1CB5BE] rounded-xl text-xs font-bold border border-[#1CB5BE]/30 hover:bg-[#1CB5BE]/10 transition-colors cursor-pointer">
-                                        <RefreshCw className="w-4 h-4" /> {t('home.retry', 'Retry')}
+                                        <RefreshCw className="w-4 h-4" /> Retry
                                     </button>
                                 </div>
                             ) : (
@@ -464,7 +450,7 @@ export default function HomePage() {
                                         <ReportCard key={report.id} report={report} onSelect={(id) => handleSelectReport(id)} onShare={handleShareCard} isGeneratingCard={generatingCardId === report.id} />
                                     ))}
                                     {filteredReports.length === 0 && (
-                                        <div className="text-center py-12 text-gray-400 border border-dashed border-[#1A3352] rounded-2xl">{t('home.noReports', 'No fact-checks found matching your search.')}</div>
+                                        <div className="text-center py-12 text-gray-400 border border-dashed border-[#1A3352] rounded-2xl">No fact-checks found matching your search.</div>
                                     )}
                                 </>
                             )}
@@ -472,7 +458,7 @@ export default function HomePage() {
                         {hasMorePages && (
                             <div className="flex justify-center pt-4">
                                 <button onClick={handleLoadMore} disabled={isLoading} className="px-6 py-3 bg-[#0E243F] hover:bg-[#1A3352] text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
-                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('home.loadMore', 'Load More Fact-Checks')}
+                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Load More Fact-Checks'}
                                 </button>
                             </div>
                         )}

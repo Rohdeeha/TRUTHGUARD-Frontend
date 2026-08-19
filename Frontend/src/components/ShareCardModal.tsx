@@ -1,5 +1,4 @@
 import { X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface ShareCardModalProps {
     cardUrl: string;
@@ -7,8 +6,6 @@ interface ShareCardModalProps {
 }
 
 export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
-    const { t } = useTranslation();
-
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
@@ -21,7 +18,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                 </button>
 
                 <h3 className="text-lg font-bold text-white pt-2">
-                    {t('home.generatedCardTitle', 'Fact-Check Card')}
+                    Fact-Check Card
                 </h3>
 
                 <div className="overflow-hidden rounded-xl border border-[#1A3352] bg-[#061528] p-2">
@@ -37,7 +34,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                         onClick={onClose}
                         className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer"
                     >
-                        {t('home.close', 'Close')}
+                        Close
                     </button>
                     <a
                         href={cardUrl}
@@ -46,7 +43,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                         download="truthguard-fact-check.png"
                         className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer"
                     >
-                        {t('home.downloadCard', 'Download Card')}
+                        Download Card
                     </a>
                 </div>
             </div>

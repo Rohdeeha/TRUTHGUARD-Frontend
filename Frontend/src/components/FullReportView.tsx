@@ -10,7 +10,6 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useTranslation } from 'react-i18next';
 
 // Updated interface supporting media uploads & metadata
 interface Report {
@@ -27,7 +26,6 @@ interface Report {
 }
 
 export default function FullReportView({ reportId, onBack }: { reportId: string, onBack: () => void }) {
-    const { t } = useTranslation();
     const [report, setReport] = useState<Report | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -70,7 +68,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
     };
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-400">{t('home.syncing', 'Loading report details...')}</div>;
+        return <div className="p-8 text-center text-gray-400">Loading report details...</div>;
     }
 
     if (!report) return <div className="p-8 text-center text-rose-400">Report not found.</div>;
@@ -97,7 +95,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             {/* Navigation Header */}
             <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-[#1CB5BE] hover:text-white font-bold mb-6 transition-colors"
+                className="flex items-center gap-2 text-[#1CB5BE] hover:text-white font-bold mb-6 transition-colors cursor-pointer"
             >
                 <ArrowLeft className="w-5 h-5" />
                 Back to Situation Room
@@ -173,7 +171,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     {/* Highlighted Claim Box */}
                     <div className="bg-[#061528] p-4 sm:p-5 rounded-xl border border-[#1A3352] mb-8">
                         <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-1">
-                            {t('home.claimLabel', 'Claim Under Review:')}
+                            Claim Under Review:
                         </span>
                         <p className="text-gray-200 text-base italic font-medium leading-relaxed">
                             "{report.claim}"
@@ -195,9 +193,9 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         <div className="text-xs text-gray-400 font-medium">
                             Source verified by <span className="text-white font-bold">TruthGuard Fact Check Room</span>
                         </div>
-                        <button className="flex items-center gap-2 bg-[#1CB5BE]/10 text-[#1CB5BE] hover:bg-[#1CB5BE] hover:text-[#061528] px-4 py-2 rounded-lg font-bold transition-all text-sm">
+                        <button className="flex items-center gap-2 bg-[#1CB5BE]/10 text-[#1CB5BE] hover:bg-[#1CB5BE] hover:text-[#061528] px-4 py-2 rounded-lg font-bold transition-all text-sm cursor-pointer">
                             <Share2 className="w-4 h-4" />
-                            {t('home.shareReport', 'Share Fact-Check')}
+                            Share Fact-Check
                         </button>
                     </div>
 

@@ -2,14 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getTriageQueue, updateTicketStatus, type DashboardReport } from "../services/api";
-import { useLanguage } from './LanguageContext';
-import { useTranslation } from 'react-i18next';
 import {
     Share2,
     Search,
     Filter,
     Radio,
-    Globe,
     Plus,
     Edit3
 } from 'lucide-react';
@@ -17,9 +14,6 @@ import BroadcastModal from '../components/BroadcastModal';
 import { SituationRoomAdminForm, type AdminFormState } from './SituationRoomAdminPage';
 
 export default function DashboardPage() {
-    const { language, setLanguage } = useLanguage();
-    const { t } = useTranslation();
-
     const [reports, setReports] = useState<DashboardReport[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('ALL');
@@ -30,25 +24,6 @@ export default function DashboardPage() {
     });
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
-
-    // Dynamic translation helper to resolve database language fields safely
-    const getLocalizedContent = (report: any, field: 'title' | 'summary', currentLang: string) => {
-        if (!report) return '';
-
-        // 1. Check nested object format from DRF: report.translations.yo.title
-        if (report.translations && report.translations[currentLang] && report.translations[currentLang][field]) {
-            return report.translations[currentLang][field];
-        }
-
-        // 2. Check flat field format: report.title_yo
-        const flatKey = `${field}_${currentLang}`;
-        if (report[flatKey]) {
-            return report[flatKey];
-        }
-
-        // 3. Fallback to default field value
-        return report[field] || '';
-    };
 
     // 1. Synchronize live reports with Django DB
     const loadReports = useCallback(async () => {
@@ -65,7 +40,7 @@ export default function DashboardPage() {
         } finally {
             setLoading(false);
         }
-    }, [searchQuery, selectedFilter, language]);
+    }, [searchQuery, selectedFilter]);
 
     useEffect(() => {
         loadReports();
@@ -101,7 +76,6 @@ export default function DashboardPage() {
     const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
 
     return (
-        // Scope text color to text-slate-200 to prevent global cyan inheritance
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-slate-200">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A3352] pb-6">
@@ -109,25 +83,11 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 text-[#1CB5BE] font-bold text-xs uppercase tracking-wider mb-1">
                         <Radio className={`w-4 h-4 text-emerald-400 ${loading ? 'animate-ping' : 'animate-pulse'}`} />
                         <h1 className="text-2xl sm:text-3xl font-black text-white">
-                            {t('dashboard.pageTitle', 'Situation Room Dashboard')}
+                            Situation Room Dashboard
                         </h1>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 mt-2">
-                        {/* Language Selector */}
-                        <div className="flex items-center bg-[#061528] border border-[#1A3352] rounded-xl px-3 py-1.5 gap-2">
-                            <Globe className="w-4 h-4 text-[#1CB5BE]" />
-                            <select
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                                className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
-                            >
-                                <option value="en" className="bg-[#061528] text-white">English</option>
-                                <option value="yo" className="bg-[#061528] text-white">Yorùbá</option>
-                                <option value="pcm" className="bg-[#061528] text-white">Pidgin</option>
-                            </select>
-                        </div>
-
                         <span className="bg-[#1CB5BE] text-[#061528] font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
                             Live Reports: {totalCount}
                         </span>
@@ -185,6 +145,9 @@ export default function DashboardPage() {
             <div className="space-y-4">
                 {reports.map((report) => {
                     const currentStatus = report.status || report.verdict || 'PENDING';
+                    const reportTitle = report.title || 'Untitled Incident';
+                    const reportSummary = report.summary || report.details || report.description || 'No summary provided.';
+
                     return (
                         <div
                             key={report.id}
@@ -206,12 +169,12 @@ export default function DashboardPage() {
                                 </div>
 
                                 <h3 className="text-base font-bold text-white">
-                                    {getLocalizedContent(report, 'title', language)}
+                                    {reportTitle}
                                 </h3>
 
                                 <p className="text-xs text-gray-300">
                                     <strong className="text-white">Summary: </strong>
-                                    {getLocalizedContent(report, 'summary', language)}
+                                    {reportSummary}
                                 </p>
                             </div>
 
@@ -284,14 +247,14 @@ export default function DashboardPage() {
                 <BroadcastModal
                     report={{
                         id: String(selectedReportForBroadcast.id),
-                        title: getLocalizedContent(selectedReportForBroadcast, 'title', language),
-                        claim: selectedReportForBroadcast.claim || getLocalizedContent(selectedReportForBroadcast, 'title', language),
+                        title: selectedReportForBroadcast.title || 'Incident Report',
+                        claim: selectedReportForBroadcast.claim || selectedReportForBroadcast.title || '',
                         verdict: (selectedReportForBroadcast.status || selectedReportForBroadcast.verdict || 'PENDING') as 'FALSE' | 'MISLEADING' | 'VERIFIED' | 'PENDING',
-                        summary: getLocalizedContent(selectedReportForBroadcast, 'summary', language),
+                        summary: selectedReportForBroadcast.summary || selectedReportForBroadcast.details || '',
                     }}
                     onClose={() => setSelectedReportForBroadcast(null)}
                 />
             )}
         </div>
     );
-}
+}
