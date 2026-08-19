@@ -138,14 +138,6 @@ export default function ReportPage() {
                             className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
                         />
                     </div>
-
-                    {/* Incident Category Selector */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.categoryLabel', 'Incident Category')}
-                        </label>
-                    </div>
-
                     {/* Claim / Rumor Text (RESTORED) */}
                     <div>
                         <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
