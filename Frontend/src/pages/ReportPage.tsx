@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, ShieldCheck, CheckCircle2, UserCircle2 } from 'lucide-react';
+import { Send, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { submitReport } from '../services/api';
 
 // 1. Strictly type the data object we will send to the backend/parent
@@ -152,43 +152,6 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                     />
                 </div>
 
-                {/* Contact Divider */}
-                <div className="pt-6 border-t border-[#1A3352]">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-6">
-                        <UserCircle2 className="w-4 h-4 text-[#1CB5BE]" />
-                        Your Contact Details (Optional)
-                    </h3>
-
-                    {/* 5 & 6. Name and Email (Side-by-Side on larger screens) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                Your Name
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.contactName}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, contactName: e.target.value })}
-                                placeholder="John Doe"
-                                className="w-full bg-[#061528] border border-[#1A3352] focus:border-[#1CB5BE] text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                value={formData.contactEmail}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                placeholder="john@example.com"
-                                className="w-full bg-[#061528] border border-[#1A3352] focus:border-[#1CB5BE] text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
-                            />
-                        </div>
-                    </div>
-                </div>
-
                 {/* Submit Action */}
                 <div className="pt-4">
                     <button
@@ -212,4 +175,4 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
 };
 
 export const SubmitClaimForm = ReportPage;
-export default ReportPage;
+export default ReportPage;
