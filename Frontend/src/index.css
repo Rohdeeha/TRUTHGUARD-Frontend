@@ -1,6 +1,12 @@
+/* 1. Import Poppins from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+
 @import "tailwindcss";
 
 @theme {
+    /* 2. Override Tailwind's default sans font with Poppins */
+    --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
     /* Brand Palette derived from TruthGuard Logo */
     --color-brand-navy: #071D38;
     /* Primary Dark Background / Text */
@@ -36,7 +42,10 @@ body {
     padding: 0;
     background-color: var(--color-brand-navy, #071D38);
     color: #FFFFFF;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+    /* 3. Apply the Tailwind sans font (now Poppins) globally to the document body */
+    font-family: var(--font-sans);
+
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
