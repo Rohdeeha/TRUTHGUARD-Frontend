@@ -29,7 +29,7 @@ const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 
 // Helper to get stored auth token
-const getAuthHeader = (tokenKey = 'token') => {
+const getAuthHeader = (tokenKey = 'token'): Record<string, string> => {
     const token = localStorage.getItem(tokenKey);
     return token ? { Authorization: `Bearer ${token}` } : {};
 };

@@ -13,7 +13,7 @@ const getCurrentLang = () => {
 };
 
 // Helper to get stored auth token
-const getAuthHeader = (tokenKey = 'token') => {
+const getAuthHeader = (tokenKey = 'token'): Record<string, string> => {
     const token = localStorage.getItem(tokenKey) || localStorage.getItem('fact_checker_token');
     return token ? { Authorization: `Bearer ${token}` } : {};
 };

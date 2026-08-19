@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, ShieldCheck, CheckCircle2, UserCircle2 } from 'lucide-react';
+import { submitReport } from '../services/api';
 
 // 1. Strictly type the data object we will send to the backend/parent
 export interface FactCheckSubmissionData {
@@ -12,11 +13,11 @@ export interface FactCheckSubmissionData {
 }
 
 // 2. Strictly type the props this component expects to receive
-interface SubmitClaimFormProps {
+export interface SubmitClaimFormProps {
     onSubmitReport?: (data: FactCheckSubmissionData) => Promise<void>;
 }
 
-export const SubmitClaimForm: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) => {
+export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) => {
     const [formData, setFormData] = useState<FactCheckSubmissionData>({
         statement: '',
         whoSaidIt: '',
@@ -38,8 +39,14 @@ export const SubmitClaimForm: React.FC<SubmitClaimFormProps> = ({ onSubmitReport
             if (onSubmitReport) {
                 await onSubmitReport(formData);
             } else {
-                // Fallback simulation if no prop was provided
-                await new Promise((resolve) => setTimeout(resolve, 1500));
+                // Submit to backend
+                await submitReport({
+                    title: formData.statement,
+                    details: `Who said it: ${formData.whoSaidIt || 'Unknown'}\nWhere/When: ${formData.whenAndWhere || 'Unknown'}\nEvidence: ${formData.evidenceLinks || 'None'}\nContact Name: ${formData.contactName || 'Anonymous'}\nContact Email: ${formData.contactEmail || 'N/A'}`,
+                    category: 'DISINFORMATION',
+                    location: formData.whenAndWhere || 'Osun State',
+                    is_anonymous: !formData.contactName && !formData.contactEmail,
+                });
             }
 
             setIsSuccess(true);
@@ -203,3 +210,6 @@ export const SubmitClaimForm: React.FC<SubmitClaimFormProps> = ({ onSubmitReport
         </div>
     );
 };
+
+export const SubmitClaimForm = ReportPage;
+export default ReportPage;
