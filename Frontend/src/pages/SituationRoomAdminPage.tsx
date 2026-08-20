@@ -81,7 +81,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
     const url = data.id
       ? `https://truthguard-api-sut7.onrender.com/api/incidents/${data.id}/`
       : `https://truthguard-api-sut7.onrender.com/api/incidents/`;
-    
+
     const method = data.id ? 'PUT' : 'POST';
 
     const res = await fetch(url, {
@@ -95,7 +95,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       try {
         const errJson = await res.json();
         if (errJson.detail) errDetail = errJson.detail;
-      } catch (_) {}
+      } catch (_) { }
       throw new Error(errDetail);
     }
 
@@ -182,13 +182,13 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
   };
 
   return (
-    <div className="bg-[#0E243F] border border-[#1A3352] rounded-xl p-6 text-white max-w-4xl mx-auto shadow-2xl">
-      <div className="flex justify-between items-center mb-6 border-b border-[#1A3352] pb-4">
+    <div className="bg-card-theme border border-theme rounded-xl p-6 text-main-white max-w-4xl mx-auto shadow-2xl">
+      <div className="flex justify-between items-center mb-6 border-b border-theme pb-4">
         <h2 className="text-xl font-bold text-[#1CB5BE]">
           {formData.id ? `Edit Incident #${formData.id}` : 'Create New Incident Report'}
         </h2>
         {onClose && (
-          <button onClick={onClose} className="text-gray-400 hover:text-white cursor-pointer">
+          <button onClick={onClose} className="text-muted-theme hover:text-main-white cursor-pointer">
             <X className="w-6 h-6" />
           </button>
         )}
@@ -196,11 +196,10 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
 
       {message && (
         <div
-          className={`p-3 rounded-lg mb-4 text-sm font-semibold ${
-            message.type === 'success'
-              ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-300'
-              : 'bg-rose-950/80 border border-rose-500/50 text-rose-300'
-          }`}
+          className={`p-3 rounded-lg mb-4 text-sm font-semibold ${message.type === 'success'
+            ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-300'
+            : 'bg-rose-950/80 border border-rose-500/50 text-rose-300'
+            }`}
         >
           {message.text}
         </div>
@@ -217,7 +216,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
           <div>
@@ -227,7 +226,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="claim"
               value={formData.claim}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
         </div>
@@ -240,7 +239,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             rows={3}
             value={formData.description}
             onChange={handleChange}
-            className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+            className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
           />
         </div>
 
@@ -252,7 +251,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Disinformation">Disinformation</option>
               <option value="Voter Suppression">Voter Suppression</option>
@@ -268,7 +267,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Pending">Pending</option>
               <option value="Under Review">Under Review</option>
@@ -285,7 +284,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.location}
               onChange={handleChange}
               placeholder="e.g. Osogbo, Osun State"
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
         </div>
@@ -300,7 +299,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.reporter}
               onChange={handleChange}
               placeholder="Author name or ID"
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
 
@@ -309,7 +308,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             <input
               type="file"
               onChange={handleFileChange}
-              className="w-full bg-[#061528] border border-[#1A3352] rounded-lg px-3 py-1.5 text-xs text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-black hover:file:bg-[#1CB5BE]/80"
+              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-black hover:file:bg-[#1CB5BE]/80"
             />
           </div>
         </div>
@@ -322,7 +321,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="is_eligible"
               checked={formData.is_eligible}
               onChange={handleChange}
-              className="rounded bg-[#061528] border-[#1A3352] text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-[#061528] border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Eligible
           </label>
@@ -333,14 +332,14 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="is_anonymous"
               checked={formData.is_anonymous}
               onChange={handleChange}
-              className="rounded bg-[#061528] border-[#1A3352] text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-[#061528] border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Anonymous
           </label>
         </div>
 
         {/* Action Buttons Row */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-[#1A3352]">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-theme">
           <button
             type="button"
             onClick={handleDelete}
@@ -356,7 +355,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               type="button"
               onClick={handleSaveAndContinue}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-main-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Save and continue editing
@@ -366,7 +365,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               type="button"
               onClick={handleSaveAndAddAnother}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-main-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               Save and add another

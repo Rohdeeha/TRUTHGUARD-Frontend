@@ -8,20 +8,20 @@ interface ShareCardModalProps {
 export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
+            <div className="bg-card-theme border border-theme p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 text-muted-theme hover:text-main-white transition-colors cursor-pointer"
                     aria-label="Close modal"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
-                <h3 className="text-lg font-bold text-white pt-2">
+                <h3 className="text-lg font-bold text-main-white pt-2">
                     Fact-Check Card
                 </h3>
 
-                <div className="overflow-hidden rounded-xl border border-[#1A3352] bg-[#061528] p-2">
+                <div className="overflow-hidden rounded-xl border border-theme bg-[#061528] p-2">
                     <img
                         src={cardUrl}
                         alt="Fact Check Graphic Card"
@@ -32,7 +32,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                 <div className="flex items-center gap-3 justify-end pt-2">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-white transition-colors cursor-pointer"
                     >
                         Close
                     </button>

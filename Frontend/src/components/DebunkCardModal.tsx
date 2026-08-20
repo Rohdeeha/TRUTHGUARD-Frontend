@@ -46,13 +46,13 @@ export default function DebunkCardModal({ debunk, onClose }: DebunkCardModalProp
     const getVerdictBadge = (verdict: DebunkItem['verdict']) => {
         switch (verdict) {
             case 'FALSE':
-                return { bg: 'bg-rose-600', text: 'text-white', label: 'FAKE NEWS / DEBUNKED' };
+                return { bg: 'bg-rose-600', text: 'text-main-white', label: 'FAKE NEWS / DEBUNKED' };
             case 'MISLEADING':
                 return { bg: 'bg-amber-500', text: 'text-slate-950', label: 'MISLEADING CONTENT' };
             case 'TRUE':
-                return { bg: 'bg-emerald-600', text: 'text-white', label: 'VERIFIED TRUE' };
+                return { bg: 'bg-emerald-600', text: 'text-main-white', label: 'VERIFIED TRUE' };
             default:
-                return { bg: 'bg-gray-600', text: 'text-white', label: 'UNVERIFIED CLAIM' };
+                return { bg: 'bg-gray-600', text: 'text-main-white', label: 'UNVERIFIED CLAIM' };
         }
     };
 
@@ -60,24 +60,24 @@ export default function DebunkCardModal({ debunk, onClose }: DebunkCardModalProp
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-[#0E243F] border border-gray-800 rounded-2xl max-w-xl w-full p-6 space-y-6 shadow-2xl relative">
+            <div className="bg-card-theme border border-gray-800 rounded-2xl max-w-xl w-full p-6 space-y-6 shadow-2xl relative">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white bg-[#071D38] rounded-full transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 p-2 text-muted-theme hover:text-main-white bg-[#071D38] rounded-full transition-colors cursor-pointer"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
                 <div className="flex items-center gap-2">
                     <Share2 className="w-5 h-5 text-[#00B8C4]" />
-                    <h2 className="text-lg font-bold text-white">Shareable Fact-Check Card</h2>
+                    <h2 className="text-lg font-bold text-main-white">Shareable Fact-Check Card</h2>
                 </div>
 
                 {/* Printable Canvas Card Area */}
                 <div
                     ref={cardRef}
-                    className="bg-[#071D38] border-2 border-[#00B8C4] rounded-2xl p-6 text-white space-y-5 shadow-2xl relative overflow-hidden"
+                    className="bg-[#071D38] border-2 border-[#00B8C4] rounded-2xl p-6 text-main-white space-y-5 shadow-2xl relative overflow-hidden"
                 >
                     {/* Header Branding */}
                     <div className="flex items-center justify-between border-b border-gray-800 pb-4">
@@ -87,14 +87,14 @@ export default function DebunkCardModal({ debunk, onClose }: DebunkCardModalProp
                             </div>
                             <div>
                                 <span className="text-sm font-black tracking-wider text-[#00B8C4]">
-                                    TRUTH<span className="text-white">GUARD</span>
+                                    TRUTH<span className="text-main-white">GUARD</span>
                                 </span>
-                                <span className="text-[8px] block text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
+                                <span className="text-[8px] block text-muted-theme font-bold uppercase tracking-widest -mt-0.5">
                                     #OsunDecides2026 Fact Check
                                 </span>
                             </div>
                         </div>
-                        <span className="text-[10px] font-mono text-gray-400 font-bold bg-[#0E243F] px-2 py-1 rounded border border-gray-800">
+                        <span className="text-[10px] font-mono text-muted-theme font-bold bg-card-theme px-2 py-1 rounded border border-gray-800">
                             {debunk.date}
                         </span>
                     </div>
@@ -105,7 +105,7 @@ export default function DebunkCardModal({ debunk, onClose }: DebunkCardModalProp
                     </div>
 
                     {/* Claim Box */}
-                    <div className="bg-[#0E243F] p-4 rounded-xl border border-gray-800 space-y-1">
+                    <div className="bg-card-theme p-4 rounded-xl border border-gray-800 space-y-1">
                         <span className="text-[10px] font-bold uppercase text-[#E05A2B] tracking-wide block">
                             Claim Circulating Online:
                         </span>
@@ -119,13 +119,13 @@ export default function DebunkCardModal({ debunk, onClose }: DebunkCardModalProp
                         <span className="text-[10px] font-bold uppercase text-[#00B8C4] tracking-wide block flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Investigation Findings:
                         </span>
-                        <p className="text-xs text-gray-300 leading-relaxed bg-[#0E243F]/50 p-3 rounded-lg border border-gray-800/80">
+                        <p className="text-xs text-gray-300 leading-relaxed bg-card-theme/50 p-3 rounded-lg border border-gray-800/80">
                             {debunk.explanation}
                         </p>
                     </div>
 
                     {/* Watermark Footer */}
-                    <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[9px] text-gray-400 font-semibold">
+                    <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[9px] text-muted-theme font-semibold">
                         <span>Verified by FactCheck Africa / BallotEyes</span>
                         <span>truthguard.org · Osun 2026</span>
                     </div>

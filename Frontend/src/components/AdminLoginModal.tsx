@@ -37,10 +37,10 @@ export default function AdminLoginModal({ onSuccess, onCancel }: AdminLoginModal
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[#0E243F] border border-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+            <div className="bg-card-theme border border-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
                 <button
                     onClick={onCancel}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 text-muted-theme hover:text-main-white transition-colors"
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -50,8 +50,8 @@ export default function AdminLoginModal({ onSuccess, onCancel }: AdminLoginModal
                         <Lock className="w-6 h-6" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white">Restricted Access</h2>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <h2 className="text-xl font-bold text-main-white">Restricted Access</h2>
+                        <p className="text-xs text-muted-theme mt-1">
                             Authorized TruthGuard personnel only.
                         </p>
                     </div>
@@ -67,7 +67,7 @@ export default function AdminLoginModal({ onSuccess, onCancel }: AdminLoginModal
                             value={passcode}
                             onChange={(e) => setPasscode(e.target.value)}
                             placeholder="Enter secure passcode..."
-                            className="w-full bg-[#071D38] border border-gray-700 text-white px-4 py-2.5 rounded-lg focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
+                            className="w-full bg-[#071D38] border border-gray-700 text-main-white px-4 py-2.5 rounded-lg focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
                             required
                         />
                     </div>
@@ -75,7 +75,7 @@ export default function AdminLoginModal({ onSuccess, onCancel }: AdminLoginModal
                     <button
                         type="submit"
                         disabled={isLoading || !passcode}
-                        className="w-full py-3 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-main-white font-bold text-sm rounded-lg transition-all flex items-center justify-center gap-2"
                     >
                         {isLoading ? 'Verifying...' : 'Authenticate'} <ArrowRight className="w-4 h-4" />
                     </button>

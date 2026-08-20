@@ -37,8 +37,8 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-[#071D38] flex items-center justify-center p-4">
-            <div className="bg-[#0E243F] border border-[#1A3352] p-8 rounded-2xl max-w-md w-full">
-                <h1 className="text-2xl font-bold text-white mb-6">Staff Login</h1>
+            <div className="bg-card-theme border border-theme p-8 rounded-2xl max-w-md w-full">
+                <h1 className="text-2xl font-bold text-main-white mb-6">Staff Login</h1>
                 {error && (
                     <div className="p-3 mb-4 bg-rose-500/20 border border-rose-500/40 text-rose-300 rounded-lg text-sm">
                         {error}
@@ -51,7 +51,7 @@ export default function LoginPage() {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-[#061528] border border-[#1A3352] text-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-[#061528] border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
                             required
                         />
                     </div>
@@ -61,7 +61,7 @@ export default function LoginPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-[#061528] border border-[#1A3352] text-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-[#061528] border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
                             required
                         />
                     </div>

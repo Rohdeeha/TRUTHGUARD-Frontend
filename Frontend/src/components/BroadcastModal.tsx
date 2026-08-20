@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { X, Send, CheckCircle2, Share2, MessageSquare, Globe } from 'lucide-react';
 
 const Twitter = (props: React.ComponentProps<'svg'>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></svg>
 );
 
 const Facebook = (props: React.ComponentProps<'svg'>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
 );
 
 interface ReportData {
@@ -93,15 +93,15 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-[#0E243F] border border-[#1A3352] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div className="bg-card-theme border border-theme rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
 
                 {/* Header */}
-                <div className="p-5 border-b border-[#1A3352] flex items-center justify-between">
+                <div className="p-5 border-b border-theme flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[#1CB5BE] font-bold text-base">
                         <Share2 className="w-5 h-5" />
                         <span>Broadcast Report to Social Media</span>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white">
+                    <button onClick={onClose} className="text-muted-theme hover:text-main-white">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -111,7 +111,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                     {broadcastDone ? (
                         <div className="text-center py-6 space-y-4">
                             <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
-                            <h3 className="text-xl font-bold text-white">Successfully Broadcasted!</h3>
+                            <h3 className="text-xl font-bold text-main-white">Successfully Broadcasted!</h3>
                             <p className="text-xs text-gray-300">
                                 This fact-check report has been transmitted to all selected official social media channels.
                             </p>
@@ -144,7 +144,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-[#1A3352] rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.twitter}
@@ -157,7 +157,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">X / Twitter</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-[#1A3352] rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.facebook}
@@ -170,7 +170,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Facebook Page</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-[#1A3352] rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.telegram}
@@ -183,7 +183,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Telegram Channel</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-[#1A3352] rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.whatsapp}
@@ -207,7 +207,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                     rows={6}
                                     value={customCaption}
                                     onChange={(e) => setCustomCaption(e.target.value)}
-                                    className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
+                                    className="w-full bg-[#061528] border border-theme rounded-xl p-3 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
                                 />
                             </div>
 
@@ -216,7 +216,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-400 hover:text-white bg-transparent border border-[#1A3352]"
+                                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-muted-theme hover:text-main-white bg-transparent border border-theme"
                                 >
                                     Cancel
                                 </button>
@@ -224,7 +224,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                     type="button"
                                     onClick={handleBroadcast}
                                     disabled={isBroadcasting}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-black text-[#061528] bg-[#E55322] hover:bg-[#d44819] text-white transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-xs font-black text-[#061528] bg-[#E55322] hover:bg-[#d44819] text-main-white transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
                                 >
                                     <Send className="w-4 h-4" />
                                     {isBroadcasting ? 'Publishing...' : 'Broadcast Everywhere'}

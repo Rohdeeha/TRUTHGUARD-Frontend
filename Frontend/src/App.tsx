@@ -62,9 +62,9 @@ export default function App() {
     const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#061528] text-slate-900 dark:text-white flex flex-col font-sans transition-colors duration-200">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#061528] text-slate-900 dark:text-main-white flex flex-col font-sans transition-colors duration-200">
             {/* Header / Navbar */}
-            <header className="border-b border-slate-200 dark:border-[#1A3352] bg-white dark:bg-[#0E243F] sticky top-0 z-50 transition-colors duration-200">
+            <header className="border-b border-slate-200 dark:border-theme bg-white dark:bg-card-theme sticky top-0 z-50 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
 
                     {/* Logo / Brand */}
@@ -82,7 +82,7 @@ export default function App() {
                                 <span className="text-[#1CB5BE]">TRUTH</span>
                                 <span className="text-[#E55322]">GUARD</span>
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-muted-theme font-bold uppercase tracking-widest -mt-0.5">
                                 Osun 2026 Fact Check
                             </span>
                         </div>
@@ -90,14 +90,14 @@ export default function App() {
 
                     {/* Navigation Controls */}
                     <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
-                        <nav className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#061528] p-1.5 rounded-xl border border-slate-200 dark:border-[#1A3352] shrink-0 transition-colors duration-200">
+                        <nav className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#061528] p-1.5 rounded-xl border border-slate-200 dark:border-theme shrink-0 transition-colors duration-200">
 
                             {/* Live Fact-Checks / Debunks */}
                             <button
                                 onClick={() => handleTabClick('home')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'home'
                                     ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
+                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-main-white'
                                     }`}
                             >
                                 <FileText className="w-4 h-4" />
@@ -108,8 +108,8 @@ export default function App() {
                             <button
                                 onClick={() => handleTabClick('report')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'report'
-                                    ? 'bg-[#E55322] text-white shadow-md font-extrabold'
-                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
+                                    ? 'bg-[#E55322] text-main-white shadow-md font-extrabold'
+                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-main-white'
                                     }`}
                             >
                                 <Shield className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function App() {
                                     onClick={() => handleTabClick('dashboard')}
                                     className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
                                         ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                        : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
+                                        : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-main-white'
                                         }`}
                                 >
                                     <LayoutDashboard className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function App() {
             )}
 
             {/* Footer */}
-            <footer className="border-t border-slate-200 dark:border-[#1A3352] bg-white dark:bg-[#0E243F] py-6 text-center text-xs text-slate-500 dark:text-gray-400 transition-colors duration-200">
+            <footer className="border-t border-slate-200 dark:border-theme bg-white dark:bg-card-theme py-6 text-center text-xs text-slate-500 dark:text-muted-theme transition-colors duration-200">
                 <p>© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group</p>
             </footer>
         </div>

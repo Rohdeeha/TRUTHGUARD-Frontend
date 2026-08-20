@@ -11,14 +11,14 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
             <div className="fixed -left-[9999px] top-0">
                 <div
                     ref={ref}
-                    className="w-[1200px] h-[630px] bg-[#061528] p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-white font-sans"
+                    className="w-[1200px] h-[630px] bg-[#061528] p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-main-white font-sans"
                 >
                     {/* Header */}
-                    <div className="flex justify-between items-center border-b border-[#1A3352] pb-6">
+                    <div className="flex justify-between items-center border-b border-theme pb-6">
                         <h1 className="text-3xl font-black text-[#1CB5BE] tracking-wider">
                             TRUTHGUARD FACT-CHECK
                         </h1>
-                        <span className="text-lg font-bold text-gray-400">
+                        <span className="text-lg font-bold text-muted-theme">
                             {report.location} • {report.timestamp}
                         </span>
                     </div>
@@ -34,7 +34,7 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
                     </div>
 
                     {/* Verdict & Summary Box */}
-                    <div className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl space-y-2">
+                    <div className="bg-card-theme border border-theme p-6 rounded-2xl space-y-2">
                         <span className="text-xs font-bold text-[#1CB5BE] uppercase tracking-widest">
                             VERIFIED FINDING
                         </span>
@@ -44,7 +44,7 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
                     </div>
 
                     {/* Footer Branding */}
-                    <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-[#1A3352]">
+                    <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-theme">
                         <span>TruthGuard Election Monitoring Platform</span>
                         <span>truthguard.org</span>
                     </div>
