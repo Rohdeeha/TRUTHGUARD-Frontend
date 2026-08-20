@@ -76,13 +76,13 @@ export default function DashboardPage() {
     const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-main-theme">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-theme pb-6">
                 <div>
                     <div className="flex items-center gap-2 text-[#1CB5BE] font-bold text-xs uppercase tracking-wider mb-1">
                         <Radio className={`w-4 h-4 text-emerald-400 ${loading ? 'animate-ping' : 'animate-pulse'}`} />
-                        <h1 className="text-2xl sm:text-3xl font-black text-main-white">
+                        <h1 className="text-2xl sm:text-3xl font-black text-main-theme">
                             Situation Room Dashboard
                         </h1>
                     </div>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search reports..."
-                        className="w-full bg-slate-50 border border-theme rounded-xl pl-10 pr-4 py-2.5 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE]"
+                        className="w-full bg-input-theme border border-theme rounded-xl pl-10 pr-4 py-2.5 text-xs text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
                     />
                 </div>
 
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                             onClick={() => setSelectedFilter(statusOption)}
                             className={`px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer ${selectedFilter === statusOption
                                 ? 'bg-[#1CB5BE] text-[#061528]'
-                                : 'bg-slate-50 text-gray-300 border border-theme'
+                                : 'bg-subcard-theme text-muted-theme border border-theme hover:text-main-theme'
                                 }`}
                         >
                             {statusOption}
@@ -155,25 +155,25 @@ export default function DashboardPage() {
                         >
                             <div className="space-y-2 max-w-3xl">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-50 text-[#1CB5BE] border border-theme">
+                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-subcard-theme text-[#1CB5BE] border border-theme">
                                         #{String(report.id).slice(0, 8)}
                                     </span>
                                     <span className="text-xs text-muted-theme">
                                         {report.location || 'Unknown Location'}
                                     </span>
                                     {report.category && (
-                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-50 text-amber-400 border border-theme">
+                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-subcard-theme text-amber-400 border border-theme">
                                             {report.category}
                                         </span>
                                     )}
                                 </div>
 
-                                <h3 className="text-base font-bold text-main-white">
+                                <h3 className="text-base font-bold text-main-theme">
                                     {reportTitle}
                                 </h3>
 
-                                <p className="text-xs text-gray-300">
-                                    <strong className="text-main-white">Summary: </strong>
+                                <p className="text-xs text-muted-theme">
+                                    <strong className="text-main-theme">Summary: </strong>
                                     {reportSummary}
                                 </p>
                             </div>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                                 <select
                                     value={currentStatus}
                                     onChange={(e) => handleVerdictChange(report.id, e.target.value as any)}
-                                    className="bg-slate-50 border border-theme text-xs font-bold text-main-white rounded-lg px-2.5 py-1.5 focus:outline-none"
+                                    className="bg-input-theme border border-theme text-xs font-bold text-main-theme rounded-lg px-2.5 py-1.5 focus:outline-none"
                                 >
                                     <option value="PENDING">PENDING</option>
                                     <option value="VERIFIED">VERIFIED</option>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
                                             reporter: report.author_name || (typeof report.reporter === 'string' ? report.reporter : (typeof report.reporter === 'number' ? String(report.reporter) : '')),
                                         }
                                     })}
-                                    className="bg-[#1A3352] hover:bg-[#22436c] text-main-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+                                    className="bg-subcard-theme hover:bg-card-theme border border-theme text-main-theme text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
                                 >
                                     <Edit3 className="w-3.5 h-3.5" />
                                     Edit
@@ -215,7 +215,7 @@ export default function DashboardPage() {
 
                                 <button
                                     onClick={() => setSelectedReportForBroadcast(report)}
-                                    className="bg-[#E55322] hover:bg-[#d44819] text-main-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer"
+                                    className="bg-[#E55322] hover:bg-[#d44819] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer shadow-md"
                                 >
                                     <Share2 className="w-4 h-4" />
                                     Broadcast

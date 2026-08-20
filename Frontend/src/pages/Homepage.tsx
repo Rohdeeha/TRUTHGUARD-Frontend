@@ -102,7 +102,7 @@ const FilterTabs = ({ activeFilter, onSelectFilter }: { activeFilter: Category; 
                         onClick={() => onSelectFilter(tab.id)}
                         className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${isActive
                             ? 'bg-[#1CB5BE] text-[#061528]'
-                            : 'bg-card-theme text-gray-300 border border-theme hover:text-main-white'
+                            : 'bg-card-theme text-muted-theme border border-theme hover:text-main-theme'
                             }`}
                     >
                         {tab.label}
@@ -141,7 +141,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
             {/* Title */}
             <h2
                 onClick={() => onSelect(report.id)}
-                className="text-lg sm:text-xl font-bold text-main-white leading-snug hover:text-[#1CB5BE] cursor-pointer transition-colors"
+                className="text-lg sm:text-xl font-bold text-main-theme leading-snug hover:text-[#1CB5BE] cursor-pointer transition-colors"
             >
                 {report.title}
             </h2>
@@ -151,12 +151,12 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                 {report.media_url && (
                     <div
                         onClick={() => onSelect(report.id)}
-                        className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
+                        className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-subcard-theme rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
                     >
                         {report.media_type === 'video' ? (
                             <div className="w-full h-full relative flex items-center justify-center bg-black">
                                 <video src={report.media_url} className="w-full h-full object-cover opacity-80" />
-                                <Play className="w-6 h-6 absolute text-main-white opacity-70" />
+                                <Play className="w-6 h-6 absolute text-white opacity-70" />
                             </div>
                         ) : (
                             <img
@@ -169,11 +169,11 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                     </div>
                 )}
 
-                <div className="flex-1 bg-slate-50 rounded-xl p-3 sm:p-4 border border-theme flex flex-col justify-center">
+                <div className="flex-1 bg-subcard-theme rounded-xl p-3 sm:p-4 border border-theme flex flex-col justify-center">
                     <span className="text-muted-theme font-bold text-xs mb-1 block">
                         Claim Under Review:
                     </span>
-                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed line-clamp-3">
+                    <p className="text-xs sm:text-sm text-main-theme leading-relaxed line-clamp-3">
                         {claimText}
                     </p>
                 </div>
@@ -183,7 +183,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
             <div className="flex items-center justify-between pt-4 mt-2 border-t border-theme">
                 <button
                     onClick={() => onSelect(report.id)}
-                    className="text-[#1CB5BE] hover:text-main-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    className="text-[#1CB5BE] hover:opacity-80 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 >
                     Read Full Story →
                 </button>
@@ -191,7 +191,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                 <button
                     onClick={() => onShare(report)}
                     disabled={isGeneratingCard}
-                    className="text-muted-theme hover:text-main-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                    className="text-muted-theme hover:text-main-theme text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                 >
                     {isGeneratingCard ? (
                         <Loader2 className="w-4 h-4 animate-spin text-[#1CB5BE]" />
@@ -208,7 +208,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
 const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { report: PublicReport; onBack: () => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
     return (
         <div className="space-y-6">
-            <button onClick={onBack} className="inline-flex items-center gap-2 text-[#1CB5BE] hover:text-main-white font-bold text-sm cursor-pointer mb-2">
+            <button onClick={onBack} className="inline-flex items-center gap-2 text-[#1CB5BE] hover:opacity-80 font-bold text-sm cursor-pointer mb-2">
                 <ArrowLeft className="w-4 h-4" /> Back to Feed
             </button>
             <div className="bg-card-theme border border-theme p-6 sm:p-8 rounded-2xl space-y-6">
@@ -223,9 +223,9 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                         </span>
                     )}
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-main-white leading-tight">{report.title}</h1>
+                <h1 className="text-2xl sm:text-3xl font-black text-main-theme leading-tight">{report.title}</h1>
                 {report.media_url && (
-                    <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-slate-50 flex items-center justify-center">
+                    <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-subcard-theme flex items-center justify-center">
                         {report.media_type === 'video' ? (
                             <video src={report.media_url} controls className="w-full max-h-96 object-contain" />
                         ) : (
@@ -234,18 +234,18 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     </div>
                 )}
                 {report.claim && (
-                    <div className="bg-slate-50 rounded-xl p-4 border border-theme">
-                        <p className="text-sm text-gray-300">
+                    <div className="bg-subcard-theme rounded-xl p-4 border border-theme">
+                        <p className="text-sm text-main-theme">
                             <strong className="text-muted-theme font-bold text-xs block mb-1">CLAIM:</strong>
                             "{report.claim}"
                         </p>
                     </div>
                 )}
                 <div className="border-t border-theme pt-6">
-                    <p className="text-gray-200 leading-relaxed text-base whitespace-pre-wrap">{report.summary || report.content}</p>
+                    <p className="text-main-theme leading-relaxed text-base whitespace-pre-wrap">{report.summary || report.content}</p>
                 </div>
                 <div className="pt-4 border-t border-theme flex justify-end">
-                    <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-muted-theme hover:text-main-white text-xs font-bold flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-theme cursor-pointer disabled:opacity-50 transition-colors">
+                    <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-muted-theme hover:text-main-theme text-xs font-bold flex items-center gap-2 bg-subcard-theme px-4 py-2 rounded-xl border border-theme cursor-pointer disabled:opacity-50 transition-colors">
                         {isGeneratingCard ? <Loader2 className="w-4 h-4 animate-spin text-[#1CB5BE]" /> : <Share2 className="w-4 h-4" />}
                         Share Fact-Check
                     </button>
@@ -259,15 +259,15 @@ const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card-theme border border-theme p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
-                <button onClick={onClose} className="absolute top-4 right-4 text-muted-theme hover:text-main-white transition-colors cursor-pointer">
+                <button onClick={onClose} className="absolute top-4 right-4 text-muted-theme hover:text-main-theme transition-colors cursor-pointer">
                     <X className="w-5 h-5" />
                 </button>
-                <h3 className="text-lg font-bold text-main-white pt-2">Fact-Check Card</h3>
-                <div className="overflow-hidden rounded-xl border border-theme bg-slate-50 p-2">
+                <h3 className="text-lg font-bold text-main-theme pt-2">Fact-Check Card</h3>
+                <div className="overflow-hidden rounded-xl border border-theme bg-subcard-theme p-2">
                     <img src={cardUrl} alt="Fact Check Graphic Card" className="w-full h-auto rounded-lg object-contain" />
                 </div>
                 <div className="flex items-center gap-3 justify-end pt-2">
-                    <button onClick={onClose} className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-white transition-colors cursor-pointer">Close</button>
+                    <button onClick={onClose} className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-theme transition-colors cursor-pointer">Close</button>
                     <a href={cardUrl} target="_blank" rel="noopener noreferrer" download="fact-check-card.png" className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer">
                         Download Card
                     </a>
@@ -412,7 +412,7 @@ export default function HomePage() {
     }, [reports, searchQuery, activeFilter]);
 
     return (
-        <div className="min-h-screen bg-slate-50 text-main-white py-12 px-4 sm:px-6 lg:px-8 relative">
+        <div className="min-h-screen bg-app text-main-theme py-12 px-4 sm:px-6 lg:px-8 relative">
             <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] pointer-events-none opacity-0">
                 {selectedShareReport && <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />}
             </div>
@@ -423,12 +423,18 @@ export default function HomePage() {
                 ) : (
                     <>
                         <div className="text-center space-y-4">
-                            <h1 className="text-3xl md:text-5xl font-black text-main-white tracking-tight">Live Election Fact-Checks</h1>
+                            <h1 className="text-3xl md:text-5xl font-black text-main-theme tracking-tight">Live Election Fact-Checks</h1>
                         </div>
                         <div className="space-y-4">
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-theme" />
-                                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search verified claims, candidates, or rumors..." className="w-full bg-card-theme border border-theme rounded-xl pl-12 pr-4 py-3.5 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE] shadow-lg" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search verified claims, candidates, or rumors..."
+                                    className="w-full bg-card-theme border border-theme rounded-xl pl-12 pr-4 py-3.5 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] shadow-lg placeholder:text-muted-theme"
+                                />
                             </div>
                             <FilterTabs activeFilter={activeFilter} onSelectFilter={(cat) => setActiveFilter(cat)} />
                         </div>
@@ -457,7 +463,7 @@ export default function HomePage() {
                         </div>
                         {hasMorePages && (
                             <div className="flex justify-center pt-4">
-                                <button onClick={handleLoadMore} disabled={isLoading} className="px-6 py-3 bg-card-theme hover:bg-[#1A3352] text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
+                                <button onClick={handleLoadMore} disabled={isLoading} className="px-6 py-3 bg-card-theme hover:bg-subcard-theme text-[#1CB5BE] border border-[#1CB5BE]/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50">
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Load More Fact-Checks'}
                                 </button>
                             </div>

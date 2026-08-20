@@ -182,13 +182,13 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
   };
 
   return (
-    <div className="bg-card-theme border border-theme rounded-xl p-6 text-main-white max-w-4xl mx-auto shadow-2xl">
+    <div className="bg-card-theme border border-theme rounded-xl p-6 text-main-theme max-w-4xl mx-auto shadow-2xl">
       <div className="flex justify-between items-center mb-6 border-b border-theme pb-4">
         <h2 className="text-xl font-bold text-[#1CB5BE]">
           {formData.id ? `Edit Incident #${formData.id}` : 'Create New Incident Report'}
         </h2>
         {onClose && (
-          <button onClick={onClose} className="text-muted-theme hover:text-main-white cursor-pointer">
+          <button onClick={onClose} className="text-muted-theme hover:text-main-theme cursor-pointer">
             <X className="w-6 h-6" />
           </button>
         )}
@@ -197,8 +197,8 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       {message && (
         <div
           className={`p-3 rounded-lg mb-4 text-sm font-semibold ${message.type === 'success'
-            ? 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-300'
-            : 'bg-rose-950/80 border border-rose-500/50 text-rose-300'
+            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 dark:text-emerald-300'
+            : 'bg-rose-500/10 border border-rose-500/30 text-rose-500 dark:text-rose-300'
             }`}
         >
           {message.text}
@@ -209,49 +209,49 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
         {/* Title & Claim */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Title *</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Title *</label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Claim</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Claim</label>
             <input
               type="text"
               name="claim"
               value={formData.claim}
               onChange={handleChange}
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-gray-300 mb-1">Description</label>
+          <label className="block text-xs font-semibold text-main-theme mb-1">Description</label>
           <textarea
             name="description"
             rows={3}
             value={formData.description}
             onChange={handleChange}
-            className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+            className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
           />
         </div>
 
         {/* Category, Status, Location */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Category</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Category</label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Disinformation">Disinformation</option>
               <option value="Voter Suppression">Voter Suppression</option>
@@ -262,12 +262,12 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Status</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Status</label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Pending">Pending</option>
               <option value="Under Review">Under Review</option>
@@ -277,14 +277,14 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Location</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Location</label>
             <input
               type="text"
               name="location"
               value={formData.location}
               onChange={handleChange}
               placeholder="e.g. Osogbo, Osun State"
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
         </div>
@@ -292,47 +292,47 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
         {/* Reporter & Evidence File */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Reporter / Author</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Reporter / Author</label>
             <input
               type="text"
               name="reporter"
               value={formData.reporter}
               onChange={handleChange}
               placeholder="Author name or ID"
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">Evidence File / Media</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Evidence File / Media</label>
             <input
               type="file"
               onChange={handleFileChange}
-              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-black hover:file:bg-[#1CB5BE]/80"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-[#061528] file:font-bold hover:file:bg-[#1CB5BE]/80 cursor-pointer"
             />
           </div>
         </div>
 
         {/* Checkboxes */}
         <div className="flex items-center gap-6 pt-2">
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-300">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
             <input
               type="checkbox"
               name="is_eligible"
               checked={formData.is_eligible}
               onChange={handleChange}
-              className="rounded bg-slate-50 border-theme text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-input-theme border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Eligible
           </label>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-300">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
             <input
               type="checkbox"
               name="is_anonymous"
               checked={formData.is_anonymous}
               onChange={handleChange}
-              className="rounded bg-slate-50 border-theme text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-input-theme border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Anonymous
           </label>
@@ -344,7 +344,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             type="button"
             onClick={handleDelete}
             disabled={isSubmitting || !formData.id}
-            className="flex items-center gap-1.5 px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/40 rounded-lg hover:bg-rose-600/30 text-xs font-bold transition disabled:opacity-40 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 bg-rose-600/20 text-rose-500 dark:text-rose-400 border border-rose-500/40 rounded-lg hover:bg-rose-600/30 text-xs font-bold transition disabled:opacity-40 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             Delete
@@ -355,7 +355,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               type="button"
               onClick={handleSaveAndContinue}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-main-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-subcard-theme hover:bg-card-theme border border-theme text-main-theme rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Save and continue editing
@@ -365,7 +365,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               type="button"
               onClick={handleSaveAndAddAnother}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#1A3352] hover:bg-[#22436c] text-main-white rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-subcard-theme hover:bg-card-theme border border-theme text-main-theme rounded-lg text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               Save and add another
@@ -374,7 +374,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 px-5 py-2 bg-[#1CB5BE] hover:bg-[#189ea6] text-black font-bold rounded-lg text-xs transition disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-5 py-2 bg-[#1CB5BE] hover:bg-[#189ea6] text-[#061528] font-bold rounded-lg text-xs transition disabled:opacity-50 cursor-pointer shadow-md"
             >
               <Save className="w-4 h-4" />
               SAVE

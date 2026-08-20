@@ -101,7 +101,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                         <Share2 className="w-5 h-5" />
                         <span>Broadcast Report to Social Media</span>
                     </div>
-                    <button onClick={onClose} className="text-muted-theme hover:text-main-white">
+                    <button onClick={onClose} className="text-muted-theme hover:text-main-theme cursor-pointer">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -111,13 +111,13 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                     {broadcastDone ? (
                         <div className="text-center py-6 space-y-4">
                             <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
-                            <h3 className="text-xl font-bold text-main-white">Successfully Broadcasted!</h3>
-                            <p className="text-xs text-gray-300">
+                            <h3 className="text-xl font-bold text-main-theme">Successfully Broadcasted!</h3>
+                            <p className="text-xs text-muted-theme">
                                 This fact-check report has been transmitted to all selected official social media channels.
                             </p>
                             <button
                                 onClick={onClose}
-                                className="bg-[#1CB5BE] text-[#061528] font-bold px-6 py-2 rounded-xl text-xs"
+                                className="bg-[#1CB5BE] text-[#061528] font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-md"
                             >
                                 Done
                             </button>
@@ -127,7 +127,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                             {/* Platform Selector Checkboxes */}
                             <div>
                                 <div className="flex items-center justify-between mb-2">
-                                    <label className="text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    <label className="text-xs font-bold text-main-theme uppercase tracking-wider">
                                         Select Target Channels
                                     </label>
                                     <button
@@ -137,14 +137,14 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                                 !Object.values(selectedPlatforms).every(Boolean)
                                             )
                                         }
-                                        className="text-[11px] text-[#1CB5BE] hover:underline font-semibold"
+                                        className="text-[11px] text-[#1CB5BE] hover:underline font-semibold cursor-pointer"
                                     >
                                         Toggle All
                                     </button>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-subcard-theme border border-theme rounded-xl cursor-pointer text-main-theme">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.twitter}
@@ -157,7 +157,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">X / Twitter</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-subcard-theme border border-theme rounded-xl cursor-pointer text-main-theme">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.facebook}
@@ -170,7 +170,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Facebook Page</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-subcard-theme border border-theme rounded-xl cursor-pointer text-main-theme">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.telegram}
@@ -183,7 +183,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Telegram Channel</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-subcard-theme border border-theme rounded-xl cursor-pointer text-main-theme">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.whatsapp}
@@ -200,14 +200,14 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
 
                             {/* Editable Caption Box */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                                <label className="block text-xs font-bold text-main-theme uppercase tracking-wider mb-2">
                                     Post Text Preview
                                 </label>
                                 <textarea
                                     rows={6}
                                     value={customCaption}
                                     onChange={(e) => setCustomCaption(e.target.value)}
-                                    className="w-full bg-slate-50 border border-theme rounded-xl p-3 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
+                                    className="w-full bg-input-theme border border-theme rounded-xl p-3 text-xs text-main-theme focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
                                 />
                             </div>
 
@@ -216,7 +216,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-muted-theme hover:text-main-white bg-transparent border border-theme"
+                                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-muted-theme hover:text-main-theme bg-transparent border border-theme cursor-pointer"
                                 >
                                     Cancel
                                 </button>
@@ -224,7 +224,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                     type="button"
                                     onClick={handleBroadcast}
                                     disabled={isBroadcasting}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-black text-[#061528] bg-[#E55322] hover:bg-[#d44819] text-main-white transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#E55322] hover:bg-[#d44819] text-white transition-all flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
                                 >
                                     <Send className="w-4 h-4" />
                                     {isBroadcasting ? 'Publishing...' : 'Broadcast Everywhere'}

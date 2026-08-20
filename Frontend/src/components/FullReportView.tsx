@@ -95,7 +95,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             {/* Navigation Header */}
             <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-[#1CB5BE] hover:text-main-white font-bold mb-6 transition-colors cursor-pointer"
+                className="flex items-center gap-2 text-[#1CB5BE] hover:text-main-theme font-bold mb-6 transition-colors cursor-pointer"
             >
                 <ArrowLeft className="w-5 h-5" />
                 Back to Situation Room
@@ -106,7 +106,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
                 {/* 1. Featured Media Hero Banner (Image/Video) */}
                 {report.media_url ? (
-                    <div className="relative w-full max-h-[420px] bg-slate-50 overflow-hidden border-b border-theme">
+                    <div className="relative w-full max-h-[420px] bg-subcard-theme overflow-hidden border-b border-theme">
                         {report.media_type === 'video' ? (
                             <video
                                 src={report.media_url}
@@ -131,7 +131,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
                 ) : (
                     /* Fallback when no media exists */
-                    <div className="w-full h-32 bg-slate-50 flex items-center justify-center text-slate-500 border-b border-theme">
+                    <div className="w-full h-32 bg-subcard-theme flex items-center justify-center text-muted-theme border-b border-theme">
                         <div className="flex items-center gap-2 text-sm font-semibold opacity-60">
                             <ImageIcon className="w-5 h-5" />
                             <span>No Media Evidence Attached</span>
@@ -156,7 +156,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         </div>
 
                         {report.location && (
-                            <div className="flex items-center gap-1 text-slate-300">
+                            <div className="flex items-center gap-1 text-muted-theme">
                                 <MapPin className="w-3.5 h-3.5 text-[#E55322]" />
                                 <span>{report.location}</span>
                             </div>
@@ -164,26 +164,26 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
 
                     {/* Headline Title */}
-                    <h1 className="text-2xl sm:text-3xl font-black text-main-white mb-6 leading-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-main-theme mb-6 leading-tight">
                         {report.title}
                     </h1>
 
                     {/* Highlighted Claim Box */}
-                    <div className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-theme mb-8">
+                    <div className="bg-subcard-theme p-4 sm:p-5 rounded-xl border border-theme mb-8">
                         <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-1">
                             Claim Under Review:
                         </span>
-                        <p className="text-gray-200 text-base italic font-medium leading-relaxed">
+                        <p className="text-main-theme text-base italic font-medium leading-relaxed">
                             "{report.claim}"
                         </p>
                     </div>
 
                     {/* Main Fact-Check Analysis Content */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-bold text-main-white border-b border-theme pb-2">
+                        <h2 className="text-lg font-bold text-main-theme border-b border-theme pb-2">
                             Fact-Check Findings & Analysis
                         </h2>
-                        <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
+                        <div className="prose prose-invert max-w-none text-main-theme leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
                             {report.summary}
                         </div>
                     </div>
@@ -191,7 +191,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     {/* Share Action Bar */}
                     <div className="mt-10 pt-6 border-t border-theme flex items-center justify-between">
                         <div className="text-xs text-muted-theme font-medium">
-                            Source verified by <span className="text-main-white font-bold">TruthGuard Fact Check Room</span>
+                            Source verified by <span className="text-main-theme font-bold">TruthGuard Fact Check Room</span>
                         </div>
                         <button className="flex items-center gap-2 bg-[#1CB5BE]/10 text-[#1CB5BE] hover:bg-[#1CB5BE] hover:text-[#061528] px-4 py-2 rounded-lg font-bold transition-all text-sm cursor-pointer">
                             <Share2 className="w-4 h-4" />

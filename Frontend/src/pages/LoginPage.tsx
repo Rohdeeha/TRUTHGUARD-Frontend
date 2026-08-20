@@ -36,39 +36,39 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#071D38] flex items-center justify-center p-4">
-            <div className="bg-card-theme border border-theme p-8 rounded-2xl max-w-md w-full">
-                <h1 className="text-2xl font-bold text-main-white mb-6">Staff Login</h1>
+        <div className="min-h-screen bg-app flex items-center justify-center p-4">
+            <div className="bg-card-theme border border-theme p-8 rounded-2xl max-w-md w-full shadow-2xl">
+                <h1 className="text-2xl font-bold text-main-theme mb-6">Staff Login</h1>
                 {error && (
-                    <div className="p-3 mb-4 bg-rose-500/20 border border-rose-500/40 text-rose-300 rounded-lg text-sm">
+                    <div className="p-3 mb-4 bg-rose-500/20 border border-rose-500/40 text-rose-400 rounded-lg text-sm">
                         {error}
                     </div>
                 )}
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Username</label>
+                        <label className="block text-xs font-bold text-main-theme uppercase mb-2">Username</label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-slate-50 border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-input-theme border border-theme text-main-theme rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase mb-2">Password</label>
+                        <label className="block text-xs font-bold text-main-theme uppercase mb-2">Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-slate-50 border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-input-theme border border-theme text-main-theme rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
                             required
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-[#1CB5BE] hover:bg-[#1CB5BE]/90 text-[#061528] font-bold py-3 rounded-xl transition-opacity disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-[#1CB5BE] hover:bg-[#1CB5BE]/90 text-[#061528] font-bold py-3 rounded-xl transition-opacity disabled:opacity-50 cursor-pointer shadow-md"
                     >
                         {isLoading ? 'Logging in...' : 'Log In'}
                     </button>

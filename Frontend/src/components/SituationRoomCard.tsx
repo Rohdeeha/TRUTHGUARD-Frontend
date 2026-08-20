@@ -39,7 +39,7 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
             className="flex flex-col sm:flex-row items-start gap-4 p-4 bg-card-theme border border-theme rounded-xl mb-3 hover:border-[#1CB5BE] transition cursor-pointer"
         >
             {/* LEFT: Media Thumbnail */}
-            <div className="w-full sm:w-40 h-28 flex-shrink-0 bg-slate-50 rounded-lg overflow-hidden border border-theme relative">
+            <div className="w-full sm:w-40 h-28 flex-shrink-0 bg-subcard-theme rounded-lg overflow-hidden border border-theme relative">
                 {report.media_url || report.evidence_file ? (
                     report.media_type === 'video' ? (
                         <video src={report.media_url || report.evidence_file || ''} className="w-full h-full object-cover" />
@@ -47,7 +47,7 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
                         <img src={report.media_url || report.evidence_file || ''} alt={report.title} className="w-full h-full object-cover" />
                     )
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-500 font-semibold">
+                    <div className="w-full h-full flex items-center justify-center text-xs text-muted-theme font-semibold">
                         No Media
                     </div>
                 )}
@@ -57,11 +57,11 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
             <div className="flex-1 flex flex-col justify-between h-full w-full">
                 <div>
                     <div className="flex items-center justify-between gap-2 mb-1">
-                        <h3 className="text-base sm:text-lg font-bold text-main-white hover:text-[#1CB5BE] transition line-clamp-2">
+                        <h3 className="text-base sm:text-lg font-bold text-main-theme hover:text-[#1CB5BE] transition line-clamp-2">
                             {report.title}
                         </h3>
                         {report.category && (
-                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-50 text-[#1CB5BE] border border-theme shrink-0">
+                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-subcard-theme text-[#1CB5BE] border border-theme shrink-0">
                                 {report.category}
                             </span>
                         )}
@@ -80,13 +80,13 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
 
                     {/* Timestamp */}
                     <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-gray-500" />
+                        <Clock className="w-3.5 h-3.5 text-muted-theme" />
                         {report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Recent'}
                     </span>
 
                     {/* Location */}
                     {report.location && (
-                        <span className="flex items-center gap-1 text-slate-300">
+                        <span className="flex items-center gap-1 text-muted-theme">
                             <MapPin className="w-3.5 h-3.5 text-[#E05A2B]" />
                             {report.location}
                         </span>

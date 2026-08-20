@@ -11,14 +11,14 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
             <div className="fixed -left-[9999px] top-0">
                 <div
                     ref={ref}
-                    className="w-[1200px] h-[630px] bg-slate-50 p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-main-white font-sans"
+                    className="w-[1200px] h-[630px] bg-[#061528] p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-white font-sans"
                 >
                     {/* Header */}
-                    <div className="flex justify-between items-center border-b border-theme pb-6">
+                    <div className="flex justify-between items-center border-b border-[#1A3352] pb-6">
                         <h1 className="text-3xl font-black text-[#1CB5BE] tracking-wider">
                             TRUTHGUARD FACT-CHECK
                         </h1>
-                        <span className="text-lg font-bold text-muted-theme">
+                        <span className="text-lg font-bold text-[#94a3b8]">
                             {report.location} • {report.timestamp}
                         </span>
                     </div>
@@ -28,23 +28,23 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
                         <span className="text-xs font-bold text-[#E55322] uppercase tracking-widest">
                             CLAIM UNDER REVIEW
                         </span>
-                        <p className="text-2xl font-semibold text-gray-200 leading-snug">
+                        <p className="text-2xl font-semibold text-slate-100 leading-snug">
                             "{report.claim}"
                         </p>
                     </div>
 
                     {/* Verdict & Summary Box */}
-                    <div className="bg-card-theme border border-theme p-6 rounded-2xl space-y-2">
+                    <div className="bg-[#0E243F] border border-[#1A3352] p-6 rounded-2xl space-y-2">
                         <span className="text-xs font-bold text-[#1CB5BE] uppercase tracking-widest">
                             VERIFIED FINDING
                         </span>
-                        <p className="text-lg text-gray-300 line-clamp-4 leading-relaxed">
+                        <p className="text-lg text-slate-200 line-clamp-4 leading-relaxed">
                             {report.summary}
                         </p>
                     </div>
 
                     {/* Footer Branding */}
-                    <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-theme">
+                    <div className="flex justify-between items-center text-sm text-[#94a3b8] pt-4 border-t border-[#1A3352]">
                         <span>TruthGuard Election Monitoring Platform</span>
                         <span>truthguard.org</span>
                     </div>

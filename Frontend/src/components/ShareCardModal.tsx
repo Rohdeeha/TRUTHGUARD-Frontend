@@ -11,17 +11,17 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
             <div className="bg-card-theme border border-theme p-6 rounded-2xl max-w-md w-full space-y-4 text-center shadow-2xl relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-muted-theme hover:text-main-white transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 text-muted-theme hover:text-main-theme transition-colors cursor-pointer"
                     aria-label="Close modal"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
-                <h3 className="text-lg font-bold text-main-white pt-2">
+                <h3 className="text-lg font-bold text-main-theme pt-2">
                     Fact-Check Card
                 </h3>
 
-                <div className="overflow-hidden rounded-xl border border-theme bg-slate-50 p-2">
+                <div className="overflow-hidden rounded-xl border border-theme bg-subcard-theme p-2">
                     <img
                         src={cardUrl}
                         alt="Fact Check Graphic Card"
@@ -32,7 +32,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                 <div className="flex items-center gap-3 justify-end pt-2">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-white transition-colors cursor-pointer"
+                        className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-theme transition-colors cursor-pointer"
                     >
                         Close
                     </button>
@@ -41,7 +41,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         download="truthguard-fact-check.png"
-                        className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer"
+                        className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer shadow-md"
                     >
                         Download Card
                     </a>

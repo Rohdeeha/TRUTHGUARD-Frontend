@@ -23,12 +23,13 @@
     --color-status-dismissed: #6B7280;
 }
 
-/* Light Theme Variables (Default) */
+/* Light Theme Variables (Default - Unchanged) */
 :root {
     color-scheme: light;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-input: #f1f5f9;
+    --bg-subcard: #f1f5f9;
     --text-primary: #0f172a;
     --text-muted: #64748b;
     --border-color: #e2e8f0;
@@ -40,6 +41,7 @@
     --bg-main: #061528;
     --bg-card: #0E243F;
     --bg-input: #0B131D;
+    --bg-subcard: #071322;
     --text-primary: #ffffff;
     --text-muted: #94a3b8;
     --border-color: #1A3352;
@@ -74,6 +76,10 @@ body {
 
 .bg-input-theme {
     background-color: var(--bg-input);
+}
+
+.bg-subcard-theme {
+    background-color: var(--bg-subcard);
 }
 
 .border-theme {
