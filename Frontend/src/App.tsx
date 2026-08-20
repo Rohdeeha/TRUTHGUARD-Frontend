@@ -15,14 +15,22 @@ export default function App() {
         return localStorage.getItem('theme') !== 'light';
     });
 
-    // Check URL and Session Storage on load
+    // Check URL path and Session Storage on load
     useEffect(() => {
+        const path = window.location.pathname.replace(/\/+$/, '');
         const params = new URLSearchParams(window.location.search);
-        const hasAdminParam = params.get('admin') === 'true';
+        const isAdminPath = path === '/admin' || params.has('admin');
         const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
-        if (hasAdminParam || isAuthenticated) {
+        if (isAdminPath || isAuthenticated) {
             setIsAdminMode(true);
+            if (isAdminPath) {
+                if (isAuthenticated) {
+                    setActiveTab('dashboard');
+                } else {
+                    setShowAdminLogin(true);
+                }
+            }
         }
     }, []);
 
@@ -45,6 +53,9 @@ export default function App() {
                 setShowAdminLogin(true);
                 return;
             }
+            window.history.replaceState({}, document.title, '/admin');
+        } else {
+            window.history.replaceState({}, document.title, '/');
         }
         setActiveTab(tab);
     };
@@ -55,8 +66,8 @@ export default function App() {
         setIsAdminMode(false);
         setActiveTab('home');
 
-        // Removes ?admin=true from address bar cleanly
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Cleanly resets address bar to root path
+        window.history.replaceState({}, document.title, '/');
     };
 
     const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
@@ -172,8 +183,14 @@ export default function App() {
                         setShowAdminLogin(false);
                         setIsAdminMode(true);
                         setActiveTab('dashboard');
+                        window.history.replaceState({}, document.title, '/admin');
                     }}
-                    onCancel={() => setShowAdminLogin(false)}
+                    onCancel={() => {
+                        setShowAdminLogin(false);
+                        if (window.location.pathname === '/admin') {
+                            window.history.replaceState({}, document.title, '/');
+                        }
+                    }}
                 />
             )}
 

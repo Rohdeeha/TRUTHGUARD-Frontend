@@ -13,21 +13,21 @@ export interface DashboardReport {
     is_anonymous?: boolean;
     created_at?: string;
     translations?: Record<string, any>;
-    [key: string]: any; // Flexible indexing for dynamic language keys
+    [key: string]: any;
 }
 
+// Updated to match the new Django Payload fields
 export interface IncidentReport {
     id?: string | number;
-    title: string;
-    category: string;
-    location: string;
-    details: string;
-    is_anonymous: boolean;
-    media?: File | null;           // Raw file appended to FormData
-    media_url?: string | null;     // Media URL from Django backend
-    media_type?: 'image' | 'video' | 'audio' | '';
-    reporter?: string | number;
-    author_name?: string;
+    claim?: string;
+    who_said_it?: string;
+    where_and_when?: string;
+    location?: string;
+    category?: string;
+    is_anonymous?: boolean;
+    is_tfgbv?: boolean;
+    evidence_file?: File | null;
+    media_url?: string | null;
     created_at?: string;
 }
 
@@ -38,15 +38,16 @@ export interface PaginatedResponse<T> {
     results: T[];
 }
 
-const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
+// Ensure your VITE_API_BASE_URL in your .env file ends with /api (e.g. http://localhost:8000/api)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 
 // Cache key identifier for localStorage
 const DEBUNKED_FEED_CACHE_KEY = 'truthguard_cached_debunked_feed';
 
-// Helper to get stored auth token
-const getAuthHeader = (tokenKey = 'token'): Record<string, string> => {
-    const token = localStorage.getItem(tokenKey);
+// Helper to get stored auth token (Updated to check for standard 'access_token' first)
+const getAuthHeader = (tokenKey = 'access_token'): Record<string, string> => {
+    // If you explicitly pass fact_checker_token, it looks for that, otherwise defaults to access_token
+    const token = localStorage.getItem(tokenKey) || localStorage.getItem('access_token');
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
@@ -69,10 +70,12 @@ const handleResponse = async (res: Response, fallbackMessage: string) => {
         }
         throw new Error(errorMessage);
     }
+    // Return null on 204 No Content to avoid JSON parse errors
+    if (res.status === 204) return null;
     return res.json();
 };
 
-// --- Initial Mock Data (Used only on fresh browser installs before cache exists) ---
+// --- Initial Mock Data (Fallback) ---
 const MOCK_DEBUNKED_FALLBACK: PaginatedResponse<DashboardReport> = {
     count: 2,
     next: null,
@@ -90,30 +93,19 @@ const MOCK_DEBUNKED_FALLBACK: PaginatedResponse<DashboardReport> = {
             reporter: "Observer_01",
             is_anonymous: false,
             created_at: new Date().toISOString()
-        },
-        {
-            id: 102,
-            title: "Viral Video Claiming Result Sheet Manipulation",
-            summary: "Video shared across social media shows altered result sheet figures in local ward.",
-            status: "FALSE",
-            verdict: "DEBUNKED",
-            location: "Ife East, Osun State",
-            category: "Disinformation",
-            author_name: "TruthGuard Team",
-            reporter: "FactCheck Desk",
-            is_anonymous: false,
-            created_at: new Date().toISOString()
         }
     ]
 };
 
-// --- Public Endpoints ---
 
-/** 1. Submit Citizen Report (Supports both FormData with media files and JSON) */
+// ==========================================
+// 1. CITIZEN-FACING ENDPOINTS (PUBLIC)
+// ==========================================
+
 export const submitReport = async (data: FormData | Record<string, any>) => {
     const isFormData = data instanceof FormData;
-
-    const res = await fetch(`${API_BASE_URL}/incidents/report/`, {
+    // Updated endpoint: /api/report/
+    const res = await fetch(`${API_BASE_URL}/report/`, {
         method: 'POST',
         headers: isFormData ? {} : { 'Content-Type': 'application/json' },
         body: isFormData ? data : JSON.stringify(data),
@@ -122,112 +114,123 @@ export const submitReport = async (data: FormData | Record<string, any>) => {
     return handleResponse(res, 'Failed to submit report');
 };
 
-/** 2. Fetch Public Debunked Feed (With Live Caching + Fallback Safeguard) */
+
+// ==========================================
+// 2. PUBLIC VISITOR FEED
+// ==========================================
+
 export const getDebunkedFeed = async (page = 1, limit = 10): Promise<PaginatedResponse<DashboardReport>> => {
     try {
-        const res = await fetch(`${API_BASE_URL}/incidents/feed/debunked/?page=${page}&limit=${limit}`);
+        // Updated endpoint: /api/feed/fact-checks/
+        const res = await fetch(`${API_BASE_URL}/feed/fact-checks/?page=${page}&limit=${limit}`);
 
-        if (!res.ok) {
-            throw new Error(`Server returned status code ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Server returned status code ${res.status}`);
 
         const data = await res.json();
         const formattedData: PaginatedResponse<DashboardReport> = Array.isArray(data)
             ? { count: data.length, next: null, previous: null, results: data }
             : data;
 
-        // SAVE: Persist the real successful API response to localStorage for offline/outage resiliency
         localStorage.setItem(DEBUNKED_FEED_CACHE_KEY, JSON.stringify(formattedData));
-
         return formattedData;
     } catch (error) {
         console.warn("Backend 500 error or offline detected. Attempting cache fallback:", error);
-
-        // READ: Look for real previously saved reports in browser storage
         const cachedFeed = localStorage.getItem(DEBUNKED_FEED_CACHE_KEY);
         if (cachedFeed) {
-            try {
-                return JSON.parse(cachedFeed);
-            } catch (parseError) {
-                console.error("Failed to parse cached feed data:", parseError);
-            }
+            try { return JSON.parse(cachedFeed); }
+            catch (parseError) { console.error("Parse error:", parseError); }
         }
-
-        // FALLBACK: Serve test placeholders if no local cache exists yet
         return MOCK_DEBUNKED_FALLBACK;
     }
 };
 
-// --- Fact-Checker Authenticated Endpoints ---
 
-/** 3. Fetch Triage Kanban Board Queue */
-export const getTriageQueue = async (search = '', status = '') => {
+// ==========================================
+// 3. INTERNAL SITUATION ROOM & TRIAGE (AUTH REQUIRED)
+// ==========================================
+
+export const getTriageQueue = async (params: { search?: string; status?: string; is_tfgbv?: boolean } = {}) => {
     const query = new URLSearchParams();
-    if (search) query.append('search', search);
-    if (status && status !== 'ALL') query.append('status', status);
+    if (params.search) query.append('search', params.search);
+    if (params.status && params.status !== 'ALL') query.append('status', params.status);
+    if (params.is_tfgbv) query.append('is_tfgbv', 'true');
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
-
-    const res = await fetch(`${API_BASE_URL}/incidents/triage/${queryString}`, {
-        headers: {
-            ...getAuthHeader('fact_checker_token'),
-        },
+    // Updated endpoint: /api/triage/
+    const res = await fetch(`${API_BASE_URL}/triage/${queryString}`, {
+        headers: getAuthHeader(),
     });
 
     return handleResponse(res, 'Failed to fetch triage queue');
 };
 
-/** Alias function for components referencing KanbanTriageView */
 export const getKanbanTriageQueue = async (_limit = 10, search = '', status = '') => {
-    return getTriageQueue(search, status);
+    return getTriageQueue({ search, status });
 };
 
-/** 4. Update Report Ticket Status */
 export const updateTicketStatus = async (
     id: string | number,
-    status: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING'
+    data: { status?: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING'; is_tfgbv?: boolean }
 ) => {
-    const res = await fetch(`${API_BASE_URL}/incidents/triage/${id}/status/`, {
+    // Updated endpoint: /api/triage/<id>/update/
+    const res = await fetch(`${API_BASE_URL}/triage/${id}/update/`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            ...getAuthHeader('fact_checker_token'),
+            ...getAuthHeader(),
         },
-        body: JSON.stringify({ status, verdict: status }),
+        body: JSON.stringify(data),
     });
 
     return handleResponse(res, 'Failed to update ticket status');
 };
 
-/** 5. Fetch Social Listening Feed */
-export const getSocialListeningFeed = async () => {
-    const res = await fetch(`${API_BASE_URL}/incidents/social-listening/`, {
-        headers: {
-            ...getAuthHeader('fact_checker_token'),
-        },
+export const getTFGBVQueue = async () => {
+    // Updated endpoint: /api/tfgbv/queue/
+    const res = await fetch(`${API_BASE_URL}/tfgbv/queue/`, {
+        headers: getAuthHeader(),
+    });
+
+    return handleResponse(res, 'Failed to fetch TFGBV queue');
+};
+
+export const getSocialListeningFeed = async (params: { platform?: string; sentiment?: string; search?: string } = {}) => {
+    const query = new URLSearchParams();
+    if (params.platform) query.append('platform', params.platform);
+    if (params.sentiment) query.append('sentiment', params.sentiment);
+    if (params.search) query.append('search', params.search);
+
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+
+    // Updated endpoint: /api/social-listening/
+    const res = await fetch(`${API_BASE_URL}/social-listening/${queryString}`, {
+        headers: getAuthHeader(),
     });
 
     return handleResponse(res, 'Failed to fetch social listening feed');
 };
 
-/** 6. Fetch Analytics / Situation Room Data */
+
+// ==========================================
+// 4. TOOLS & ANALYTICS (AUTH REQUIRED)
+// ==========================================
+
 export const getAnalyticsData = async () => {
-    const res = await fetch(`${API_BASE_URL}/incidents/analytics/`, {
-        headers: {
-            ...getAuthHeader('fact_checker_token'),
-        },
+    // Updated endpoint: /api/analytics/
+    const res = await fetch(`${API_BASE_URL}/analytics/`, {
+        headers: getAuthHeader(),
     });
 
     return handleResponse(res, 'Failed to fetch analytics');
 };
 
-/** 7. Generate Cloudinary Debunk Card (Backend Generator) */
 export const generateCloudinaryCard = async (claim: string, fact: string) => {
-    const res = await fetch(`${API_BASE_URL}/incidents/generate-card/`, {
+    // Updated endpoint: /api/generate-card/
+    const res = await fetch(`${API_BASE_URL}/generate-card/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            ...getAuthHeader('fact_checker_token'),
+            ...getAuthHeader(),
         },
         body: JSON.stringify({ claim, fact }),
     });
@@ -235,15 +238,53 @@ export const generateCloudinaryCard = async (claim: string, fact: string) => {
     return handleResponse(res, 'Failed to generate Cloudinary card');
 };
 
-// --- Legal Expert Authenticated Endpoint ---
 
-/** 8. Fetch TFGBV Queue */
-export const getTFGBVQueue = async () => {
-    const res = await fetch(`${API_BASE_URL}/incidents/tfgbv/queue/`, {
-        headers: {
-            ...getAuthHeader('legal_expert_token'),
-        },
+// ==========================================
+// 5. AUTHENTICATION (NEW)
+// ==========================================
+
+export const loginUser = async (credentials: Record<string, any>) => {
+    // New endpoint: /api/token/
+    const res = await fetch(`${API_BASE_URL}/token/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
     });
 
-    return handleResponse(res, 'Failed to fetch TFGBV queue');
+    const data = await handleResponse(res, 'Invalid credentials');
+
+    // Automatically save standard DRF SimpleJWT tokens
+    if (data?.access) {
+        localStorage.setItem('access_token', data.access);
+        if (data.refresh) localStorage.setItem('refresh_token', data.refresh);
+    }
+
+    return data;
+};
+
+export const refreshAuthToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    // New endpoint: /api/token/refresh/
+    const res = await fetch(`${API_BASE_URL}/token/refresh/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    const data = await handleResponse(res, 'Session expired. Please log in again.');
+
+    if (data?.access) {
+        localStorage.setItem('access_token', data.access);
+    }
+    return data;
+};
+
+// Logout helper
+export const logoutUser = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('fact_checker_token');
+    localStorage.removeItem('legal_expert_token');
 };
