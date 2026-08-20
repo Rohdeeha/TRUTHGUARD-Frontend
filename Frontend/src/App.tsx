@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, FileText, LayoutDashboard, LogOut } from 'lucide-react';
+import { Shield, FileText, LayoutDashboard, LogOut, Sun, Moon } from 'lucide-react';
 import HomePage from './pages/Homepage';
 import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
@@ -9,6 +9,11 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<'home' | 'report' | 'dashboard'>('home');
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [isAdminMode, setIsAdminMode] = useState(false);
+
+    // --- NEW: Theme State ---
+    const [isDark, setIsDark] = useState(() => {
+        return localStorage.getItem('theme') !== 'light';
+    });
 
     // Check URL and Session Storage on load
     useEffect(() => {
@@ -20,6 +25,18 @@ export default function App() {
             setIsAdminMode(true);
         }
     }, []);
+
+    // --- NEW: Theme Effect ---
+    useEffect(() => {
+        const root = document.documentElement;
+        if (isDark) {
+            root.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            root.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDark]);
 
     const handleTabClick = (tab: 'home' | 'report' | 'dashboard') => {
         if (tab === 'dashboard') {
@@ -45,9 +62,9 @@ export default function App() {
     const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
     return (
-        <div className="min-h-screen bg-[#061528] text-white flex flex-col font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#061528] text-slate-900 dark:text-white flex flex-col font-sans transition-colors duration-200">
             {/* Header / Navbar */}
-            <header className="border-b border-[#1A3352] bg-[#0E243F] sticky top-0 z-50">
+            <header className="border-b border-slate-200 dark:border-[#1A3352] bg-white dark:bg-[#0E243F] sticky top-0 z-50 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
 
                     {/* Logo / Brand */}
@@ -65,7 +82,7 @@ export default function App() {
                                 <span className="text-[#1CB5BE]">TRUTH</span>
                                 <span className="text-[#E55322]">GUARD</span>
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
+                            <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
                                 Osun 2026 Fact Check
                             </span>
                         </div>
@@ -73,14 +90,14 @@ export default function App() {
 
                     {/* Navigation Controls */}
                     <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
-                        <nav className="flex items-center gap-1.5 bg-[#061528] p-1.5 rounded-xl border border-[#1A3352] shrink-0">
+                        <nav className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#061528] p-1.5 rounded-xl border border-slate-200 dark:border-[#1A3352] shrink-0 transition-colors duration-200">
 
                             {/* Live Fact-Checks / Debunks */}
                             <button
                                 onClick={() => handleTabClick('home')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'home'
                                     ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                    : 'text-gray-300 hover:text-white'
+                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
                                     }`}
                             >
                                 <FileText className="w-4 h-4" />
@@ -92,7 +109,7 @@ export default function App() {
                                 onClick={() => handleTabClick('report')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'report'
                                     ? 'bg-[#E55322] text-white shadow-md font-extrabold'
-                                    : 'text-gray-300 hover:text-white'
+                                    : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
                                     }`}
                             >
                                 <Shield className="w-4 h-4" />
@@ -105,7 +122,7 @@ export default function App() {
                                     onClick={() => handleTabClick('dashboard')}
                                     className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
                                         ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                        : 'text-gray-300 hover:text-white'
+                                        : 'text-slate-500 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
                                     <LayoutDashboard className="w-4 h-4" />
@@ -117,12 +134,25 @@ export default function App() {
                             {isAuthenticated && (
                                 <button
                                     onClick={handleLogout}
-                                    className="px-2.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 ml-1"
+                                    className="px-2.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 ml-1"
                                     title="Lock Situation Room"
                                 >
                                     <LogOut className="w-4 h-4" />
                                 </button>
                             )}
+
+                            {/* --- NEW: Theme Toggle Button --- */}
+                            <button
+                                onClick={() => setIsDark(!isDark)}
+                                className="p-2 ml-1 rounded-lg text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-[#1A3352] transition-all cursor-pointer flex items-center justify-center shrink-0"
+                                title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                            >
+                                {isDark ? (
+                                    <Sun className="w-4 h-4 text-amber-400" />
+                                ) : (
+                                    <Moon className="w-4 h-4 text-slate-700" />
+                                )}
+                            </button>
                         </nav>
                     </div>
                 </div>
@@ -148,7 +178,7 @@ export default function App() {
             )}
 
             {/* Footer */}
-            <footer className="border-t border-[#1A3352] bg-[#0E243F] py-6 text-center text-xs text-gray-400">
+            <footer className="border-t border-slate-200 dark:border-[#1A3352] bg-white dark:bg-[#0E243F] py-6 text-center text-xs text-slate-500 dark:text-gray-400 transition-colors duration-200">
                 <p>© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group</p>
             </footer>
         </div>

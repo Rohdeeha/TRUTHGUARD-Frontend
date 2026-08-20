@@ -49,3 +49,32 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
+
+@import "tailwindcss";
+
+/* Light Theme Variables (Default) */
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-input: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+}
+
+/* Dark Theme Variables */
+.dark {
+    --bg-main: #061528;
+    --bg-card: #0e243f;
+    --bg-input: #061528;
+    --text-primary: #ffffff;
+    --text-muted: #94a3b8;
+    --border-color: #1a3352;
+}
+
+/* Apply variables globally */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
