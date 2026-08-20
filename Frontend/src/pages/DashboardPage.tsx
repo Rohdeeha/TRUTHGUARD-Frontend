@@ -1,85 +1,57 @@
 // src/pages/DashboardPage.tsx
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getTriageQueue, updateTicketStatus, type DashboardReport } from "../services/api";
-import { useLanguage } from './LanguageContext';
-import { useTranslation } from 'react-i18next';
 import {
     Share2,
     Search,
     Filter,
     Radio,
-    Globe
+    Plus,
+    Edit3
 } from 'lucide-react';
 import BroadcastModal from '../components/BroadcastModal';
+import { SituationRoomAdminForm, type AdminFormState } from './SituationRoomAdminPage';
 
 export default function DashboardPage() {
-    const { language, setLanguage } = useLanguage();
-    const { t } = useTranslation();
-
     const [reports, setReports] = useState<DashboardReport[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('ALL');
     const [selectedReportForBroadcast, setSelectedReportForBroadcast] = useState<DashboardReport | null>(null);
+    const [adminFormModal, setAdminFormModal] = useState<{ isOpen: boolean; data: AdminFormState | null }>({
+        isOpen: false,
+        data: null,
+    });
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // Dynamic translation helper to resolve database language fields safely
-    const getLocalizedContent = (report: any, field: 'title' | 'summary', currentLang: string) => {
-        if (!report) return '';
+    // 1. Synchronize live reports with Django DB
+    const loadReports = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await getTriageQueue(searchQuery, selectedFilter);
+            const results = Array.isArray(data) ? data : data.results || [];
+            const count = data.count || results.length;
 
-        // 1. Check nested object format from DRF: report.translations.yo.title
-        if (report.translations && report.translations[currentLang] && report.translations[currentLang][field]) {
-            return report.translations[currentLang][field];
+            setReports(results);
+            setTotalCount(count);
+        } catch (error) {
+            console.error('Error syncing reports from Django API:', error);
+        } finally {
+            setLoading(false);
         }
+    }, [searchQuery, selectedFilter]);
 
-        // 2. Check flat field format: report.title_yo
-        const flatKey = `${field}_${currentLang}`;
-        if (report[flatKey]) {
-            return report[flatKey];
-        }
-
-        // 3. Fallback to default field value
-        return report[field] || '';
-    };
-
-    // 1. Synchronize live reports with Django DB via polling
     useEffect(() => {
-        let isMounted = true;
-
-        const loadReports = async () => {
-            setLoading(true);
-            try {
-                // Calls getTriageQueue from api.ts
-                const data = await getTriageQueue(searchQuery, selectedFilter);
-
-                if (isMounted) {
-                    const results = Array.isArray(data) ? data : data.results || [];
-                    const count = data.count || results.length;
-
-                    setReports(results);
-                    setTotalCount(count);
-                }
-            } catch (error) {
-                console.error('Error syncing reports from Django API:', error);
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        // Initial Load
         loadReports();
 
         // 15-second polling loop for live telemetry updates
         const intervalId = setInterval(loadReports, 15000);
 
         return () => {
-            isMounted = false;
             clearInterval(intervalId);
         };
-    }, [searchQuery, selectedFilter, language]);
+    }, [loadReports]);
 
     // 2. Patch verdict changes in database
     const handleVerdictChange = async (id: string | number, newVerdict: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING') => {
@@ -101,35 +73,21 @@ export default function DashboardPage() {
 
     // Analytics counters
     const pendingCount = reports.filter((r) => (r.status || r.verdict) === 'PENDING').length;
-const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
+    const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.status || r.verdict || '')).length;
+
     return (
-        // Scope text color to text-slate-200 to prevent global cyan inheritance
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 text-main-theme">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A3352] pb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-theme pb-6">
                 <div>
                     <div className="flex items-center gap-2 text-[#1CB5BE] font-bold text-xs uppercase tracking-wider mb-1">
                         <Radio className={`w-4 h-4 text-emerald-400 ${loading ? 'animate-ping' : 'animate-pulse'}`} />
-                        <h1 className="text-2xl sm:text-3xl font-black text-white">
-                            {t('dashboard.pageTitle', 'Situation Room Dashboard')}
+                        <h1 className="text-2xl sm:text-3xl font-black text-main-theme">
+                            Situation Room Dashboard
                         </h1>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 mt-2">
-                        {/* Language Selector */}
-                        <div className="flex items-center bg-[#061528] border border-[#1A3352] rounded-xl px-3 py-1.5 gap-2">
-                            <Globe className="w-4 h-4 text-[#1CB5BE]" />
-                            <select
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                                className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
-                            >
-                                <option value="en" className="bg-[#061528] text-white">English</option>
-                                <option value="yo" className="bg-[#061528] text-white">Yorùbá</option>
-                                <option value="pcm" className="bg-[#061528] text-white">Pidgin</option>
-                            </select>
-                        </div>
-
                         <span className="bg-[#1CB5BE] text-[#061528] font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
                             Live Reports: {totalCount}
                         </span>
@@ -141,18 +99,28 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                         </span>
                     </div>
                 </div>
+
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setAdminFormModal({ isOpen: true, data: null })}
+                        className="bg-[#1CB5BE] hover:bg-[#189ea6] text-[#061528] font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all cursor-pointer"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Create Incident
+                    </button>
+                </div>
             </div>
 
             {/* Search & Filter Bar */}
-            <div className="bg-[#0E243F] border border-[#1A3352] p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="bg-card-theme border border-theme p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-theme" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search reports..."
-                        className="w-full bg-[#061528] border border-[#1A3352] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#1CB5BE]"
+                        className="w-full bg-input-theme border border-theme rounded-xl pl-10 pr-4 py-2.5 text-xs text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
                     />
                 </div>
 
@@ -164,7 +132,7 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                             onClick={() => setSelectedFilter(statusOption)}
                             className={`px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer ${selectedFilter === statusOption
                                 ? 'bg-[#1CB5BE] text-[#061528]'
-                                : 'bg-[#061528] text-gray-300 border border-[#1A3352]'
+                                : 'bg-subcard-theme text-muted-theme border border-theme hover:text-main-theme'
                                 }`}
                         >
                             {statusOption}
@@ -177,36 +145,44 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
             <div className="space-y-4">
                 {reports.map((report) => {
                     const currentStatus = report.status || report.verdict || 'PENDING';
+                    const reportTitle = report.title || 'Untitled Incident';
+                    const reportSummary = report.summary || report.details || report.description || 'No summary provided.';
+
                     return (
                         <div
                             key={report.id}
-                            className="bg-[#0E243F] border border-[#1A3352] rounded-2xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                            className="bg-card-theme border border-theme rounded-2xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
                         >
                             <div className="space-y-2 max-w-3xl">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#061528] text-[#1CB5BE] border border-[#1A3352]">
+                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-subcard-theme text-[#1CB5BE] border border-theme">
                                         #{String(report.id).slice(0, 8)}
                                     </span>
-                                    <span className="text-xs text-gray-400">
+                                    <span className="text-xs text-muted-theme">
                                         {report.location || 'Unknown Location'}
                                     </span>
+                                    {report.category && (
+                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-subcard-theme text-amber-400 border border-theme">
+                                            {report.category}
+                                        </span>
+                                    )}
                                 </div>
 
-                                <h3 className="text-base font-bold text-white">
-                                    {getLocalizedContent(report, 'title', language)}
+                                <h3 className="text-base font-bold text-main-theme">
+                                    {reportTitle}
                                 </h3>
 
-                                <p className="text-xs text-gray-300">
-                                    <strong className="text-white">Summary: </strong>
-                                    {getLocalizedContent(report, 'summary', language)}
+                                <p className="text-xs text-muted-theme">
+                                    <strong className="text-main-theme">Summary: </strong>
+                                    {reportSummary}
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3">
                                 <select
                                     value={currentStatus}
                                     onChange={(e) => handleVerdictChange(report.id, e.target.value as any)}
-                                    className="bg-[#061528] border border-[#1A3352] text-xs font-bold text-white rounded-lg px-2.5 py-1.5 focus:outline-none"
+                                    className="bg-input-theme border border-theme text-xs font-bold text-main-theme rounded-lg px-2.5 py-1.5 focus:outline-none"
                                 >
                                     <option value="PENDING">PENDING</option>
                                     <option value="VERIFIED">VERIFIED</option>
@@ -215,8 +191,31 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                                 </select>
 
                                 <button
+                                    onClick={() => setAdminFormModal({
+                                        isOpen: true,
+                                        data: {
+                                            id: report.id,
+                                            title: report.title || '',
+                                            claim: report.claim || report.title || '',
+                                            description: report.details || report.description || report.summary || '',
+                                            category: report.category || 'Disinformation',
+                                            status: report.status || report.verdict || 'Pending',
+                                            location: report.location || '',
+                                            is_eligible: report.is_eligible ?? true,
+                                            is_anonymous: report.is_anonymous ?? false,
+                                            evidence_file: report.evidence_file || report.media_url || null,
+                                            reporter: report.author_name || (typeof report.reporter === 'string' ? report.reporter : (typeof report.reporter === 'number' ? String(report.reporter) : '')),
+                                        }
+                                    })}
+                                    className="bg-subcard-theme hover:bg-card-theme border border-theme text-main-theme text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer transition-colors"
+                                >
+                                    <Edit3 className="w-3.5 h-3.5" />
+                                    Edit
+                                </button>
+
+                                <button
                                     onClick={() => setSelectedReportForBroadcast(report)}
-                                    className="bg-[#E55322] hover:bg-[#d44819] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer"
+                                    className="bg-[#E55322] hover:bg-[#d44819] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer shadow-md"
                                 >
                                     <Share2 className="w-4 h-4" />
                                     Broadcast
@@ -227,15 +226,31 @@ const debunkedCount = reports.filter((r) => ['FALSE', 'MISLEADING'].includes(r.s
                 })}
             </div>
 
+            {/* Admin Incident Form Modal */}
+            {adminFormModal.isOpen && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <SituationRoomAdminForm
+                            initialData={adminFormModal.data}
+                            onClose={() => setAdminFormModal({ isOpen: false, data: null })}
+                            onSuccess={() => {
+                                loadReports();
+                                setAdminFormModal({ isOpen: false, data: null });
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Broadcast Modal */}
             {selectedReportForBroadcast && (
                 <BroadcastModal
                     report={{
                         id: String(selectedReportForBroadcast.id),
-                        title: getLocalizedContent(selectedReportForBroadcast, 'title', language),
-                        claim: selectedReportForBroadcast.claim || getLocalizedContent(selectedReportForBroadcast, 'title', language),
+                        title: selectedReportForBroadcast.title || 'Incident Report',
+                        claim: selectedReportForBroadcast.claim || selectedReportForBroadcast.title || '',
                         verdict: (selectedReportForBroadcast.status || selectedReportForBroadcast.verdict || 'PENDING') as 'FALSE' | 'MISLEADING' | 'VERIFIED' | 'PENDING',
-                        summary: getLocalizedContent(selectedReportForBroadcast, 'summary', language),
+                        summary: selectedReportForBroadcast.summary || selectedReportForBroadcast.details || '',
                     }}
                     onClose={() => setSelectedReportForBroadcast(null)}
                 />

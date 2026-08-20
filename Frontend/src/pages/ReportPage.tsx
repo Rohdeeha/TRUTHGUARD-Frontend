@@ -1,273 +1,183 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Shield, Upload, Send, CheckCircle2, Loader2, AlertCircle, X } from 'lucide-react';
+import { Send, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { submitReport } from '../services/api';
 
-export default function ReportPage() {
-    const { t } = useTranslation();
+// 1. Strictly type the data object we will send to the backend/parent
+export interface FactCheckSubmissionData {
+    statement: string;
+    whoSaidIt: string;
+    whenAndWhere: string;
+    evidenceLinks: string;
+    contactName?: string;
+    contactEmail?: string;
+}
 
-    // Form Field States
-    const [title, setTitle] = useState('');
-    const [claim, setClaim] = useState('');
-    const [category, setCategory] = useState('DISINFORMATION');
-    const [location, setLocation] = useState('');
-    const [details, setDetails] = useState('');
-    const [isAnonymous, setIsAnonymous] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+// 2. Strictly type the props this component expects to receive
+export interface SubmitClaimFormProps {
+    onSubmitReport?: (data: FactCheckSubmissionData) => Promise<void>;
+}
 
-    // Request & Feedback States
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) => {
+    const [formData, setFormData] = useState<FactCheckSubmissionData>({
+        statement: '',
+        whoSaidIt: '',
+        whenAndWhere: '',
+        evidenceLinks: '',
+        contactName: '',
+        contactEmail: '',
+    });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFile(e.target.files[0]);
-        }
-    };
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-    const handleReset = () => {
-        setTitle('');
-        setClaim('');
-        setCategory('DISINFORMATION');
-        setLocation('');
-        setDetails('');
-        setIsAnonymous(false);
-        setSelectedFile(null);
-        setSubmitted(false);
-        setErrorMessage(null);
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setErrorMessage(null);
-
-        // Build FormData payload to handle multipart binary file upload
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('claim', claim);
-        formData.append('category', category);
-        formData.append('location', location);
-        formData.append('details', details);
-        formData.append('is_anonymous', String(isAnonymous));
-
-        if (selectedFile) {
-            // UPDATED: Using 'evidence_file' exactly as the backend requested
-            formData.append('evidence_file', selectedFile);
-        }
 
         try {
-            // Calls POST /api/incidents/report/ via src/services/api.ts
-            await submitReport(formData);
-            setSubmitted(true);
-        } catch (err: any) {
-            console.error('Report submission error:', err);
-            setErrorMessage(
-                err.message ||
-                t(
-                    'report.submitError',
-                    'Could not submit report. Please check your network and try again.'
-                )
-            );
+            // Trigger the parent function if it was passed in
+            if (onSubmitReport) {
+                await onSubmitReport(formData);
+            } else {
+                // Submit to backend
+                await submitReport({
+                    title: formData.statement,
+                    details: `Who said it: ${formData.whoSaidIt || 'Unknown'}\nWhere/When: ${formData.whenAndWhere || 'Unknown'}\nEvidence: ${formData.evidenceLinks || 'None'}\nContact Name: ${formData.contactName || 'Anonymous'}\nContact Email: ${formData.contactEmail || 'N/A'}`,
+                    category: 'DISINFORMATION',
+                    location: formData.whenAndWhere || 'Osun State',
+                    is_anonymous: !formData.contactName && !formData.contactEmail,
+                });
+            }
+
+            setIsSuccess(true);
+            setFormData({
+                statement: '', whoSaidIt: '', whenAndWhere: '', evidenceLinks: '', contactName: '', contactEmail: ''
+            });
+        } catch (error) {
+            console.error("Failed to submit fact-check:", error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    if (submitted) {
-        return (
-            <div className="max-w-2xl mx-auto my-12 p-8 bg-[#0E243F] border border-[#1A3352] rounded-2xl text-center shadow-2xl">
-                <CheckCircle2 className="w-16 h-16 text-[#1CB5BE] mx-auto mb-4 animate-bounce" />
-                <h2 className="text-2xl font-bold mb-2 text-white">
-                    {t('report.receivedTitle', 'Report Received!')}
-                </h2>
-                <p className="text-gray-300 text-sm mb-6 leading-relaxed">
-                    {t(
-                        'report.receivedMsg',
-                        'Thank you for helping keep the Osun elections transparent. Our verification team in the Situation Room is reviewing your submission.'
-                    )}
-                </p>
-                <button
-                    onClick={handleReset}
-                    className="bg-[#1CB5BE] text-[#061528] font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-[#1CB5BE]/90 transition-all cursor-pointer"
-                >
-                    {t('report.submitAnother', 'Submit Another Report')}
-                </button>
-            </div>
-        );
-    }
-
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8">
-            <div className="bg-[#0E243F] border border-[#1A3352] rounded-2xl p-6 sm:p-8 shadow-xl">
-                {/* Header Title */}
-                <div className="mb-6">
-                    <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 mb-2">
-                        <Shield className="w-6 h-6 text-[#1CB5BE]" />
-                        {t('report.title', 'Report Fake News or Incident Wey Happen')}
-                    </h1>
-                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        {t(
-                            'report.subtitle',
-                            'Help keep Osun clean from fake news. Send suspicious news, fake results, or voting trouble straight to our Situation Room.'
-                        )}
+        <div className="max-w-3xl mx-auto bg-card-theme border border-theme rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-colors duration-200">
+
+            {/* Top Left Decorative Accent */}
+            <div className="absolute top-0 left-0 w-2 h-full bg-[#1CB5BE]"></div>
+
+            {/* Header Section */}
+            <div className="mb-8 pl-4">
+                <div className="flex items-center gap-2 mb-4">
+                    <ShieldCheck className="w-5 h-5 text-[#1CB5BE]" />
+                    <span className="bg-[#1CB5BE]/10 text-[#1CB5BE] border border-[#1CB5BE]/20 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
+                        Public Submission
+                    </span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-black text-main-theme tracking-tight mb-3">
+                    Suggest a Fact-Check
+                </h1>
+                <p className="text-muted-theme text-sm sm:text-base leading-relaxed max-w-xl">
+                    Help us combat misinformation. Seen or heard something dubious? Fill out the form below, and our team will investigate.
+                </p>
+            </div>
+
+            {isSuccess && (
+                <div className="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-3 text-emerald-500 dark:text-emerald-400 ml-4">
+                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                    <p className="text-sm font-medium">
+                        Submission received! Our desk team will investigate this claim.
                     </p>
                 </div>
+            )}
 
-                {/* Error Alert Box */}
-                {errorMessage && (
-                    <div className="mb-6 p-4 bg-rose-500/20 border border-rose-500/40 rounded-xl flex items-center gap-3 text-rose-400 text-sm">
-                        <AlertCircle className="w-5 h-5 shrink-0" />
-                        <span>{errorMessage}</span>
-                    </div>
-                )}
+            {/* Form Section with Responsive Grid */}
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 pl-4">
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Report Title */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.titleLabel', 'Report Headline / Title')}
+                {/* 1. The Statement (Full Width) */}
+                <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
+                        <span className="text-[#1CB5BE] font-black">1.</span>
+                        <span>THE STATEMENT / CLAIM</span>
+                        <span className="text-rose-500">*</span>
+                    </label>
+                    <textarea
+                        required
+                        rows={3}
+                        value={formData.statement}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, statement: e.target.value })}
+                        placeholder="Please enter the exact statement or claim you want us to investigate..."
+                        className="w-full bg-input-theme text-main-theme border border-theme focus:border-[#1CB5BE] placeholder:text-muted-theme rounded-xl p-4 text-sm outline-none transition-colors resize-y leading-relaxed"
+                    />
+                </div>
+
+                {/* 2 & 3. Who and Where/When (Side-by-Side on larger screens) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
+                            <span className="text-[#1CB5BE] font-black">2.</span>
+                            <span>WHO SAID IT?</span>
                         </label>
                         <input
                             type="text"
-                            required
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder={t('report.titlePlaceholder', 'e.g., Fake election result sheet circulating online')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
+                            value={formData.whoSaidIt}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, whoSaidIt: e.target.value })}
+                            placeholder="Name of public figure, organization..."
+                            className="w-full bg-input-theme text-main-theme border border-theme focus:border-[#1CB5BE] placeholder:text-muted-theme rounded-xl px-4 py-3 text-sm outline-none transition-colors"
                         />
                     </div>
 
-                    {/* Incident Category Selector */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.categoryLabel', 'Incident Category')}
-                        </label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE]"
-                        >
-                            <option value="DISINFORMATION">Disinformation / Fake News</option>
-                            <option value="VOTER_SUPPRESSION">Voter Suppression / Intimidation</option>
-                            <option value="LOGISTICS_FAILURE">Logistics / BVAS Issue</option>
-                            <option value="VIOLENCE">Violence / Security Incident</option>
-                            <option value="TFGBV">Targeted Online Harassment (TFGBV)</option>
-                            <option value="INEC">INEC Official Info Discrepancy</option>
-                        </select>
-                    </div>
-
-                    {/* Claim / Rumor Text (RESTORED) */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.claimLabel', 'What is the Rumor or Claim?')}
-                        </label>
-                        <textarea
-                            rows={2}
-                            required
-                            value={claim}
-                            onChange={(e) => setClaim(e.target.value)}
-                            placeholder={t('report.claimPlaceholder', 'e.g., They are saying ballot boxes were snatched at Ward 4...')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
-                        />
-                    </div>
-
-                    {/* Location Field */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.locationLabel', 'Location / LGA / Polling Unit')}
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
+                            <span className="text-[#1CB5BE] font-black">3.</span>
+                            <span>WHERE & WHEN?</span>
                         </label>
                         <input
                             type="text"
-                            required
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder={t('report.locationPlaceholder', 'e.g., Osogbo LGA, Ward 4, PU 008')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
+                            value={formData.whenAndWhere}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, whenAndWhere: e.target.value })}
+                            placeholder="e.g., Yesterday on X/Twitter, TV Broadcast"
+                            className="w-full bg-input-theme text-main-theme border border-theme focus:border-[#1CB5BE] placeholder:text-muted-theme rounded-xl px-4 py-3 text-sm outline-none transition-colors"
                         />
                     </div>
+                </div>
 
-                    {/* Detailed Context */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.detailsLabel', 'Additional Context / Details')}
-                        </label>
-                        <textarea
-                            rows={3}
-                            value={details}
-                            onChange={(e) => setDetails(e.target.value)}
-                            placeholder={t('report.detailsPlaceholder', 'Describe what happened in detail or include links to social media posts...')}
-                            className="w-full bg-[#061528] border border-[#1A3352] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#1CB5BE] placeholder-gray-500"
-                        />
-                    </div>
+                {/* 4. Evidence (Full Width) */}
+                <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
+                        <span className="text-[#1CB5BE] font-black">4.</span>
+                        <span>EVIDENCE & CONTEXT LINKS</span>
+                    </label>
+                    <textarea
+                        rows={2}
+                        value={formData.evidenceLinks}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, evidenceLinks: e.target.value })}
+                        placeholder="Provide links to sources, social media posts, or any extra context..."
+                        className="w-full bg-input-theme text-main-theme border border-theme focus:border-[#1CB5BE] placeholder:text-muted-theme rounded-xl p-4 text-sm outline-none transition-colors resize-y leading-relaxed"
+                    />
+                </div>
 
-                    {/* Upload Evidence Box */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
-                            {t('report.uploadLabel', 'Upload Media Evidence (Optional)')}
-                        </label>
-                        <div className="relative border-2 border-dashed border-[#1A3352] hover:border-[#1CB5BE] rounded-xl p-6 text-center cursor-pointer transition-colors bg-[#061528]">
-                            <input
-                                type="file"
-                                accept="image/*,video/*,audio/*"
-                                onChange={handleFileChange}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                            {selectedFile ? (
-                                <div className="flex items-center justify-center gap-2 text-xs text-[#1CB5BE] font-bold">
-                                    <span>{selectedFile.name}</span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedFile(null);
-                                        }}
-                                        className="text-gray-400 hover:text-white"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ) : (
-                                <p className="text-xs text-gray-400">
-                                    {t('report.uploadClick', 'Click or drag to attach screenshot, audio, or video evidence')}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Anonymous Checkbox */}
-                    <div className="flex items-center gap-3 bg-[#061528] p-3 rounded-xl border border-[#1A3352]">
-                        <input
-                            type="checkbox"
-                            id="anonymous"
-                            checked={isAnonymous}
-                            onChange={(e) => setIsAnonymous(e.target.checked)}
-                            className="w-4 h-4 accent-[#1CB5BE] rounded cursor-pointer"
-                        />
-                        <label htmlFor="anonymous" className="text-xs font-semibold text-gray-300 cursor-pointer select-none">
-                            {t('report.anonymous', 'Keep my report anonymous')}
-                        </label>
-                    </div>
-
-                    {/* Submit Button */}
+                {/* Submit Action */}
+                <div className="pt-4">
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-[#1CB5BE] hover:bg-[#18a2aa] text-[#061528] font-black py-3.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                        className="w-full sm:w-auto bg-[#1CB5BE] hover:bg-[#189EA6] text-white font-bold py-3.5 px-8 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg disabled:opacity-50"
                     >
                         {isSubmitting ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span className="text-sm">Submitting...</span>
                         ) : (
                             <>
                                 <Send className="w-4 h-4" />
-                                {t('report.submit', 'Submit Incident Report')}
+                                <span className="text-sm">Submit Fact-Check</span>
                             </>
                         )}
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     );
-}
+};
+
+export const SubmitClaimForm = ReportPage;
+export default ReportPage;

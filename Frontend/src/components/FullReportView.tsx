@@ -10,7 +10,6 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useTranslation } from 'react-i18next';
 
 // Updated interface supporting media uploads & metadata
 interface Report {
@@ -27,7 +26,6 @@ interface Report {
 }
 
 export default function FullReportView({ reportId, onBack }: { reportId: string, onBack: () => void }) {
-    const { t } = useTranslation();
     const [report, setReport] = useState<Report | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -70,7 +68,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
     };
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-400">{t('home.syncing', 'Loading report details...')}</div>;
+        return <div className="p-8 text-center text-muted-theme">Loading report details...</div>;
     }
 
     if (!report) return <div className="p-8 text-center text-rose-400">Report not found.</div>;
@@ -85,7 +83,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             case 'MISLEADING':
                 return { color: 'bg-amber-500/20 text-amber-400 border-amber-500', label: 'MISLEADING CONTENT', icon: AlertTriangle };
             default:
-                return { color: 'bg-gray-500/20 text-gray-400 border-gray-500', label: 'UNDER REVIEW', icon: AlertTriangle };
+                return { color: 'bg-gray-500/20 text-muted-theme border-gray-500', label: 'UNDER REVIEW', icon: AlertTriangle };
         }
     };
 
@@ -97,18 +95,18 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             {/* Navigation Header */}
             <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-[#1CB5BE] hover:text-white font-bold mb-6 transition-colors"
+                className="flex items-center gap-2 text-[#1CB5BE] hover:text-main-theme font-bold mb-6 transition-colors cursor-pointer"
             >
                 <ArrowLeft className="w-5 h-5" />
                 Back to Situation Room
             </button>
 
             {/* Blog Article Container */}
-            <article className="bg-[#0E243F] border border-[#1A3352] rounded-2xl overflow-hidden shadow-xl">
+            <article className="bg-card-theme border border-theme rounded-2xl overflow-hidden shadow-xl">
 
                 {/* 1. Featured Media Hero Banner (Image/Video) */}
                 {report.media_url ? (
-                    <div className="relative w-full max-h-[420px] bg-[#061528] overflow-hidden border-b border-[#1A3352]">
+                    <div className="relative w-full max-h-[420px] bg-subcard-theme overflow-hidden border-b border-theme">
                         {report.media_type === 'video' ? (
                             <video
                                 src={report.media_url}
@@ -133,7 +131,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
                 ) : (
                     /* Fallback when no media exists */
-                    <div className="w-full h-32 bg-[#061528] flex items-center justify-center text-slate-500 border-b border-[#1A3352]">
+                    <div className="w-full h-32 bg-subcard-theme flex items-center justify-center text-muted-theme border-b border-theme">
                         <div className="flex items-center gap-2 text-sm font-semibold opacity-60">
                             <ImageIcon className="w-5 h-5" />
                             <span>No Media Evidence Attached</span>
@@ -145,7 +143,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                 <div className="p-6 sm:p-8">
 
                     {/* Category & Timestamps */}
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-400 mb-4">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-theme mb-4">
                         {report.category && (
                             <span className="bg-[#1CB5BE]/10 text-[#1CB5BE] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">
                                 {report.category}
@@ -153,12 +151,12 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         )}
 
                         <div className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-gray-400" />
+                            <Clock className="w-3.5 h-3.5 text-muted-theme" />
                             <span>{getTimeAgo(report.created_at)}</span>
                         </div>
 
                         {report.location && (
-                            <div className="flex items-center gap-1 text-slate-300">
+                            <div className="flex items-center gap-1 text-muted-theme">
                                 <MapPin className="w-3.5 h-3.5 text-[#E55322]" />
                                 <span>{report.location}</span>
                             </div>
@@ -166,38 +164,38 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
 
                     {/* Headline Title */}
-                    <h1 className="text-2xl sm:text-3xl font-black text-white mb-6 leading-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-main-theme mb-6 leading-tight">
                         {report.title}
                     </h1>
 
                     {/* Highlighted Claim Box */}
-                    <div className="bg-[#061528] p-4 sm:p-5 rounded-xl border border-[#1A3352] mb-8">
+                    <div className="bg-subcard-theme p-4 sm:p-5 rounded-xl border border-theme mb-8">
                         <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-1">
-                            {t('home.claimLabel', 'Claim Under Review:')}
+                            Claim Under Review:
                         </span>
-                        <p className="text-gray-200 text-base italic font-medium leading-relaxed">
+                        <p className="text-main-theme text-base italic font-medium leading-relaxed">
                             "{report.claim}"
                         </p>
                     </div>
 
                     {/* Main Fact-Check Analysis Content */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-bold text-white border-b border-[#1A3352] pb-2">
+                        <h2 className="text-lg font-bold text-main-theme border-b border-theme pb-2">
                             Fact-Check Findings & Analysis
                         </h2>
-                        <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
+                        <div className="prose prose-invert max-w-none text-main-theme leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
                             {report.summary}
                         </div>
                     </div>
 
                     {/* Share Action Bar */}
-                    <div className="mt-10 pt-6 border-t border-[#1A3352] flex items-center justify-between">
-                        <div className="text-xs text-gray-400 font-medium">
-                            Source verified by <span className="text-white font-bold">TruthGuard Fact Check Room</span>
+                    <div className="mt-10 pt-6 border-t border-theme flex items-center justify-between">
+                        <div className="text-xs text-muted-theme font-medium">
+                            Source verified by <span className="text-main-theme font-bold">TruthGuard Fact Check Room</span>
                         </div>
-                        <button className="flex items-center gap-2 bg-[#1CB5BE]/10 text-[#1CB5BE] hover:bg-[#1CB5BE] hover:text-[#061528] px-4 py-2 rounded-lg font-bold transition-all text-sm">
+                        <button className="flex items-center gap-2 bg-[#1CB5BE]/10 text-[#1CB5BE] hover:bg-[#1CB5BE] hover:text-[#061528] px-4 py-2 rounded-lg font-bold transition-all text-sm cursor-pointer">
                             <Share2 className="w-4 h-4" />
-                            {t('home.shareReport', 'Share Fact-Check')}
+                            Share Fact-Check
                         </button>
                     </div>
 

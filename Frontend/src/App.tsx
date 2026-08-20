@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, FileText, LayoutDashboard, Globe, LogOut } from 'lucide-react';
-import { useLanguage } from './pages/LanguageContext';
-import { useTranslation } from 'react-i18next';
+import { Shield, FileText, LayoutDashboard, LogOut, Sun, Moon } from 'lucide-react';
 import HomePage from './pages/Homepage';
 import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
@@ -12,20 +10,41 @@ export default function App() {
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [isAdminMode, setIsAdminMode] = useState(false);
 
-    // Connects to LanguageContext (which syncs with i18next & localStorage)
-    const { language, setLanguage } = useLanguage();
-    const { t } = useTranslation();
+    // --- NEW: Theme State ---
+    const [isDark, setIsDark] = useState(() => {
+        return localStorage.getItem('theme') !== 'light';
+    });
 
-    // Check URL and Session Storage on load
+    // Check URL path and Session Storage on load
     useEffect(() => {
+        const path = window.location.pathname.replace(/\/+$/, '');
         const params = new URLSearchParams(window.location.search);
-        const hasAdminParam = params.get('admin') === 'true';
+        const isAdminPath = path === '/admin' || params.has('admin');
         const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
-        if (hasAdminParam || isAuthenticated) {
+        if (isAdminPath || isAuthenticated) {
             setIsAdminMode(true);
+            if (isAdminPath) {
+                if (isAuthenticated) {
+                    setActiveTab('dashboard');
+                } else {
+                    setShowAdminLogin(true);
+                }
+            }
         }
     }, []);
+
+    // --- NEW: Theme Effect ---
+    useEffect(() => {
+        const root = document.documentElement;
+        if (isDark) {
+            root.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            root.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDark]);
 
     const handleTabClick = (tab: 'home' | 'report' | 'dashboard') => {
         if (tab === 'dashboard') {
@@ -34,6 +53,9 @@ export default function App() {
                 setShowAdminLogin(true);
                 return;
             }
+            window.history.replaceState({}, document.title, '/admin');
+        } else {
+            window.history.replaceState({}, document.title, '/');
         }
         setActiveTab(tab);
     };
@@ -44,16 +66,16 @@ export default function App() {
         setIsAdminMode(false);
         setActiveTab('home');
 
-        // Removes ?admin=true from address bar cleanly
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Cleanly resets address bar to root path
+        window.history.replaceState({}, document.title, '/');
     };
 
     const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
     return (
-        <div className="min-h-screen bg-[#061528] text-white flex flex-col font-sans">
+        <div className="min-h-screen bg-app text-main-theme flex flex-col font-sans transition-colors duration-200">
             {/* Header / Navbar */}
-            <header className="border-b border-[#1A3352] bg-[#0E243F] sticky top-0 z-50">
+            <header className="border-b border-theme bg-card-theme sticky top-0 z-50 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
 
                     {/* Logo / Brand */}
@@ -71,26 +93,26 @@ export default function App() {
                                 <span className="text-[#1CB5BE]">TRUTH</span>
                                 <span className="text-[#E55322]">GUARD</span>
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest -mt-0.5">
-                                {t('nav.tagline', 'Osun 2026 Fact Check')}
+                            <span className="text-[9px] sm:text-[10px] text-muted-theme font-bold uppercase tracking-widest -mt-0.5">
+                                Osun 2026 Fact Check
                             </span>
                         </div>
                     </div>
 
-                    {/* Navigation Controls & Language Switcher */}
+                    {/* Navigation Controls */}
                     <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
-                        <nav className="flex items-center gap-1.5 bg-[#061528] p-1.5 rounded-xl border border-[#1A3352] shrink-0">
+                        <nav className="flex items-center gap-1.5 bg-subcard-theme p-1.5 rounded-xl border border-theme shrink-0 transition-colors duration-200">
 
                             {/* Live Fact-Checks / Debunks */}
                             <button
                                 onClick={() => handleTabClick('home')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'home'
                                     ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                    : 'text-gray-300 hover:text-white'
+                                    : 'text-muted-theme hover:text-main-theme'
                                     }`}
                             >
                                 <FileText className="w-4 h-4" />
-                                {t('nav.debunks', 'Live Fact-Checks')}
+                                Live Fact-Checks
                             </button>
 
                             {/* Report Incident */}
@@ -98,11 +120,11 @@ export default function App() {
                                 onClick={() => handleTabClick('report')}
                                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'report'
                                     ? 'bg-[#E55322] text-white shadow-md font-extrabold'
-                                    : 'text-gray-300 hover:text-white'
+                                    : 'text-muted-theme hover:text-main-theme'
                                     }`}
                             >
                                 <Shield className="w-4 h-4" />
-                                {t('nav.report', 'Report Incident')}
+                                Report Incident
                             </button>
 
                             {/* Situation Room (Admin Mode) */}
@@ -111,11 +133,11 @@ export default function App() {
                                     onClick={() => handleTabClick('dashboard')}
                                     className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
                                         ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                        : 'text-gray-300 hover:text-white'
+                                        : 'text-muted-theme hover:text-main-theme'
                                         }`}
                                 >
                                     <LayoutDashboard className="w-4 h-4" />
-                                    {t('nav.situationRoom', 'Situation Room')}
+                                    Situation Room
                                 </button>
                             )}
 
@@ -123,34 +145,26 @@ export default function App() {
                             {isAuthenticated && (
                                 <button
                                     onClick={handleLogout}
-                                    className="px-2.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 ml-1"
-                                    title={t('nav.lockRoom', 'Lock Situation Room')}
+                                    className="px-2.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 ml-1"
+                                    title="Lock Situation Room"
                                 >
                                     <LogOut className="w-4 h-4" />
                                 </button>
                             )}
-                        </nav>
 
-                        {/* Language Selector */}
-                        <div className="flex items-center gap-1 bg-[#061528] px-2.5 py-1.5 rounded-xl border border-[#1A3352] text-xs shrink-0">
-                            <Globe className="w-4 h-4 text-[#1CB5BE]" />
-                            {[
-                                { code: 'en', label: 'EN' },
-                                { code: 'yo', label: 'YO' },
-                                { code: 'pcm', label: 'PCM' }
-                            ].map((lang) => (
-                                <button
-                                    key={lang.code}
-                                    onClick={() => setLanguage(lang.code)}
-                                    className={`px-2 py-1 rounded-md font-bold cursor-pointer transition-colors ${language === lang.code
-                                        ? 'bg-[#1CB5BE] text-[#061528]'
-                                        : 'text-gray-400 hover:text-white'
-                                        }`}
-                                >
-                                    {lang.label}
-                                </button>
-                            ))}
-                        </div>
+                            {/* --- Theme Toggle Button --- */}
+                            <button
+                                onClick={() => setIsDark(!isDark)}
+                                className="p-2 ml-1 rounded-lg text-muted-theme hover:bg-card-theme hover:text-main-theme transition-all cursor-pointer flex items-center justify-center shrink-0 border border-transparent hover:border-theme"
+                                title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                            >
+                                {isDark ? (
+                                    <Sun className="w-4 h-4 text-amber-400" />
+                                ) : (
+                                    <Moon className="w-4 h-4 text-slate-700" />
+                                )}
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </header>
@@ -169,14 +183,20 @@ export default function App() {
                         setShowAdminLogin(false);
                         setIsAdminMode(true);
                         setActiveTab('dashboard');
+                        window.history.replaceState({}, document.title, '/admin');
                     }}
-                    onCancel={() => setShowAdminLogin(false)}
+                    onCancel={() => {
+                        setShowAdminLogin(false);
+                        if (window.location.pathname === '/admin') {
+                            window.history.replaceState({}, document.title, '/');
+                        }
+                    }}
                 />
             )}
 
             {/* Footer */}
-            <footer className="border-t border-[#1A3352] bg-[#0E243F] py-6 text-center text-xs text-gray-400">
-                <p>{t('nav.footer', '© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group')}</p>
+            <footer className="border-t border-theme bg-card-theme py-6 text-center text-xs text-muted-theme transition-colors duration-200">
+                <p>© 2026 TruthGuard Initiative · FactCheck Africa / BallotEyes Working Group</p>
             </footer>
         </div>
     );
