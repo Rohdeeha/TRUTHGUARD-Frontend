@@ -1,6 +1,7 @@
 /* 1. Import Poppins from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
 
+/* Initialize Tailwind v4 */
 @import "tailwindcss";
 
 @theme {
@@ -9,51 +10,22 @@
 
     /* Brand Palette derived from TruthGuard Logo */
     --color-brand-navy: #071D38;
-    /* Primary Dark Background / Text */
     --color-brand-teal: #00B8C4;
-    /* Accent / Shield Border / Verification Teal */
     --color-brand-coral: #E05A2B;
-    /* Alert Orange / "TRUTH" Text / Fake Warning */
     --color-brand-shield: #0B131D;
-    /* Shield Dark Interior Background */
     --color-brand-surface: #0E243F;
-    /* Card Backgrounds on Dark Mode */
 
     /* Status Colors */
     --color-status-new: #3B82F6;
-    /* Blue */
     --color-status-investigating: #F59E0B;
-    /* Amber */
     --color-status-verified: #10B981;
-    /* Green */
     --color-status-debunked: #EF4444;
-    /* Red */
     --color-status-dismissed: #6B7280;
-    /* Gray */
 }
-
-/* Global Reset & Base Styling */
-:root {
-    color-scheme: dark;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--color-brand-navy, #071D38);
-    color: #FFFFFF;
-
-    /* 3. Apply the Tailwind sans font (now Poppins) globally to the document body */
-    font-family: var(--font-sans);
-
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-}
-
-@import "tailwindcss";
 
 /* Light Theme Variables (Default) */
 :root {
+    color-scheme: light;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-input: #f1f5f9;
@@ -64,17 +36,54 @@ body {
 
 /* Dark Theme Variables */
 .dark {
+    color-scheme: dark;
     --bg-main: #061528;
-    --bg-card: #0e243f;
-    --bg-input: #061528;
+    --bg-card: #0E243F;
+    --bg-input: #0B131D;
     --text-primary: #ffffff;
     --text-muted: #94a3b8;
-    --border-color: #1a3352;
+    --border-color: #1A3352;
 }
 
-/* Apply variables globally */
+/* Global Reset & Base Styling */
 body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+
+    /* Apply the Tailwind sans font globally */
+    font-family: var(--font-sans);
+
+    /* Apply theme variables to body */
     background-color: var(--bg-main);
     color: var(--text-primary);
+
+    /* Smooth transition for theme switching */
     transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Reusable Theme Utility Classes */
+.bg-app {
+    background-color: var(--bg-main);
+}
+
+.bg-card-theme {
+    background-color: var(--bg-card);
+}
+
+.bg-input-theme {
+    background-color: var(--bg-input);
+}
+
+.border-theme {
+    border-color: var(--border-color);
+}
+
+.text-main-theme {
+    color: var(--text-primary);
+}
+
+.text-muted-theme {
+    color: var(--text-muted);
 }
