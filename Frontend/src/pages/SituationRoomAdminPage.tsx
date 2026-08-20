@@ -216,7 +216,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
           <div>
@@ -226,7 +226,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="claim"
               value={formData.claim}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
         </div>
@@ -239,7 +239,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             rows={3}
             value={formData.description}
             onChange={handleChange}
-            className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+            className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
           />
         </div>
 
@@ -251,7 +251,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Disinformation">Disinformation</option>
               <option value="Voter Suppression">Voter Suppression</option>
@@ -267,7 +267,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             >
               <option value="Pending">Pending</option>
               <option value="Under Review">Under Review</option>
@@ -284,7 +284,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.location}
               onChange={handleChange}
               placeholder="e.g. Osogbo, Osun State"
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
         </div>
@@ -299,7 +299,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               value={formData.reporter}
               onChange={handleChange}
               placeholder="Author name or ID"
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-2 text-sm text-main-white focus:outline-none focus:border-[#1CB5BE]"
             />
           </div>
 
@@ -308,7 +308,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
             <input
               type="file"
               onChange={handleFileChange}
-              className="w-full bg-[#061528] border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-black hover:file:bg-[#1CB5BE]/80"
+              className="w-full bg-slate-50 border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-black hover:file:bg-[#1CB5BE]/80"
             />
           </div>
         </div>
@@ -321,7 +321,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="is_eligible"
               checked={formData.is_eligible}
               onChange={handleChange}
-              className="rounded bg-[#061528] border-theme text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-slate-50 border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Eligible
           </label>
@@ -332,7 +332,7 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               name="is_anonymous"
               checked={formData.is_anonymous}
               onChange={handleChange}
-              className="rounded bg-[#061528] border-theme text-[#1CB5BE] focus:ring-0"
+              className="rounded bg-slate-50 border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Anonymous
           </label>

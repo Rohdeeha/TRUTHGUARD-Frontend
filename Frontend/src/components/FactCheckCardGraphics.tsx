@@ -11,7 +11,7 @@ export const FactCheckCardGraphic = forwardRef<HTMLDivElement, Props>(
             <div className="fixed -left-[9999px] top-0">
                 <div
                     ref={ref}
-                    className="w-[1200px] h-[630px] bg-[#061528] p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-main-white font-sans"
+                    className="w-[1200px] h-[630px] bg-slate-50 p-12 flex flex-col justify-between border-4 border-[#1CB5BE] text-main-white font-sans"
                 >
                     {/* Header */}
                     <div className="flex justify-between items-center border-b border-theme pb-6">

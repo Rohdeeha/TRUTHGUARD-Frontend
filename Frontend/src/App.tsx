@@ -89,7 +89,7 @@ export default function App() {
 
                     {/* Navigation Controls */}
                     <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
-                        <nav className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#061528] p-1.5 rounded-xl border border-slate-200 dark:border-theme shrink-0 transition-colors duration-200">
+                        <nav className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-50 p-1.5 rounded-xl border border-slate-200 dark:border-theme shrink-0 transition-colors duration-200">
 
                             {/* Live Fact-Checks / Debunks */}
                             <button

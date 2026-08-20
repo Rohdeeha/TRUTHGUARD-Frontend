@@ -106,7 +106,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
                 {/* 1. Featured Media Hero Banner (Image/Video) */}
                 {report.media_url ? (
-                    <div className="relative w-full max-h-[420px] bg-[#061528] overflow-hidden border-b border-theme">
+                    <div className="relative w-full max-h-[420px] bg-slate-50 overflow-hidden border-b border-theme">
                         {report.media_type === 'video' ? (
                             <video
                                 src={report.media_url}
@@ -131,7 +131,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
                 ) : (
                     /* Fallback when no media exists */
-                    <div className="w-full h-32 bg-[#061528] flex items-center justify-center text-slate-500 border-b border-theme">
+                    <div className="w-full h-32 bg-slate-50 flex items-center justify-center text-slate-500 border-b border-theme">
                         <div className="flex items-center gap-2 text-sm font-semibold opacity-60">
                             <ImageIcon className="w-5 h-5" />
                             <span>No Media Evidence Attached</span>
@@ -169,7 +169,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </h1>
 
                     {/* Highlighted Claim Box */}
-                    <div className="bg-[#061528] p-4 sm:p-5 rounded-xl border border-theme mb-8">
+                    <div className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-theme mb-8">
                         <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-1">
                             Claim Under Review:
                         </span>

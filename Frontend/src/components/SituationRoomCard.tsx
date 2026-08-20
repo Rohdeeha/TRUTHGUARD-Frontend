@@ -39,7 +39,7 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
             className="flex flex-col sm:flex-row items-start gap-4 p-4 bg-card-theme border border-theme rounded-xl mb-3 hover:border-[#1CB5BE] transition cursor-pointer"
         >
             {/* LEFT: Media Thumbnail */}
-            <div className="w-full sm:w-40 h-28 flex-shrink-0 bg-[#061528] rounded-lg overflow-hidden border border-theme relative">
+            <div className="w-full sm:w-40 h-28 flex-shrink-0 bg-slate-50 rounded-lg overflow-hidden border border-theme relative">
                 {report.media_url || report.evidence_file ? (
                     report.media_type === 'video' ? (
                         <video src={report.media_url || report.evidence_file || ''} className="w-full h-full object-cover" />
@@ -61,7 +61,7 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
                             {report.title}
                         </h3>
                         {report.category && (
-                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#061528] text-[#1CB5BE] border border-theme shrink-0">
+                            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-50 text-[#1CB5BE] border border-theme shrink-0">
                                 {report.category}
                             </span>
                         )}

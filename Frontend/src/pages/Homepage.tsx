@@ -151,7 +151,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                 {report.media_url && (
                     <div
                         onClick={() => onSelect(report.id)}
-                        className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-[#061528] rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
+                        className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
                     >
                         {report.media_type === 'video' ? (
                             <div className="w-full h-full relative flex items-center justify-center bg-black">
@@ -169,7 +169,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                     </div>
                 )}
 
-                <div className="flex-1 bg-[#061528] rounded-xl p-3 sm:p-4 border border-theme flex flex-col justify-center">
+                <div className="flex-1 bg-slate-50 rounded-xl p-3 sm:p-4 border border-theme flex flex-col justify-center">
                     <span className="text-muted-theme font-bold text-xs mb-1 block">
                         Claim Under Review:
                     </span>
@@ -225,7 +225,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-main-white leading-tight">{report.title}</h1>
                 {report.media_url && (
-                    <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-[#061528] flex items-center justify-center">
+                    <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-slate-50 flex items-center justify-center">
                         {report.media_type === 'video' ? (
                             <video src={report.media_url} controls className="w-full max-h-96 object-contain" />
                         ) : (
@@ -234,7 +234,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     </div>
                 )}
                 {report.claim && (
-                    <div className="bg-[#061528] rounded-xl p-4 border border-theme">
+                    <div className="bg-slate-50 rounded-xl p-4 border border-theme">
                         <p className="text-sm text-gray-300">
                             <strong className="text-muted-theme font-bold text-xs block mb-1">CLAIM:</strong>
                             "{report.claim}"
@@ -245,7 +245,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     <p className="text-gray-200 leading-relaxed text-base whitespace-pre-wrap">{report.summary || report.content}</p>
                 </div>
                 <div className="pt-4 border-t border-theme flex justify-end">
-                    <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-muted-theme hover:text-main-white text-xs font-bold flex items-center gap-2 bg-[#061528] px-4 py-2 rounded-xl border border-theme cursor-pointer disabled:opacity-50 transition-colors">
+                    <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-muted-theme hover:text-main-white text-xs font-bold flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-theme cursor-pointer disabled:opacity-50 transition-colors">
                         {isGeneratingCard ? <Loader2 className="w-4 h-4 animate-spin text-[#1CB5BE]" /> : <Share2 className="w-4 h-4" />}
                         Share Fact-Check
                     </button>
@@ -263,7 +263,7 @@ const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => 
                     <X className="w-5 h-5" />
                 </button>
                 <h3 className="text-lg font-bold text-main-white pt-2">Fact-Check Card</h3>
-                <div className="overflow-hidden rounded-xl border border-theme bg-[#061528] p-2">
+                <div className="overflow-hidden rounded-xl border border-theme bg-slate-50 p-2">
                     <img src={cardUrl} alt="Fact Check Graphic Card" className="w-full h-auto rounded-lg object-contain" />
                 </div>
                 <div className="flex items-center gap-3 justify-end pt-2">
@@ -412,7 +412,7 @@ export default function HomePage() {
     }, [reports, searchQuery, activeFilter]);
 
     return (
-        <div className="min-h-screen bg-[#061528] text-main-white py-12 px-4 sm:px-6 lg:px-8 relative">
+        <div className="min-h-screen bg-slate-50 text-main-white py-12 px-4 sm:px-6 lg:px-8 relative">
             <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] pointer-events-none opacity-0">
                 {selectedShareReport && <FactCheckCardGraphic ref={cardRef} report={selectedShareReport} />}
             </div>

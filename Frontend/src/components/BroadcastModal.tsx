@@ -144,7 +144,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.twitter}
@@ -157,7 +157,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">X / Twitter</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.facebook}
@@ -170,7 +170,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Facebook Page</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.telegram}
@@ -183,7 +183,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                         <span className="font-bold">Telegram Channel</span>
                                     </label>
 
-                                    <label className="flex items-center gap-2 p-2.5 bg-[#061528] border border-theme rounded-xl cursor-pointer">
+                                    <label className="flex items-center gap-2 p-2.5 bg-slate-50 border border-theme rounded-xl cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={selectedPlatforms.whatsapp}
@@ -207,7 +207,7 @@ export default function BroadcastModal({ report, onClose }: BroadcastModalProps)
                                     rows={6}
                                     value={customCaption}
                                     onChange={(e) => setCustomCaption(e.target.value)}
-                                    className="w-full bg-[#061528] border border-theme rounded-xl p-3 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
+                                    className="w-full bg-slate-50 border border-theme rounded-xl p-3 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE] font-mono leading-relaxed"
                                 />
                             </div>
 

@@ -21,7 +21,7 @@ export const ShareCardModal = ({ cardUrl, onClose }: ShareCardModalProps) => {
                     Fact-Check Card
                 </h3>
 
-                <div className="overflow-hidden rounded-xl border border-theme bg-[#061528] p-2">
+                <div className="overflow-hidden rounded-xl border border-theme bg-slate-50 p-2">
                     <img
                         src={cardUrl}
                         alt="Fact Check Graphic Card"

@@ -132,7 +132,7 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                             value={formData.whenAndWhere}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, whenAndWhere: e.target.value })}
                             placeholder="e.g., Yesterday on X/Twitter, TV Broadcast"
-                            className="w-full bg-   input-theme border border-theme focus:border-[#1CB5BE] text-main-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                            className="w-full bg-input-theme border border-theme focus:border-[#1CB5BE] text-main-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
                         />
                     </div>
                 </div>
@@ -147,8 +147,7 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                         value={formData.evidenceLinks}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, evidenceLinks: e.target.value })}
                         placeholder="Provide links to sources, social media posts, or any extra context..."
-                        className="w-full bg-[#061528] border border-theme focus:border-[#1CB5BE] text-main-white placeholder-gray-500 rounded-xl p-4 text-sm outline-none transition-colors resize-y leading-relaxed"
-                    />
+                        className="w-full bg-input-theme text-main-theme border border-theme focus:border-[#1CB5BE] placeholder:text-slate-400 rounded-xl p-4 text-sm outline-none transition-colors resize-y leading-relaxed" />
                 </div>
 
                 {/* Submit Action */}

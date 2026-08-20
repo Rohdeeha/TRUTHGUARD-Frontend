@@ -51,7 +51,7 @@ export default function LoginPage() {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full bg-[#061528] border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-slate-50 border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
                             required
                         />
                     </div>
@@ -61,7 +61,7 @@ export default function LoginPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-[#061528] border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
+                            className="w-full bg-slate-50 border border-theme text-main-white rounded-xl p-3 text-sm outline-none focus:border-[#1CB5BE]"
                             required
                         />
                     </div>

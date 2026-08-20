@@ -120,7 +120,7 @@ export default function DashboardPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search reports..."
-                        className="w-full bg-[#061528] border border-theme rounded-xl pl-10 pr-4 py-2.5 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE]"
+                        className="w-full bg-slate-50 border border-theme rounded-xl pl-10 pr-4 py-2.5 text-xs text-main-white focus:outline-none focus:border-[#1CB5BE]"
                     />
                 </div>
 
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                             onClick={() => setSelectedFilter(statusOption)}
                             className={`px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer ${selectedFilter === statusOption
                                 ? 'bg-[#1CB5BE] text-[#061528]'
-                                : 'bg-[#061528] text-gray-300 border border-theme'
+                                : 'bg-slate-50 text-gray-300 border border-theme'
                                 }`}
                         >
                             {statusOption}
@@ -155,14 +155,14 @@ export default function DashboardPage() {
                         >
                             <div className="space-y-2 max-w-3xl">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#061528] text-[#1CB5BE] border border-theme">
+                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-50 text-[#1CB5BE] border border-theme">
                                         #{String(report.id).slice(0, 8)}
                                     </span>
                                     <span className="text-xs text-muted-theme">
                                         {report.location || 'Unknown Location'}
                                     </span>
                                     {report.category && (
-                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#061528] text-amber-400 border border-theme">
+                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-50 text-amber-400 border border-theme">
                                             {report.category}
                                         </span>
                                     )}
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                                 <select
                                     value={currentStatus}
                                     onChange={(e) => handleVerdictChange(report.id, e.target.value as any)}
-                                    className="bg-[#061528] border border-theme text-xs font-bold text-main-white rounded-lg px-2.5 py-1.5 focus:outline-none"
+                                    className="bg-slate-50 border border-theme text-xs font-bold text-main-white rounded-lg px-2.5 py-1.5 focus:outline-none"
                                 >
                                     <option value="PENDING">PENDING</option>
                                     <option value="VERIFIED">VERIFIED</option>
