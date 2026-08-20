@@ -62,8 +62,7 @@ export default function App() {
     const isAuthenticated = !!sessionStorage.getItem('truthguard_admin_token');
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#061528] text-slate-900 dark:text-main-white flex flex-col font-sans transition-colors duration-200">
-            {/* Header / Navbar */}
+        <div className="min-h-screen bg-app text-main-theme flex flex-col font-sans transition-colors duration-200">            {/* Header / Navbar */}
             <header className="border-b border-slate-200 dark:border-theme bg-white dark:bg-card-theme sticky top-0 z-50 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
 
