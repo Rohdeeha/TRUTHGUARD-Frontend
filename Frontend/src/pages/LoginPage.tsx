@@ -23,7 +23,7 @@ export default function LoginPage() {
                 // Store token using the key expected by api.ts
                 localStorage.setItem('fact_checker_token', data.access || data.token);
                 sessionStorage.setItem('truthguard_admin_token', data.access || data.token);
-                window.location.href = '/?admin=true';
+                window.location.href = '/admin';
             } else {
                 setError(data.detail || 'Login failed');
             }
