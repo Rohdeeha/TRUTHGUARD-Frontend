@@ -99,7 +99,13 @@ export const RichTextContent: React.FC<RichTextContentProps> = ({
     if (hasHtmlMarkup && sanitizedHtml) {
         return (
             <Component
-                className={`prose prose-slate dark:prose-invert max-w-none text-main-theme leading-relaxed prose-blockquote:border-l-4 prose-blockquote:border-[#1CB5BE] prose-blockquote:pl-4 prose-blockquote:my-4 prose-blockquote:py-3 prose-blockquote:pr-4 prose-blockquote:bg-slate-100/70 dark:prose-blockquote:bg-subcard-theme prose-blockquote:rounded-r-lg prose-blockquote:text-slate-900 dark:prose-blockquote:text-main-theme prose-blockquote:not-italic ${className}`.trim()}
+                className={`prose prose-slate dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 leading-relaxed 
+                prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-bold
+                prose-strong:text-slate-900 dark:prose-strong:text-white
+                prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-a:font-semibold prose-a:underline hover:prose-a:text-cyan-700 dark:hover:prose-a:text-cyan-300
+                prose-blockquote:border-l-4 prose-blockquote:border-[#1CB5BE] prose-blockquote:pl-4 prose-blockquote:my-4 prose-blockquote:py-3 prose-blockquote:pr-4 
+                prose-blockquote:bg-slate-100/70 dark:prose-blockquote:bg-subcard-theme 
+                prose-blockquote:rounded-r-lg prose-blockquote:text-slate-900 dark:prose-blockquote:text-main-theme prose-blockquote:not-italic ${className}`.trim()}
                 dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
             />
         );
@@ -108,7 +114,10 @@ export const RichTextContent: React.FC<RichTextContentProps> = ({
     // 4. Fallback for plain unformatted text (no HTML tags)
     return (
         <Component
-            className={`prose prose-slate dark:prose-invert max-w-none text-main-theme leading-relaxed whitespace-pre-wrap ${className}`.trim()}
+            className={`prose prose-slate dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap 
+            prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-bold
+            prose-strong:text-slate-900 dark:prose-strong:text-white
+            prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-a:font-semibold prose-a:underline hover:prose-a:text-cyan-700 dark:hover:prose-a:text-cyan-300 ${className}`.trim()}
         >
             {trimmed}
         </Component>
