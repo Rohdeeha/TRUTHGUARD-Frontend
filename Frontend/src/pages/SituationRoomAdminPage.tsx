@@ -6,9 +6,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://truthguard-ap
 export interface AdminFormState {
   id?: number | string;
   claim: string;
+  title?: string;
   who_said_it: string;
   where_and_when: string;
   evidence_links: string;
+  details?: string;
   category: string;
   status: string;
   location: string;
@@ -67,9 +69,16 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
 
   const sendPayload = async (data: AdminFormState) => {
     const payload = new FormData();
-    Object.entries(data).forEach(([key, val]) => {
+
+    // Prepare compatibility fallbacks so both legacy and updated endpoints capture data
+    const finalData = {
+      ...data,
+      title: data.claim, // Ensures components reading .title work
+      details: data.details || (data.evidence_links ? `Evidence: ${data.evidence_links}` : 'No evidence provided'),
+    };
+
+    Object.entries(finalData).forEach(([key, val]) => {
       if (val !== null && val !== undefined) {
-        // If evidence_file is already a remote string URL (from existing record), don't send as file
         if (key === 'evidence_file' && !(val instanceof File)) {
           return;
         }
@@ -77,7 +86,11 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       }
     });
 
-    const token = localStorage.getItem('access_token') || localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
+    const token =
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('fact_checker_token') ||
+      sessionStorage.getItem('truthguard_admin_token');
+
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     const url = data.id
@@ -104,7 +117,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
     return await res.json();
   };
 
-  // 1. Action: SAVE (Submits and closes form)
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -121,7 +133,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
     }
   };
 
-  // 2. Action: Save and add another (Submits and resets form)
   const handleSaveAndAddAnother = async () => {
     setIsSubmitting(true);
     setMessage(null);
@@ -137,13 +148,12 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
     }
   };
 
-  // 3. Action: Save and continue editing (Submits and keeps current ID)
   const handleSaveAndContinue = async () => {
     setIsSubmitting(true);
     setMessage(null);
     try {
       const result = await sendPayload(formData);
-      if (result.id) {
+      if (result?.id) {
         setFormData((prev) => ({ ...prev, id: result.id }));
       }
       setMessage({ type: 'success', text: 'Saved! You can continue editing.' });
@@ -155,7 +165,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
     }
   };
 
-  // 4. Action: DELETE (Deletes incident record from Django backend)
   const handleDelete = async () => {
     if (!formData.id) {
       setMessage({ type: 'error', text: 'Cannot delete an unsaved record.' });
@@ -165,13 +174,16 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('access_token') || localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
+      const token =
+        localStorage.getItem('access_token') ||
+        localStorage.getItem('fact_checker_token') ||
+        sessionStorage.getItem('truthguard_admin_token');
       const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const res = await fetch(
-        `${API_BASE_URL}/incidents/${formData.id}/`,
-        { method: 'DELETE', headers }
-      );
+      const res = await fetch(`${API_BASE_URL}/incidents/${formData.id}/`, {
+        method: 'DELETE',
+        headers,
+      });
       if (!res.ok) throw new Error('Failed to delete incident.');
       setMessage({ type: 'success', text: 'Incident deleted successfully.' });
       if (onSuccess) onSuccess();
@@ -199,8 +211,8 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       {message && (
         <div
           className={`p-3 rounded-lg mb-4 text-sm font-semibold ${message.type === 'success'
-            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 dark:text-emerald-300'
-            : 'bg-rose-500/10 border border-rose-500/30 text-rose-500 dark:text-rose-300'
+              ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 dark:text-emerald-300'
+              : 'bg-rose-500/10 border border-rose-500/30 text-rose-500 dark:text-rose-300'
             }`}
         >
           {message.text}
@@ -208,7 +220,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       )}
 
       <form onSubmit={handleSave} className="space-y-4">
-        {/* Claim & Who Said It */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-main-theme mb-1">Claim *</label>
@@ -235,7 +246,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
         </div>
 
-        {/* Where & When & Evidence Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-main-theme mb-1">Where and When</label>
@@ -261,7 +271,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
         </div>
 
-        {/* Category, Status, Location */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-semibold text-main-theme mb-1">Category</label>
@@ -308,7 +317,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
         </div>
 
-        {/* Evidence File Upload */}
         <div>
           <label className="block text-xs font-semibold text-main-theme mb-1">Evidence File / Media</label>
           <input
@@ -318,7 +326,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           />
         </div>
 
-        {/* Checkboxes */}
         <div className="flex items-center gap-6 pt-2">
           <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
             <input
@@ -343,7 +350,6 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </label>
         </div>
 
-        {/* Action Buttons Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-theme">
           <button
             type="button"

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Send, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { submitReport } from '../services/api';
 
-// 1. Strictly type the data object we will send to the backend/parent
 export interface FactCheckSubmissionData {
     statement: string;
     whoSaidIt: string;
@@ -12,7 +11,6 @@ export interface FactCheckSubmissionData {
     contactEmail?: string;
 }
 
-// 2. Strictly type the props this component expects to receive
 export interface SubmitClaimFormProps {
     onSubmitReport?: (data: FactCheckSubmissionData) => Promise<void>;
 }
@@ -38,14 +36,17 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
             if (onSubmitReport) {
                 await onSubmitReport(formData);
             } else {
-                // ✅ NEW PAYLOAD (Matches backend Incident model)
+                // Dual-key payload ensures both old and new Django endpoints read the data
                 await submitReport({
                     claim: formData.statement,
+                    title: formData.statement, // Fallback for components checking .title
                     who_said_it: formData.whoSaidIt || 'Unknown',
                     where_and_when: formData.whenAndWhere || 'Unknown',
-                    evidence_links: formData.evidenceLinks || '',
                     location: formData.whenAndWhere || 'Osun State',
                     category: 'DISINFORMATION',
+                    status: 'PENDING', // Forces visibility in Situation Room filters
+                    evidence_links: formData.evidenceLinks || '',
+                    details: formData.evidenceLinks ? `Evidence: ${formData.evidenceLinks}` : 'No evidence provided',
                     is_anonymous: !formData.contactName && !formData.contactEmail,
                 });
             }
@@ -68,11 +69,8 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
 
     return (
         <div className="max-w-3xl mx-auto bg-card-theme border border-theme rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-colors duration-200">
-
-            {/* Top Left Decorative Accent */}
             <div className="absolute top-0 left-0 w-2 h-full bg-[#1CB5BE]"></div>
 
-            {/* Header Section */}
             <div className="mb-8 pl-4">
                 <div className="flex items-center gap-2 mb-4">
                     <ShieldCheck className="w-5 h-5 text-[#1CB5BE]" />
@@ -97,10 +95,7 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                 </div>
             )}
 
-            {/* Form Section with Responsive Grid */}
             <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 pl-4">
-
-                {/* 1. The Statement (Full Width) */}
                 <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
                         <span className="text-[#1CB5BE] font-black">1.</span>
@@ -117,7 +112,6 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                     />
                 </div>
 
-                {/* 2 & 3. Who and Where/When (Side-by-Side on larger screens) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
@@ -148,7 +142,6 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                     </div>
                 </div>
 
-                {/* 4. Evidence (Full Width) */}
                 <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-main-theme">
                         <span className="text-[#1CB5BE] font-black">4.</span>
@@ -163,7 +156,6 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
                     />
                 </div>
 
-                {/* Submit Action */}
                 <div className="pt-4">
                     <button
                         type="submit"
