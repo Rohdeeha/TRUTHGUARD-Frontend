@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import DOMPurify from 'dompurify';
+import DOMPurify, { type Config as DOMPurifyConfig } from 'dompurify';
 
 export interface RichTextContentProps {
     /**
@@ -13,7 +13,7 @@ export interface RichTextContentProps {
     /**
      * Optional DOMPurify configuration options for custom sanitization rules.
      */
-    purifyConfig?: DOMPurify.Config;
+    purifyConfig?: DOMPurifyConfig;
     /**
      * Optional custom fallback React element when content is empty, null, or undefined.
      */
