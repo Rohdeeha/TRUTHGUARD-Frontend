@@ -60,6 +60,21 @@ export interface RichTextContentProps {
  * with DOMPurify protection against XSS and Tailwind Typography (`prose dark:prose-invert max-w-none text-main-theme`) styling.
  * Handles null/undefined, plain text strings, and HTML markup gracefully.
  */
+// Register hook once to strip inline color and background styles from rich text
+if (typeof window !== 'undefined' && DOMPurify && typeof DOMPurify.addHook === 'function') {
+    try {
+        DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+            if (node instanceof HTMLElement && node.hasAttribute('style')) {
+                node.style.removeProperty('color');
+                node.style.removeProperty('background-color');
+                node.style.removeProperty('background');
+            }
+        });
+    } catch {
+        // hook already registered or unsupported in environment
+    }
+}
+
 export const RichTextContent: React.FC<RichTextContentProps> = ({
     content,
     className = '',
@@ -77,7 +92,12 @@ export const RichTextContent: React.FC<RichTextContentProps> = ({
         if (!trimmed) return '';
         // If content has HTML tags, sanitize with DOMPurify
         if (hasHtmlMarkup) {
-            return DOMPurify.sanitize(trimmed, purifyConfig);
+            const config: DOMPurifyConfig = {
+                ADD_ATTR: ['target', 'rel'],
+                FORBID_TAGS: ['style'],
+                ...purifyConfig,
+            };
+            return DOMPurify.sanitize(trimmed, config);
         }
         return '';
     }, [trimmed, hasHtmlMarkup, purifyConfig]);

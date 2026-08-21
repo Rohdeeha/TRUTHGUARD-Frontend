@@ -94,3 +94,82 @@ body {
 .text-muted-theme {
     color: var(--text-muted);
 }
+
+/* ==========================================================================
+   High-Contrast Typography & Light/Dark Mode Prose Rules
+   ========================================================================== */
+
+/* Light Mode: Force pure black text across all rich-text and prose tags */
+html:not(.dark) .prose,
+html:not(.dark) .prose p,
+html:not(.dark) .prose span,
+html:not(.dark) .prose div,
+html:not(.dark) .prose li,
+html:not(.dark) .prose ul,
+html:not(.dark) .prose ol,
+html:not(.dark) .prose em,
+html:not(.dark) .prose blockquote,
+html:not(.dark) .prose td,
+html:not(.dark) .prose th,
+html:not(.dark) .prose figcaption {
+    color: #000000 !important;
+}
+
+html:not(.dark) .prose strong,
+html:not(.dark) .prose b,
+html:not(.dark) .prose h1,
+html:not(.dark) .prose h2,
+html:not(.dark) .prose h3,
+html:not(.dark) .prose h4,
+html:not(.dark) .prose h5,
+html:not(.dark) .prose h6 {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+html:not(.dark) .prose a {
+    color: #0e7490 !important; /* cyan-700 */
+    font-weight: 600 !important;
+    text-decoration: underline !important;
+}
+
+html:not(.dark) .prose a:hover {
+    color: #155e75 !important; /* cyan-800 */
+}
+
+/* Dark Mode: Ensure clean bright white/slate text for dark mode */
+.dark .prose,
+.dark .prose p,
+.dark .prose span,
+.dark .prose div,
+.dark .prose li,
+.dark .prose ul,
+.dark .prose ol,
+.dark .prose em,
+.dark .prose td,
+.dark .prose th,
+.dark .prose figcaption {
+    color: #f1f5f9 !important;
+}
+
+.dark .prose strong,
+.dark .prose b,
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.dark .prose a {
+    color: #22d3ee !important; /* cyan-400 */
+    font-weight: 600 !important;
+    text-decoration: underline !important;
+}
+
+.dark .prose a:hover {
+    color: #67e8f9 !important; /* cyan-300 */
+}
