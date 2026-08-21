@@ -1,5 +1,7 @@
 import React from 'react';
 import { Clock, MapPin, User } from 'lucide-react';
+import { ReportImage } from './ReportImage';
+import { getAbsoluteImageUrl } from '../utils/imageUrl';
 
 // 1. Updated Report Interface (Contract aligning with Django backend)
 export interface Report {
@@ -40,16 +42,19 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
         >
             {/* LEFT: Media Thumbnail */}
             <div className="w-full sm:w-40 h-28 flex-shrink-0 bg-subcard-theme rounded-lg overflow-hidden border border-theme relative">
-                {report.media_url || report.evidence_file ? (
-                    report.media_type === 'video' ? (
-                        <video src={report.media_url || report.evidence_file || ''} className="w-full h-full object-cover" />
-                    ) : (
-                        <img src={report.media_url || report.evidence_file || ''} alt={report.title} className="w-full h-full object-cover" />
-                    )
+                {report.media_type === 'video' && (report.media_url || report.evidence_file) ? (
+                    <video
+                        src={getAbsoluteImageUrl(report.media_url || report.evidence_file)}
+                        className="w-full h-full object-cover"
+                    />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-muted-theme font-semibold">
-                        No Media
-                    </div>
+                    <ReportImage
+                        report={report}
+                        alt={report.title}
+                        className="w-full h-full object-cover"
+                        wrapperClassName="w-full h-full"
+                        fallbackText="No Media"
+                    />
                 )}
             </div>
 

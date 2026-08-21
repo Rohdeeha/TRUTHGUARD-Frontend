@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
 import { RichTextContent } from '../components/RichTextContent';
+import { ReportImage } from '../components/ReportImage';
+import { getAbsoluteImageUrl } from '../utils/imageUrl';
 import { getDebunkedFeed } from '../services/api';
 
 // --- Types & Constants ---
@@ -149,26 +151,24 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
 
             {/* Image + Claim Box */}
             <div className="flex flex-row gap-3 sm:gap-4 items-stretch mt-1">
-                {report.media_url && (
-                    <div
-                        onClick={() => onSelect(report.id)}
-                        className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-subcard-theme rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
-                    >
-                        {report.media_type === 'video' ? (
-                            <div className="w-full h-full relative flex items-center justify-center bg-black">
-                                <video src={report.media_url} className="w-full h-full object-cover opacity-80" />
-                                <Play className="w-6 h-6 absolute text-white opacity-70" />
-                            </div>
-                        ) : (
-                            <img
-                                src={report.media_url}
-                                alt={report.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => { (e.target as HTMLElement).parentElement!.style.display = 'none'; }}
-                            />
-                        )}
-                    </div>
-                )}
+                <div
+                    onClick={() => onSelect(report.id)}
+                    className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-subcard-theme rounded-xl overflow-hidden border border-theme relative cursor-pointer group"
+                >
+                    {report.media_type === 'video' && report.media_url ? (
+                        <div className="w-full h-full relative flex items-center justify-center bg-black">
+                            <video src={getAbsoluteImageUrl(report.media_url)} className="w-full h-full object-cover opacity-80" />
+                            <Play className="w-6 h-6 absolute text-white opacity-70" />
+                        </div>
+                    ) : (
+                        <ReportImage
+                            src={report.media_url}
+                            alt={report.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            wrapperClassName="w-full h-full"
+                        />
+                    )}
+                </div>
 
                 <div className="flex-1 bg-subcard-theme rounded-xl p-3 sm:p-4 border border-theme flex flex-col justify-center">
                     <span className="text-muted-theme font-bold text-xs mb-1 block">
@@ -225,15 +225,18 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     )}
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-main-theme leading-tight">{report.title}</h1>
-                {report.media_url && (
-                    <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-subcard-theme flex items-center justify-center">
-                        {report.media_type === 'video' ? (
-                            <video src={report.media_url} controls className="w-full max-h-96 object-contain" />
-                        ) : (
-                            <img src={report.media_url} alt={report.title} className="w-full max-h-96 object-contain" />
-                        )}
-                    </div>
-                )}
+                <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-subcard-theme flex items-center justify-center">
+                    {report.media_type === 'video' && report.media_url ? (
+                        <video src={getAbsoluteImageUrl(report.media_url)} controls className="w-full max-h-96 object-contain" />
+                    ) : (
+                        <ReportImage
+                            src={report.media_url}
+                            alt={report.title}
+                            className="w-full max-h-96 object-contain rounded-lg"
+                            wrapperClassName="w-full flex items-center justify-center"
+                        />
+                    )}
+                </div>
                 {report.claim && (
                     <div className="bg-subcard-theme rounded-xl p-4 border border-theme">
                         <p className="text-sm text-main-theme">

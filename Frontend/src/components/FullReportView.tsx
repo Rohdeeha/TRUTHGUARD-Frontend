@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { RichTextContent } from './RichTextContent';
+import { ReportImage } from './ReportImage';
+import { getAbsoluteImageUrl } from '../utils/imageUrl';
 
 // Updated interface supporting media uploads & metadata
 interface Report {
@@ -22,6 +24,9 @@ interface Report {
     category?: string;
     location?: string;
     media_url?: string;
+    image?: string;
+    evidence_file?: string | null;
+    evidence_links?: string;
     media_type?: 'image' | 'video' | 'audio' | string;
     created_at: string;
 }
@@ -106,39 +111,31 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             <article className="bg-card-theme border border-theme rounded-2xl overflow-hidden shadow-xl">
 
                 {/* 1. Featured Media Hero Banner (Image/Video) */}
-                {report.media_url ? (
-                    <div className="relative w-full max-h-[420px] bg-subcard-theme overflow-hidden border-b border-theme">
-                        {report.media_type === 'video' ? (
-                            <video
-                                src={report.media_url}
-                                controls
-                                className="w-full max-h-[420px] object-contain mx-auto"
-                            />
-                        ) : (
-                            <img
-                                src={report.media_url}
-                                alt={report.title}
-                                className="w-full h-full object-cover max-h-[420px]"
-                            />
-                        )}
+                <div className="relative w-full max-h-[420px] bg-subcard-theme overflow-hidden border-b border-theme flex items-center justify-center">
+                    {report.media_type === 'video' && (report.media_url || report.evidence_file) ? (
+                        <video
+                            src={getAbsoluteImageUrl(report.media_url || report.evidence_file)}
+                            controls
+                            className="w-full max-h-[420px] object-contain mx-auto"
+                        />
+                    ) : (
+                        <ReportImage
+                            report={report}
+                            alt={report.title}
+                            className="w-full h-full object-cover max-h-[420px]"
+                            wrapperClassName="w-full h-full flex items-center justify-center"
+                            fallbackText="No Media Evidence Attached"
+                        />
+                    )}
 
-                        {/* Status Overlay Badge on Media */}
-                        <div className="absolute top-4 left-4">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-black backdrop-blur-md ${statusInfo.color}`}>
-                                <StatusIcon className="w-4 h-4" />
-                                {statusInfo.label}
-                            </span>
-                        </div>
+                    {/* Status Overlay Badge on Media */}
+                    <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-black backdrop-blur-md ${statusInfo.color}`}>
+                            <StatusIcon className="w-4 h-4" />
+                            {statusInfo.label}
+                        </span>
                     </div>
-                ) : (
-                    /* Fallback when no media exists */
-                    <div className="w-full h-32 bg-subcard-theme flex items-center justify-center text-muted-theme border-b border-theme">
-                        <div className="flex items-center gap-2 text-sm font-semibold opacity-60">
-                            <ImageIcon className="w-5 h-5" />
-                            <span>No Media Evidence Attached</span>
-                        </div>
-                    </div>
-                )}
+                </div>
 
                 {/* 2. Article Body & Metadata */}
                 <div className="p-6 sm:p-8">
