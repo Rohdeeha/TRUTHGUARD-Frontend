@@ -10,6 +10,7 @@ import {
     Image as ImageIcon
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { RichTextContent } from './RichTextContent';
 
 // Updated interface supporting media uploads & metadata
 interface Report {
@@ -183,9 +184,11 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         <h2 className="text-lg font-bold text-main-theme border-b border-theme pb-2">
                             Fact-Check Findings & Analysis
                         </h2>
-                        <div className="prose prose-invert max-w-none text-main-theme leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
-                            {report.summary}
-                        </div>
+                        <RichTextContent
+                            content={report.summary}
+                            className="text-base sm:text-lg"
+                            fallbackText="No analysis details provided for this report."
+                        />
                     </div>
 
                     {/* Share Action Bar */}

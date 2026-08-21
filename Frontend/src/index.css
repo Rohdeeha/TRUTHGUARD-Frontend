@@ -3,6 +3,7 @@
 
 /* Initialize Tailwind v4 */
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
     /* 2. Override Tailwind's default sans font with Poppins */

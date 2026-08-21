@@ -16,6 +16,7 @@ import {
     Play
 } from 'lucide-react';
 import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
+import { RichTextContent } from '../components/RichTextContent';
 import { getDebunkedFeed } from '../services/api';
 
 // --- Types & Constants ---
@@ -242,7 +243,11 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     </div>
                 )}
                 <div className="border-t border-theme pt-6">
-                    <p className="text-main-theme leading-relaxed text-base whitespace-pre-wrap">{report.summary || report.content}</p>
+                    <RichTextContent
+                        content={report.summary || report.content}
+                        className="text-base"
+                        fallbackText="No analysis content available for this report."
+                    />
                 </div>
                 <div className="pt-4 border-t border-theme flex justify-end">
                     <button onClick={() => onShare(report)} disabled={isGeneratingCard} className="text-muted-theme hover:text-main-theme text-xs font-bold flex items-center gap-2 bg-subcard-theme px-4 py-2 rounded-xl border border-theme cursor-pointer disabled:opacity-50 transition-colors">
