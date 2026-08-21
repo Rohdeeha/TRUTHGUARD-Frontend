@@ -5,6 +5,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Configure Tailwind v4 to use class-based dark mode instead of OS media queries */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     /* 2. Override Tailwind's default sans font with Poppins */
     --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -24,15 +27,15 @@
     --color-status-dismissed: #6B7280;
 }
 
-/* Light Theme Variables (Default - Unchanged) */
+/* Light Theme Variables */
 :root {
     color-scheme: light;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-input: #f1f5f9;
     --bg-subcard: #f1f5f9;
-    --text-primary: #0f172a;
-    --text-muted: #64748b;
+    --text-primary: #000000;
+    --text-muted: #334155;
     --border-color: #e2e8f0;
 }
 
@@ -100,6 +103,23 @@ body {
    ========================================================================== */
 
 /* Light Mode: Force pure black text across all rich-text and prose tags */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6 {
+    color: #000000 !important;
+}
+
+html:not(.dark) .text-main-theme {
+    color: #000000 !important;
+}
+
+html:not(.dark) .text-muted-theme {
+    color: #1e293b !important;
+}
+
 html:not(.dark) .prose,
 html:not(.dark) .prose p,
 html:not(.dark) .prose span,
