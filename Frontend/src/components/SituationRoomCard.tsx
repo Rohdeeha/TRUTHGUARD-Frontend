@@ -2,6 +2,7 @@ import React from 'react';
 import { Clock, MapPin, User } from 'lucide-react';
 import { ReportImage } from './ReportImage';
 import { getAbsoluteImageUrl } from '../utils/imageUrl';
+import { stripHtml } from './RichTextContent';
 
 // 1. Updated Report Interface (Contract aligning with Django backend)
 export interface Report {
@@ -72,7 +73,7 @@ export const SituationRoomCard: React.FC<{ report: Report; onClick?: () => void 
                         )}
                     </div>
                     <p className="text-xs sm:text-sm text-muted-theme mt-1 line-clamp-2">
-                        {report.summary || report.claim || report.description || report.details}
+                        {stripHtml(report.summary || report.claim || report.description || report.details)}
                     </p>
                 </div>
 

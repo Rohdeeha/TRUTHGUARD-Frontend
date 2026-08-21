@@ -16,7 +16,7 @@ import {
     Play
 } from 'lucide-react';
 import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
-import { RichTextContent } from '../components/RichTextContent';
+import { RichTextContent, stripHtml } from '../components/RichTextContent';
 import { ReportImage } from '../components/ReportImage';
 import { getAbsoluteImageUrl } from '../utils/imageUrl';
 import { getDebunkedFeed } from '../services/api';
@@ -175,7 +175,7 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
                         Claim Under Review:
                     </span>
                     <p className="text-xs sm:text-sm text-main-theme leading-relaxed line-clamp-3">
-                        {claimText}
+                        {stripHtml(claimText)}
                     </p>
                 </div>
             </div>
@@ -239,10 +239,12 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 </div>
                 {report.claim && (
                     <div className="bg-subcard-theme rounded-xl p-4 border border-theme">
-                        <p className="text-sm text-main-theme">
-                            <strong className="text-muted-theme font-bold text-xs block mb-1">CLAIM:</strong>
-                            "{report.claim}"
-                        </p>
+                        <strong className="text-muted-theme font-bold text-xs block mb-2">CLAIM UNDER REVIEW:</strong>
+                        <RichTextContent
+                            content={report.claim}
+                            className="text-sm italic"
+                            fallbackText="No claim statement provided."
+                        />
                     </div>
                 )}
                 <div className="border-t border-theme pt-6">

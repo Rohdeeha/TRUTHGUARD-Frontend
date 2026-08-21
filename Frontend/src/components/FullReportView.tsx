@@ -6,8 +6,7 @@ import {
     XCircle,
     AlertTriangle,
     Clock,
-    MapPin,
-    Image as ImageIcon
+    MapPin
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { RichTextContent } from './RichTextContent';
@@ -168,12 +167,14 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
                     {/* Highlighted Claim Box */}
                     <div className="bg-subcard-theme p-4 sm:p-5 rounded-xl border border-theme mb-8">
-                        <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-1">
+                        <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-2">
                             Claim Under Review:
                         </span>
-                        <p className="text-main-theme text-base italic font-medium leading-relaxed">
-                            "{report.claim}"
-                        </p>
+                        <RichTextContent
+                            content={report.claim}
+                            className="text-base italic font-medium"
+                            fallbackText="No claim statement provided."
+                        />
                     </div>
 
                     {/* Main Fact-Check Analysis Content */}
