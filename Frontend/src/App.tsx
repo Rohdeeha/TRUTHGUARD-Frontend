@@ -76,7 +76,7 @@ export default function App() {
     return (
         <div className="min-h-screen bg-app text-main-theme flex flex-col font-sans transition-colors duration-200">
             {/* Header / Navbar */}
-            <header className="border-b border-theme bg-card-theme sticky top-0 z-50 transition-colors duration-200">
+            <header className="border-b border-theme bg-card-theme sticky top-0 z-50 transition-colors duration-200 relative">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
 
                     {/* Logo / Brand */}
