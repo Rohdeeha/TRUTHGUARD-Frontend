@@ -35,23 +35,29 @@ export const ReportPage: React.FC<SubmitClaimFormProps> = ({ onSubmitReport }) =
         setIsSubmitting(true);
 
         try {
-            // Trigger the parent function if it was passed in
             if (onSubmitReport) {
                 await onSubmitReport(formData);
             } else {
-                // Submit to backend
+                // ✅ NEW PAYLOAD (Matches backend Incident model)
                 await submitReport({
-                    title: formData.statement,
-                    details: `Who said it: ${formData.whoSaidIt || 'Unknown'}\nWhere/When: ${formData.whenAndWhere || 'Unknown'}\nEvidence: ${formData.evidenceLinks || 'None'}\nContact Name: ${formData.contactName || 'Anonymous'}\nContact Email: ${formData.contactEmail || 'N/A'}`,
-                    category: 'DISINFORMATION',
+                    claim: formData.statement,
+                    who_said_it: formData.whoSaidIt || 'Unknown',
+                    where_and_when: formData.whenAndWhere || 'Unknown',
+                    evidence_links: formData.evidenceLinks || '',
                     location: formData.whenAndWhere || 'Osun State',
+                    category: 'DISINFORMATION',
                     is_anonymous: !formData.contactName && !formData.contactEmail,
                 });
             }
 
             setIsSuccess(true);
             setFormData({
-                statement: '', whoSaidIt: '', whenAndWhere: '', evidenceLinks: '', contactName: '', contactEmail: ''
+                statement: '',
+                whoSaidIt: '',
+                whenAndWhere: '',
+                evidenceLinks: '',
+                contactName: '',
+                contactEmail: '',
             });
         } catch (error) {
             console.error("Failed to submit fact-check:", error);

@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 import { Save, PlusCircle, RefreshCw, Trash2, X } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
+
 export interface AdminFormState {
   id?: number | string;
-  title: string;
   claim: string;
-  description: string;
+  who_said_it: string;
+  where_and_when: string;
+  evidence_links: string;
   category: string;
   status: string;
   location: string;
-  is_eligible: boolean;
   is_anonymous: boolean;
+  is_tfgbv: boolean;
   evidence_file: File | string | null;
-  reporter: string;
 }
 
 const initialFormState: AdminFormState = {
-  title: '',
   claim: '',
-  description: '',
-  category: 'Disinformation',
-  status: 'Pending',
+  who_said_it: '',
+  where_and_when: '',
+  evidence_links: '',
+  category: 'DISINFORMATION',
+  status: 'PENDING',
   location: '',
-  is_eligible: true,
   is_anonymous: false,
+  is_tfgbv: false,
   evidence_file: null,
-  reporter: '',
 };
 
 export interface AdminFormProps {
@@ -75,12 +77,12 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       }
     });
 
-    const token = localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
+    const token = localStorage.getItem('access_token') || localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     const url = data.id
-      ? `https://truthguard-api-sut7.onrender.com/api/incidents/${data.id}/`
-      : `https://truthguard-api-sut7.onrender.com/api/incidents/`;
+      ? `${API_BASE_URL}/incidents/${data.id}/`
+      : `${API_BASE_URL}/incidents/`;
 
     const method = data.id ? 'PUT' : 'POST';
 
@@ -163,11 +165,11 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
+      const token = localStorage.getItem('access_token') || localStorage.getItem('fact_checker_token') || sessionStorage.getItem('truthguard_admin_token');
       const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
       const res = await fetch(
-        `https://truthguard-api-sut7.onrender.com/api/incidents/${formData.id}/`,
+        `${API_BASE_URL}/incidents/${formData.id}/`,
         { method: 'DELETE', headers }
       );
       if (!res.ok) throw new Error('Failed to delete incident.');
@@ -206,41 +208,57 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
       )}
 
       <form onSubmit={handleSave} className="space-y-4">
-        {/* Title & Claim */}
+        {/* Claim & Who Said It */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-main-theme mb-1">Title *</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
+            <label className="block text-xs font-semibold text-main-theme mb-1">Claim *</label>
+            <textarea
+              name="claim"
+              rows={2}
+              value={formData.claim}
               onChange={handleChange}
               required
+              placeholder="What is the false claim or rumor?"
               className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-main-theme mb-1">Claim</label>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Who Said It</label>
             <input
               type="text"
-              name="claim"
-              value={formData.claim}
+              name="who_said_it"
+              value={formData.who_said_it}
               onChange={handleChange}
+              placeholder="Source, handle, or handle name"
               className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
             />
           </div>
         </div>
 
-        {/* Description */}
-        <div>
-          <label className="block text-xs font-semibold text-main-theme mb-1">Description</label>
-          <textarea
-            name="description"
-            rows={3}
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
-          />
+        {/* Where & When & Evidence Links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Where and When</label>
+            <input
+              type="text"
+              name="where_and_when"
+              value={formData.where_and_when}
+              onChange={handleChange}
+              placeholder="e.g. Polling Unit 004, Osogbo / Yesterday"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-main-theme mb-1">Evidence Links</label>
+            <input
+              type="text"
+              name="evidence_links"
+              value={formData.evidence_links}
+              onChange={handleChange}
+              placeholder="Comma-separated URLs"
+              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
+            />
+          </div>
         </div>
 
         {/* Category, Status, Location */}
@@ -253,11 +271,11 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               onChange={handleChange}
               className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE]"
             >
-              <option value="Disinformation">Disinformation</option>
-              <option value="Voter Suppression">Voter Suppression</option>
-              <option value="Hate Speech">Hate Speech</option>
-              <option value="Electoral Violence">Electoral Violence</option>
-              <option value="General Rumor">General Rumor</option>
+              <option value="DISINFORMATION">Disinformation</option>
+              <option value="VOTER_SUPPRESSION">Voter Suppression</option>
+              <option value="HATE_SPEECH">Hate Speech</option>
+              <option value="ELECTORAL_VIOLENCE">Electoral Violence</option>
+              <option value="GENERAL_RUMOR">General Rumor</option>
             </select>
           </div>
 
@@ -269,10 +287,11 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               onChange={handleChange}
               className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE]"
             >
-              <option value="Pending">Pending</option>
-              <option value="Under Review">Under Review</option>
-              <option value="Verified">Verified</option>
-              <option value="Debunked">Debunked</option>
+              <option value="PENDING">Pending</option>
+              <option value="UNDER_REVIEW">Under Review</option>
+              <option value="VERIFIED">Verified</option>
+              <option value="FALSE">False</option>
+              <option value="MISLEADING">Misleading</option>
             </select>
           </div>
 
@@ -289,43 +308,18 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
           </div>
         </div>
 
-        {/* Reporter & Evidence File */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-main-theme mb-1">Reporter / Author</label>
-            <input
-              type="text"
-              name="reporter"
-              value={formData.reporter}
-              onChange={handleChange}
-              placeholder="Author name or ID"
-              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-2 text-sm text-main-theme focus:outline-none focus:border-[#1CB5BE] placeholder:text-muted-theme"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-main-theme mb-1">Evidence File / Media</label>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="w-full bg-input-theme border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-[#061528] file:font-bold hover:file:bg-[#1CB5BE]/80 cursor-pointer"
-            />
-          </div>
+        {/* Evidence File Upload */}
+        <div>
+          <label className="block text-xs font-semibold text-main-theme mb-1">Evidence File / Media</label>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="w-full bg-input-theme border border-theme rounded-lg px-3 py-1.5 text-xs text-muted-theme file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-[#1CB5BE] file:text-[#061528] file:font-bold hover:file:bg-[#1CB5BE]/80 cursor-pointer"
+          />
         </div>
 
         {/* Checkboxes */}
         <div className="flex items-center gap-6 pt-2">
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
-            <input
-              type="checkbox"
-              name="is_eligible"
-              checked={formData.is_eligible}
-              onChange={handleChange}
-              className="rounded bg-input-theme border-theme text-[#1CB5BE] focus:ring-0"
-            />
-            Is Eligible
-          </label>
-
           <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
             <input
               type="checkbox"
@@ -335,6 +329,17 @@ export const SituationRoomAdminForm: React.FC<AdminFormProps> = ({
               className="rounded bg-input-theme border-theme text-[#1CB5BE] focus:ring-0"
             />
             Is Anonymous
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-main-theme">
+            <input
+              type="checkbox"
+              name="is_tfgbv"
+              checked={formData.is_tfgbv}
+              onChange={handleChange}
+              className="rounded bg-input-theme border-theme text-[#1CB5BE] focus:ring-0"
+            />
+            Is TFGBV (Technology-Facilitated Gender-Based Violence)
           </label>
         </div>
 

@@ -1,22 +1,6 @@
 // src/services/api.ts
 
-export interface DashboardReport {
-    id: string | number;
-    title?: string;
-    summary?: string;
-    status?: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING';
-    verdict?: string;
-    location?: string;
-    category?: string;
-    reporter?: string | number;
-    author_name?: string;
-    is_anonymous?: boolean;
-    created_at?: string;
-    translations?: Record<string, any>;
-    [key: string]: any;
-}
-
-// Updated to match the new Django Payload fields
+// 1. Updated to match the new Incident model Payload fields
 export interface IncidentReport {
     id?: string | number;
     claim?: string;
@@ -24,11 +8,27 @@ export interface IncidentReport {
     where_and_when?: string;
     location?: string;
     category?: string;
+    status?: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING';
     is_anonymous?: boolean;
     is_tfgbv?: boolean;
-    evidence_file?: File | null;
-    media_url?: string | null;
+    evidence_file?: File | string | null; // Can be a File object for upload, or a string URL from backend
     created_at?: string;
+}
+
+// 2. NEW: Interface mapping to the new FactCheckArticle model for the public feed
+export interface FactCheckArticle {
+    id: string | number;
+    title?: string;
+    content?: string;
+    verdict?: string;
+    cover_image?: string | null;
+    created_at?: string;
+    fact_checker?: {
+        id: number;
+        first_name: string;
+        last_name: string;
+    };
+    incident_details?: IncidentReport; // The original citizen report is now nested here!
 }
 
 export interface PaginatedResponse<T> {
@@ -41,12 +41,8 @@ export interface PaginatedResponse<T> {
 // Ensure your VITE_API_BASE_URL in your .env file ends with /api (e.g. http://localhost:8000/api)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://truthguard-api-sut7.onrender.com/api';
 
-// Cache key identifier for localStorage
-const DEBUNKED_FEED_CACHE_KEY = 'truthguard_cached_debunked_feed';
-
-// Helper to get stored auth token (Updated to check for standard 'access_token' first)
+// Helper to get stored auth token
 const getAuthHeader = (tokenKey = 'access_token'): Record<string, string> => {
-    // If you explicitly pass fact_checker_token, it looks for that, otherwise defaults to access_token
     const token = localStorage.getItem(tokenKey) || localStorage.getItem('access_token');
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
@@ -70,33 +66,31 @@ const handleResponse = async (res: Response, fallbackMessage: string) => {
         }
         throw new Error(errorMessage);
     }
-    // Return null on 204 No Content to avoid JSON parse errors
     if (res.status === 204) return null;
     return res.json();
 };
 
-// --- Initial Mock Data (Fallback) ---
-const MOCK_DEBUNKED_FALLBACK: PaginatedResponse<DashboardReport> = {
-    count: 2,
+// --- Updated Mock Data (Fallback) ---
+const MOCK_DEBUNKED_FALLBACK: PaginatedResponse<FactCheckArticle> = {
+    count: 1,
     next: null,
     previous: null,
     results: [
         {
             id: 101,
-            title: "Alleged Voter Suppression at Polling Unit 004",
-            summary: "Reports indicate voting materials arrived late and polling officials closed lines prematurely.",
-            status: "PENDING",
-            verdict: "UNDER REVIEW",
-            location: "Osogbo, Osun State",
-            category: "Voter Suppression",
-            author_name: "Adeyemi John",
-            reporter: "Observer_01",
-            is_anonymous: false,
-            created_at: new Date().toISOString()
+            title: "No, Voting Materials Did Not Arrive Late at Unit 004",
+            content: "<p>Our investigation shows polling started exactly on time.</p>",
+            verdict: "FALSE",
+            created_at: new Date().toISOString(),
+            incident_details: {
+                claim: "Voting materials arrived late and polling officials closed lines prematurely.",
+                who_said_it: "Anonymous User on X",
+                where_and_when: "Yesterday, Osogbo",
+                category: "Voter Suppression"
+            }
         }
     ]
 };
-
 
 // ==========================================
 // 1. CITIZEN-FACING ENDPOINTS (PUBLIC)
@@ -104,7 +98,6 @@ const MOCK_DEBUNKED_FALLBACK: PaginatedResponse<DashboardReport> = {
 
 export const submitReport = async (data: FormData | Record<string, any>) => {
     const isFormData = data instanceof FormData;
-    // Updated endpoint: /api/report/
     const res = await fetch(`${API_BASE_URL}/report/`, {
         method: 'POST',
         headers: isFormData ? {} : { 'Content-Type': 'application/json' },
@@ -114,36 +107,31 @@ export const submitReport = async (data: FormData | Record<string, any>) => {
     return handleResponse(res, 'Failed to submit report');
 };
 
-
 // ==========================================
 // 2. PUBLIC VISITOR FEED
 // ==========================================
 
-export const getDebunkedFeed = async (page = 1, limit = 10): Promise<PaginatedResponse<DashboardReport>> => {
+// Switched to FactCheckArticle type and fixed pagination param (page_size)
+export const getDebunkedFeed = async (page = 1, limit = 10): Promise<PaginatedResponse<FactCheckArticle>> => {
     try {
-        // Updated endpoint: /api/feed/fact-checks/
-        const res = await fetch(`${API_BASE_URL}/feed/fact-checks/?page=${page}&limit=${limit}`);
+        // FIX: Changed limit= to page_size= so Django actually paginates it
+        const res = await fetch(`${API_BASE_URL}/feed/fact-checks/?page=${page}&page_size=${limit}`);
 
         if (!res.ok) throw new Error(`Server returned status code ${res.status}`);
 
         const data = await res.json();
-        const formattedData: PaginatedResponse<DashboardReport> = Array.isArray(data)
+
+        // Return structured data immediately instead of caching to localStorage 
+        // (prevents stale bug when the backend updates)
+        return Array.isArray(data)
             ? { count: data.length, next: null, previous: null, results: data }
             : data;
 
-        localStorage.setItem(DEBUNKED_FEED_CACHE_KEY, JSON.stringify(formattedData));
-        return formattedData;
     } catch (error) {
-        console.warn("Backend 500 error or offline detected. Attempting cache fallback:", error);
-        const cachedFeed = localStorage.getItem(DEBUNKED_FEED_CACHE_KEY);
-        if (cachedFeed) {
-            try { return JSON.parse(cachedFeed); }
-            catch (parseError) { console.error("Parse error:", parseError); }
-        }
+        console.warn("Backend 500 error or offline detected. Attempting fallback:", error);
         return MOCK_DEBUNKED_FALLBACK;
     }
 };
-
 
 // ==========================================
 // 3. INTERNAL SITUATION ROOM & TRIAGE (AUTH REQUIRED)
@@ -156,7 +144,6 @@ export const getTriageQueue = async (params: { search?: string; status?: string;
     if (params.is_tfgbv) query.append('is_tfgbv', 'true');
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
-    // Updated endpoint: /api/triage/
     const res = await fetch(`${API_BASE_URL}/triage/${queryString}`, {
         headers: getAuthHeader(),
     });
@@ -172,7 +159,6 @@ export const updateTicketStatus = async (
     id: string | number,
     data: { status?: 'VERIFIED' | 'FALSE' | 'MISLEADING' | 'PENDING'; is_tfgbv?: boolean }
 ) => {
-    // Updated endpoint: /api/triage/<id>/update/
     const res = await fetch(`${API_BASE_URL}/triage/${id}/update/`, {
         method: 'PATCH',
         headers: {
@@ -186,7 +172,6 @@ export const updateTicketStatus = async (
 };
 
 export const getTFGBVQueue = async () => {
-    // Updated endpoint: /api/tfgbv/queue/
     const res = await fetch(`${API_BASE_URL}/tfgbv/queue/`, {
         headers: getAuthHeader(),
     });
@@ -202,7 +187,6 @@ export const getSocialListeningFeed = async (params: { platform?: string; sentim
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
 
-    // Updated endpoint: /api/social-listening/
     const res = await fetch(`${API_BASE_URL}/social-listening/${queryString}`, {
         headers: getAuthHeader(),
     });
@@ -210,13 +194,11 @@ export const getSocialListeningFeed = async (params: { platform?: string; sentim
     return handleResponse(res, 'Failed to fetch social listening feed');
 };
 
-
 // ==========================================
 // 4. TOOLS & ANALYTICS (AUTH REQUIRED)
 // ==========================================
 
 export const getAnalyticsData = async () => {
-    // Updated endpoint: /api/analytics/
     const res = await fetch(`${API_BASE_URL}/analytics/`, {
         headers: getAuthHeader(),
     });
@@ -225,7 +207,6 @@ export const getAnalyticsData = async () => {
 };
 
 export const generateCloudinaryCard = async (claim: string, fact: string) => {
-    // Updated endpoint: /api/generate-card/
     const res = await fetch(`${API_BASE_URL}/generate-card/`, {
         method: 'POST',
         headers: {
@@ -238,13 +219,11 @@ export const generateCloudinaryCard = async (claim: string, fact: string) => {
     return handleResponse(res, 'Failed to generate Cloudinary card');
 };
 
-
 // ==========================================
 // 5. AUTHENTICATION (NEW)
 // ==========================================
 
 export const loginUser = async (credentials: Record<string, any>) => {
-    // New endpoint: /api/token/
     const res = await fetch(`${API_BASE_URL}/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -253,7 +232,6 @@ export const loginUser = async (credentials: Record<string, any>) => {
 
     const data = await handleResponse(res, 'Invalid credentials');
 
-    // Automatically save standard DRF SimpleJWT tokens
     if (data?.access) {
         localStorage.setItem('access_token', data.access);
         if (data.refresh) localStorage.setItem('refresh_token', data.refresh);
@@ -266,7 +244,6 @@ export const refreshAuthToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) throw new Error("No refresh token available");
 
-    // New endpoint: /api/token/refresh/
     const res = await fetch(`${API_BASE_URL}/token/refresh/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -281,7 +258,6 @@ export const refreshAuthToken = async () => {
     return data;
 };
 
-// Logout helper
 export const logoutUser = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
