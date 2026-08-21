@@ -165,14 +165,14 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         {report.title}
                     </h1>
 
-                    {/* Highlighted Claim Box */}
-                    <div className="bg-subcard-theme p-4 sm:p-5 rounded-xl border border-theme mb-8">
-                        <span className="text-[#E55322] font-bold text-xs uppercase tracking-wider block mb-2">
+                    {/* Highlighted Claim / Quote Box */}
+                    <div className="bg-slate-100/70 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme my-6 shadow-sm">
+                        <span className="text-[#E05A2B] font-bold text-xs uppercase tracking-wider block mb-2">
                             Claim Under Review:
                         </span>
                         <RichTextContent
                             content={report.claim}
-                            className="text-base italic font-medium"
+                            className="text-base sm:text-lg italic font-medium text-slate-900 dark:text-main-theme"
                             fallbackText="No claim statement provided."
                         />
                     </div>

@@ -238,11 +238,13 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     )}
                 </div>
                 {report.claim && (
-                    <div className="bg-subcard-theme rounded-xl p-4 border border-theme">
-                        <strong className="text-muted-theme font-bold text-xs block mb-2">CLAIM UNDER REVIEW:</strong>
+                    <div className="bg-slate-100/70 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme my-4 shadow-sm">
+                        <strong className="text-[#E05A2B] font-bold text-xs uppercase tracking-wider block mb-2">
+                            CLAIM UNDER REVIEW:
+                        </strong>
                         <RichTextContent
                             content={report.claim}
-                            className="text-sm italic"
+                            className="text-sm sm:text-base italic font-medium text-slate-900 dark:text-main-theme"
                             fallbackText="No claim statement provided."
                         />
                     </div>
