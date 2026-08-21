@@ -3,6 +3,7 @@
  */
 
 export interface ReportImageSource {
+    featured_image_url?: string | null;
     evidence_file?: string | File | null;
     image?: string | null;
     media_url?: string | null;
@@ -52,7 +53,7 @@ export function getAbsoluteImageUrl(path?: string | File | null): string {
 
 /**
  * Extracts and resolves the primary image URL from an API report/incident payload,
- * checking multiple common payload fields (evidence_file, image, media_url, cover_image, evidence_links).
+ * checking multiple common payload fields (featured_image_url, evidence_file, image, media_url, cover_image, evidence_links).
  */
 export function extractReportImageUrl(report?: ReportImageSource | string | null): string {
     if (!report) return '';
@@ -61,8 +62,9 @@ export function extractReportImageUrl(report?: ReportImageSource | string | null
         return getAbsoluteImageUrl(report);
     }
 
-    // 1. Direct image / media fields
+    // 1. Direct image / media fields in priority order
     const directCandidates = [
+        report.featured_image_url,
         report.evidence_file,
         report.image,
         report.media_url,

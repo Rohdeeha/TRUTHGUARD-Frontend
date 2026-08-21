@@ -56,7 +56,7 @@ export const ReportImage: React.FC<ReportImageProps> = ({
     src,
     report,
     alt = 'Incident Media',
-    className = 'object-cover w-full h-auto rounded-lg',
+    className = 'object-cover w-full h-full rounded-2xl shadow-lg border border-theme hover:scale-[1.01] transition-transform duration-200',
     wrapperClassName = '',
     fallback,
     fallbackText = 'No Media Attached',
@@ -95,16 +95,16 @@ export const ReportImage: React.FC<ReportImageProps> = ({
 
         return (
             <div
-                className={`w-full min-h-32 bg-subcard-theme border border-theme rounded-lg flex flex-col items-center justify-center p-4 text-muted-theme ${wrapperClassName}`.trim()}
+                className={`w-full min-h-48 sm:min-h-64 bg-subcard-theme border border-theme rounded-2xl flex flex-col items-center justify-center p-6 text-muted-theme shadow-md ${wrapperClassName}`.trim()}
             >
                 {hasError ? (
-                    <div className="flex items-center gap-2 text-xs font-semibold text-rose-400">
-                        <AlertCircle className="w-4 h-4" />
+                    <div className="flex flex-col items-center gap-2 text-xs font-semibold text-rose-400">
+                        <AlertCircle className="w-6 h-6 opacity-80" />
                         <span>{errorText}</span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-theme opacity-70">
-                        <ImageIcon className="w-4 h-4" />
+                    <div className="flex flex-col items-center gap-2 text-xs font-semibold text-muted-theme opacity-70">
+                        <ImageIcon className="w-6 h-6 opacity-60" />
                         <span>{fallbackText}</span>
                     </div>
                 )}
