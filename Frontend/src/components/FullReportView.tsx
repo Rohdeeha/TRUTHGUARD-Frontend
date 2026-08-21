@@ -173,25 +173,25 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                 <div className="p-6 sm:p-8 pt-2">
 
                     {/* Author Byline, Category & Timestamps */}
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-theme mb-4 pb-4 border-b border-theme/60">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-700 dark:text-slate-300 mb-4 pb-4 border-b border-theme/60">
                         {report.category && (
                             <span className="bg-[#1CB5BE]/10 text-[#1CB5BE] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">
                                 {report.category}
                             </span>
                         )}
 
-                        <span className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                        <span className="flex items-center gap-1.5 font-bold text-black dark:text-slate-100">
                             <User className="w-3.5 h-3.5 text-[#1CB5BE]" />
                             By {authorName}
                         </span>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
                             <Clock className="w-3.5 h-3.5 text-muted-theme" />
                             <span>{getTimeAgo(report.created_at)}</span>
                         </div>
 
                         {report.location && (
-                            <div className="flex items-center gap-1 text-muted-theme">
+                            <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
                                 <MapPin className="w-3.5 h-3.5 text-[#E55322]" />
                                 <span>{report.location}</span>
                             </div>
@@ -199,20 +199,20 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                     </div>
 
                     {/* Headline Title */}
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-black dark:text-white mb-6 leading-tight">
                         {report.title}
                     </h1>
 
                     {/* Section 1: Claim */}
                     {report.claim && (
                         <div className="space-y-2">
-                            <h2 className="text-slate-900 dark:text-white font-bold text-lg mt-6 mb-2">
+                            <h2 className="text-black dark:text-white font-bold text-lg mt-6 mb-2">
                                 Claim:
                             </h2>
-                            <div className="bg-slate-100/80 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme shadow-sm">
+                            <div className="bg-slate-100 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme shadow-sm">
                                 <RichTextContent
                                     content={report.claim}
-                                    className="text-base sm:text-lg italic font-medium text-slate-900 dark:text-slate-100"
+                                    className="text-base sm:text-lg italic font-medium text-black dark:text-slate-100"
                                     fallbackText="No claim statement provided."
                                 />
                             </div>
@@ -221,7 +221,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
                     {/* Section 2: Verdict */}
                     <div className="mt-6 mb-4">
-                        <h2 className="text-slate-900 dark:text-white font-bold text-lg mb-2">
+                        <h2 className="text-black dark:text-white font-bold text-lg mb-2">
                             Verdict:
                         </h2>
                         <div className="inline-block">
@@ -234,12 +234,12 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
                     {/* Section 3: Verification & Full Text */}
                     <div className="space-y-4 pt-4 border-t border-theme/60 mt-6">
-                        <h2 className="text-slate-900 dark:text-white font-bold text-lg mb-2">
+                        <h2 className="text-black dark:text-white font-bold text-lg mb-2">
                             Verification & Full Text:
                         </h2>
                         <RichTextContent
                             content={bodyContent}
-                            className="text-base sm:text-lg text-slate-800 dark:text-slate-200"
+                            className="text-base sm:text-lg text-black dark:text-slate-100"
                             fallbackText="No analysis details provided for this report."
                         />
                     </div>

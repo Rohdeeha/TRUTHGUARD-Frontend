@@ -249,11 +249,11 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
             <div className="bg-card-theme border border-theme p-6 sm:p-8 rounded-2xl space-y-6 shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-theme/60 pb-4">
                     <div className="flex flex-wrap items-center gap-3">
-                        <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-black dark:text-slate-100">
                             <User className="w-3.5 h-3.5 text-[#1CB5BE]" />
                             By {authorName}
                         </span>
-                        <span className="text-xs text-muted-theme font-medium">{report.timestamp}</span>
+                        <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">{report.timestamp}</span>
                     </div>
                     {report.location && (
                         <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#E55322] bg-[#E55322]/10 border border-[#E55322]/20 px-3 py-1 rounded-lg">
@@ -263,7 +263,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                <h1 className="text-2xl sm:text-3xl font-black text-black dark:text-white leading-tight">
                     {report.title}
                 </h1>
 
@@ -286,13 +286,13 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 {/* Claim Section */}
                 {report.claim && (
                     <div className="space-y-2">
-                        <h2 className="text-slate-900 dark:text-white font-bold text-lg mt-6 mb-2">
+                        <h2 className="text-black dark:text-white font-bold text-lg mt-6 mb-2">
                             Claim:
                         </h2>
-                        <div className="bg-slate-100/80 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme shadow-sm">
+                        <div className="bg-slate-100 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme shadow-sm">
                             <RichTextContent
                                 content={report.claim}
-                                className="text-sm sm:text-base italic font-medium text-slate-900 dark:text-slate-100"
+                                className="text-sm sm:text-base italic font-medium text-black dark:text-slate-100"
                                 fallbackText="No claim statement provided."
                             />
                         </div>
@@ -301,7 +301,7 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
 
                 {/* Verdict Section */}
                 <div className="mt-6 mb-4">
-                    <h2 className="text-slate-900 dark:text-white font-bold text-lg mb-2">
+                    <h2 className="text-black dark:text-white font-bold text-lg mb-2">
                         Verdict:
                     </h2>
                     <div className="inline-block">
@@ -313,12 +313,12 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
 
                 {/* Verification & Full Text Section */}
                 <div className="space-y-4 pt-4 border-t border-theme/60 mt-6">
-                    <h2 className="text-slate-900 dark:text-white font-bold text-lg mb-2">
+                    <h2 className="text-black dark:text-white font-bold text-lg mb-2">
                         Verification & Full Text:
                     </h2>
                     <RichTextContent
                         content={bodyContent}
-                        className="text-base sm:text-lg text-slate-800 dark:text-slate-200"
+                        className="text-base sm:text-lg text-black dark:text-slate-100"
                         fallbackText="No analysis content available for this report."
                     />
                 </div>
