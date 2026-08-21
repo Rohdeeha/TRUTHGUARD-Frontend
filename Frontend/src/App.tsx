@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, FileText, LayoutDashboard, LogOut, Sun, Moon } from 'lucide-react';
+import { Shield, FileText, LayoutDashboard, LogOut, Sun, Moon, Menu, X } from 'lucide-react';
 import HomePage from './pages/Homepage';
 import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
@@ -9,6 +9,7 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<'home' | 'report' | 'dashboard'>('home');
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [isAdminMode, setIsAdminMode] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // --- NEW: Theme State ---
     const [isDark, setIsDark] = useState(() => {
@@ -81,7 +82,10 @@ export default function App() {
                     {/* Logo / Brand */}
                     <div
                         className="flex items-center gap-3 cursor-pointer shrink-0 py-1"
-                        onClick={() => handleTabClick('home')}
+                        onClick={() => {
+                            handleTabClick('home');
+                            setIsMobileMenuOpen(false);
+                        }}
                     >
                         <img
                             src="/truthguard.jpeg"
@@ -99,8 +103,8 @@ export default function App() {
                         </div>
                     </div>
 
-                    {/* Navigation Controls */}
-                    <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
+                    {/* 1. Desktop Navigation (Tablet/Desktop 768px+) */}
+                    <div className="hidden md:flex items-center gap-3">
                         <nav className="flex items-center gap-1.5 bg-subcard-theme p-1.5 rounded-xl border border-theme shrink-0 transition-colors duration-200">
 
                             {/* Live Fact-Checks / Debunks */}
@@ -166,7 +170,130 @@ export default function App() {
                             </button>
                         </nav>
                     </div>
+
+                    {/* 2. Mobile Hamburger Toggle Button (Mobile only) */}
+                    <div className="flex items-center gap-2 md:hidden">
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            className="p-2 rounded-lg text-muted-theme hover:bg-subcard-theme hover:text-main-theme transition-all cursor-pointer flex items-center justify-center border border-theme"
+                            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                        >
+                            {isDark ? (
+                                <Sun className="w-4 h-4 text-amber-400" />
+                            ) : (
+                                <Moon className="w-4 h-4 text-slate-700" />
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="p-2 rounded-lg text-muted-theme hover:bg-subcard-theme hover:text-main-theme transition-all cursor-pointer border border-theme"
+                            aria-label="Toggle Navigation Menu"
+                        >
+                            {isMobileMenuOpen ? (
+                                <X className="w-6 h-6 text-main-theme" />
+                            ) : (
+                                <Menu className="w-6 h-6 text-main-theme" />
+                            )}
+                        </button>
+                    </div>
                 </div>
+
+                {/* 3. Mobile Dropdown / Drawer Menu */}
+                {isMobileMenuOpen && (
+                    <div className="flex flex-col gap-3 p-4 bg-card-theme border-b border-theme md:hidden shadow-lg animate-in slide-in-from-top-2 duration-200">
+                        {/* Live Fact-Checks */}
+                        <button
+                            onClick={() => {
+                                handleTabClick('home');
+                                setIsMobileMenuOpen(false);
+                            }}
+                            className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'home'
+                                ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
+                                : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                                }`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <FileText className="w-4 h-4" />
+                                Live Fact-Checks
+                            </span>
+                            {activeTab === 'home' && <span className="text-xs font-black">ACTIVE</span>}
+                        </button>
+
+                        {/* Report Incident */}
+                        <button
+                            onClick={() => {
+                                handleTabClick('report');
+                                setIsMobileMenuOpen(false);
+                            }}
+                            className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'report'
+                                ? 'bg-[#E55322] text-white shadow-md font-extrabold'
+                                : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                                }`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <Shield className="w-4 h-4" />
+                                Report Incident
+                            </span>
+                            {activeTab === 'report' && <span className="text-xs font-black">ACTIVE</span>}
+                        </button>
+
+                        {/* Situation Room (Admin Mode) */}
+                        {isAdminMode && (
+                            <button
+                                onClick={() => {
+                                    handleTabClick('dashboard');
+                                    setIsMobileMenuOpen(false);
+                                }}
+                                className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'dashboard'
+                                    ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
+                                    : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                                    }`}
+                            >
+                                <span className="flex items-center gap-2">
+                                    <LayoutDashboard className="w-4 h-4" />
+                                    Situation Room
+                                </span>
+                                {activeTab === 'dashboard' && <span className="text-xs font-black">ACTIVE</span>}
+                            </button>
+                        )}
+
+                        {/* Logout & Theme Row on Mobile */}
+                        <div className="flex items-center justify-between pt-2 border-t border-theme/60 mt-1">
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-theme">
+                                <span>Theme:</span>
+                                <button
+                                    onClick={() => setIsDark(!isDark)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-subcard-theme border border-theme text-main-theme font-bold text-xs cursor-pointer"
+                                >
+                                    {isDark ? (
+                                        <>
+                                            <Sun className="w-3.5 h-3.5 text-amber-400" />
+                                            Light Mode
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Moon className="w-3.5 h-3.5 text-slate-700" />
+                                            Dark Mode
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => {
+                                        handleLogout();
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className="px-3 py-1.5 text-xs font-bold rounded-lg text-rose-500 hover:bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5 cursor-pointer"
+                                >
+                                    <LogOut className="w-3.5 h-3.5" />
+                                    Logout
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
             </header>
 
             {/* Main Content */}
