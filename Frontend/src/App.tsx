@@ -174,17 +174,6 @@ export default function App() {
                     {/* 2. Mobile Hamburger Toggle Button (Mobile only) */}
                     <div className="flex items-center gap-2 md:hidden">
                         <button
-                            onClick={() => setIsDark(!isDark)}
-                            className="p-2 rounded-lg text-muted-theme hover:bg-subcard-theme hover:text-main-theme transition-all cursor-pointer flex items-center justify-center border border-theme"
-                            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                        >
-                            {isDark ? (
-                                <Sun className="w-4 h-4 text-amber-400" />
-                            ) : (
-                                <Moon className="w-4 h-4 text-slate-700" />
-                            )}
-                        </button>
-                        <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="p-2 rounded-lg text-muted-theme hover:bg-subcard-theme hover:text-main-theme transition-all cursor-pointer border border-theme"
                             aria-label="Toggle Navigation Menu"
@@ -198,25 +187,27 @@ export default function App() {
                     </div>
                 </div>
 
-                {/* 3. Mobile Dropdown / Drawer Menu */}
+                {/* 3. Compact Floating Mobile Dropdown Card */}
                 {isMobileMenuOpen && (
-                    <div className="flex flex-col gap-3 p-4 bg-card-theme border-b border-theme md:hidden shadow-lg animate-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-4 top-full mt-2 z-50 w-64 bg-[#0B1E36] border border-slate-700/80 rounded-xl shadow-2xl p-2 flex flex-col gap-1 md:hidden animate-in fade-in zoom-in-95 duration-150">
                         {/* Live Fact-Checks */}
                         <button
                             onClick={() => {
                                 handleTabClick('home');
                                 setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'home'
-                                ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${activeTab === 'home'
+                                ? 'bg-[#1CB5BE]/20 text-[#1CB5BE] font-bold'
+                                : 'text-slate-200 hover:bg-slate-800'
                                 }`}
                         >
-                            <span className="flex items-center gap-2">
-                                <FileText className="w-4 h-4" />
+                            <span className="flex items-center gap-2.5">
+                                <FileText size={18} className={activeTab === 'home' ? 'text-[#1CB5BE]' : 'text-slate-400'} />
                                 Live Fact-Checks
                             </span>
-                            {activeTab === 'home' && <span className="text-xs font-black">ACTIVE</span>}
+                            {activeTab === 'home' && (
+                                <span className="w-2 h-2 rounded-full bg-[#1CB5BE]"></span>
+                            )}
                         </button>
 
                         {/* Report Incident */}
@@ -225,16 +216,18 @@ export default function App() {
                                 handleTabClick('report');
                                 setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'report'
-                                ? 'bg-[#E55322] text-white shadow-md font-extrabold'
-                                : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${activeTab === 'report'
+                                ? 'bg-[#E55322]/20 text-[#E55322] font-bold'
+                                : 'text-slate-200 hover:bg-slate-800'
                                 }`}
                         >
-                            <span className="flex items-center gap-2">
-                                <Shield className="w-4 h-4" />
+                            <span className="flex items-center gap-2.5">
+                                <Shield size={18} className={activeTab === 'report' ? 'text-[#E55322]' : 'text-slate-400'} />
                                 Report Incident
                             </span>
-                            {activeTab === 'report' && <span className="text-xs font-black">ACTIVE</span>}
+                            {activeTab === 'report' && (
+                                <span className="w-2 h-2 rounded-full bg-[#E55322]"></span>
+                            )}
                         </button>
 
                         {/* Situation Room (Admin Mode) */}
@@ -244,54 +237,51 @@ export default function App() {
                                     handleTabClick('dashboard');
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full px-4 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-between ${activeTab === 'dashboard'
-                                    ? 'bg-[#1CB5BE] text-[#061528] shadow-md font-extrabold'
-                                    : 'bg-subcard-theme text-main-theme hover:bg-subcard-theme/80 border border-theme'
+                                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${activeTab === 'dashboard'
+                                    ? 'bg-[#1CB5BE]/20 text-[#1CB5BE] font-bold'
+                                    : 'text-slate-200 hover:bg-slate-800'
                                     }`}
                             >
-                                <span className="flex items-center gap-2">
-                                    <LayoutDashboard className="w-4 h-4" />
+                                <span className="flex items-center gap-2.5">
+                                    <LayoutDashboard size={18} className={activeTab === 'dashboard' ? 'text-[#1CB5BE]' : 'text-slate-400'} />
                                     Situation Room
                                 </span>
-                                {activeTab === 'dashboard' && <span className="text-xs font-black">ACTIVE</span>}
+                                {activeTab === 'dashboard' && (
+                                    <span className="w-2 h-2 rounded-full bg-[#1CB5BE]"></span>
+                                )}
                             </button>
                         )}
 
-                        {/* Logout & Theme Row on Mobile */}
-                        <div className="flex items-center justify-between pt-2 border-t border-theme/60 mt-1">
-                            <div className="flex items-center gap-2 text-xs font-medium text-muted-theme">
-                                <span>Theme:</span>
-                                <button
-                                    onClick={() => setIsDark(!isDark)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-subcard-theme border border-theme text-main-theme font-bold text-xs cursor-pointer"
-                                >
-                                    {isDark ? (
-                                        <>
-                                            <Sun className="w-3.5 h-3.5 text-amber-400" />
-                                            Light Mode
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Moon className="w-3.5 h-3.5 text-slate-700" />
-                                            Dark Mode
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                        {/* Divider */}
+                        <div className="h-px bg-slate-700/60 my-1"></div>
 
-                            {isAuthenticated && (
-                                <button
-                                    onClick={() => {
-                                        handleLogout();
-                                        setIsMobileMenuOpen(false);
-                                    }}
-                                    className="px-3 py-1.5 text-xs font-bold rounded-lg text-rose-500 hover:bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5 cursor-pointer"
-                                >
-                                    <LogOut className="w-3.5 h-3.5" />
-                                    Logout
-                                </button>
-                            )}
-                        </div>
+                        {/* Theme Switcher */}
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer"
+                        >
+                            <span className="flex items-center gap-2.5">
+                                {isDark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-slate-400" />}
+                                {isDark ? 'Light Mode' : 'Dark Mode'}
+                            </span>
+                            <span className="text-xs text-slate-400">Switch</span>
+                        </button>
+
+                        {/* Logout (Admin only) */}
+                        {isAuthenticated && (
+                            <button
+                                onClick={() => {
+                                    handleLogout();
+                                    setIsMobileMenuOpen(false);
+                                }}
+                                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <LogOut size={18} />
+                                    Lock Situation Room
+                                </span>
+                            </button>
+                        )}
                     </div>
                 )}
             </header>
