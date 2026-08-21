@@ -13,7 +13,8 @@ import {
     RefreshCw,
     MapPin,
     Clock,
-    Play
+    Play,
+    User
 } from 'lucide-react';
 import { FactCheckCardGraphic } from '../components/FactCheckCardGraphics';
 import { RichTextContent, stripHtml } from '../components/RichTextContent';
@@ -207,15 +208,42 @@ const ReportCard = ({ report, onSelect, onShare, isGeneratingCard }: { report: P
 };
 
 const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { report: PublicReport; onBack: () => void; onShare: (report: PublicReport) => void; isGeneratingCard: boolean; }) => {
+    const authorName = report.byline || report.author || report.author_name || 'TruthGuard Team';
+    const featuredImageUrl = report.featured_image_url || report.evidence_file || report.image || report.media_url;
+    const bodyContent = report.content || report.details || report.summary || '';
+
+    const getVerdictClaimHeader = (status?: string) => {
+        switch (status?.toUpperCase()) {
+            case 'FALSE':
+                return 'DEBUNKED FALSE CLAIM:';
+            case 'MISLEADING':
+                return 'MISLEADING CLAIM UNDER REVIEW:';
+            case 'TRUE':
+            case 'VERIFIED':
+                return 'VERIFIED FACTUAL CLAIM:';
+            case 'PENDING':
+            case 'UNDER_REVIEW':
+                return 'CLAIM UNDER INVESTIGATION:';
+            default:
+                return 'CLAIM UNDER REVIEW:';
+        }
+    };
+
+    const verdictHeader = getVerdictClaimHeader(report.status || report.verdict);
+
     return (
         <div className="space-y-6">
             <button onClick={onBack} className="inline-flex items-center gap-2 text-[#1CB5BE] hover:opacity-80 font-bold text-sm cursor-pointer mb-2">
                 <ArrowLeft className="w-4 h-4" /> Back to Feed
             </button>
-            <div className="bg-card-theme border border-theme p-6 sm:p-8 rounded-2xl space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+            <div className="bg-card-theme border border-theme p-6 sm:p-8 rounded-2xl space-y-6 shadow-xl">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-theme/60 pb-4">
+                    <div className="flex flex-wrap items-center gap-3">
                         {report.verdict && <VerdictBadge verdict={report.verdict} />}
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-main-theme">
+                            <User className="w-3.5 h-3.5 text-[#1CB5BE]" />
+                            By {authorName}
+                        </span>
                         <span className="text-xs text-muted-theme font-medium">{report.timestamp}</span>
                     </div>
                     {report.location && (
@@ -225,22 +253,24 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                     )}
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-main-theme leading-tight">{report.title}</h1>
-                <div className="rounded-xl overflow-hidden border border-theme max-h-96 bg-subcard-theme flex items-center justify-center">
+                <div className="relative w-full max-h-[480px] min-h-[320px] aspect-video md:aspect-[16/9] bg-subcard-theme rounded-2xl overflow-hidden border border-theme flex items-center justify-center shadow-lg group">
                     {report.media_type === 'video' && report.media_url ? (
-                        <video src={getAbsoluteImageUrl(report.media_url)} controls className="w-full max-h-96 object-contain" />
+                        <video src={getAbsoluteImageUrl(report.media_url)} controls className="w-full h-full max-h-[480px] object-contain mx-auto" />
                     ) : (
                         <ReportImage
-                            src={report.media_url}
+                            src={featuredImageUrl}
+                            report={report}
                             alt={report.title}
-                            className="w-full max-h-96 object-contain rounded-lg"
-                            wrapperClassName="w-full flex items-center justify-center"
+                            className="object-cover w-full h-full rounded-2xl shadow-lg border border-theme hover:scale-[1.01] transition-transform duration-200"
+                            wrapperClassName="w-full h-full min-h-[320px] max-h-[480px] flex items-center justify-center"
+                            fallbackText="No Media Evidence Attached"
                         />
                     )}
                 </div>
                 {report.claim && (
                     <div className="bg-slate-100/70 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme my-4 shadow-sm">
                         <strong className="text-[#E05A2B] font-bold text-xs uppercase tracking-wider block mb-2">
-                            CLAIM UNDER REVIEW:
+                            {verdictHeader}
                         </strong>
                         <RichTextContent
                             content={report.claim}
@@ -251,8 +281,8 @@ const ReportDetailView = ({ report, onBack, onShare, isGeneratingCard }: { repor
                 )}
                 <div className="border-t border-theme pt-6">
                     <RichTextContent
-                        content={report.summary || report.content}
-                        className="text-base"
+                        content={bodyContent}
+                        className="text-base sm:text-lg"
                         fallbackText="No analysis content available for this report."
                     />
                 </div>
@@ -275,14 +305,18 @@ const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => 
                     <X className="w-5 h-5" />
                 </button>
                 <h3 className="text-lg font-bold text-main-theme pt-2">Fact-Check Card</h3>
-                <div className="overflow-hidden rounded-xl border border-theme bg-subcard-theme p-2">
+                <div className="rounded-xl overflow-hidden border border-theme bg-subcard-theme p-2">
                     <img src={cardUrl} alt="Fact Check Graphic Card" className="w-full h-auto rounded-lg object-contain" />
                 </div>
-                <div className="flex items-center gap-3 justify-end pt-2">
-                    <button onClick={onClose} className="px-4 py-2 text-xs font-bold text-muted-theme hover:text-main-theme transition-colors cursor-pointer">Close</button>
-                    <a href={cardUrl} target="_blank" rel="noopener noreferrer" download="fact-check-card.png" className="px-4 py-2 bg-[#1CB5BE] text-[#061528] rounded-xl text-xs font-bold hover:bg-[#1CB5BE]/90 transition-colors inline-flex items-center gap-2 cursor-pointer">
-                        Download Card
-                    </a>
+                <div className="pt-2 flex gap-3 justify-center">
+                    <button onClick={() => {
+                        const link = document.createElement('a');
+                        link.download = 'TruthGuard-FactCheck.png';
+                        link.href = cardUrl;
+                        link.click();
+                    }} className="px-4 py-2 bg-[#1CB5BE] text-[#061528] font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+                        Download Image
+                    </button>
                 </div>
             </div>
         </div>
@@ -290,32 +324,32 @@ const ShareCardModal = ({ cardUrl, onClose }: { cardUrl: string; onClose: () => 
 };
 
 // --- Main Page Component ---
-export default function HomePage() {
+export default function Homepage() {
     const cardRef = useRef<HTMLDivElement>(null);
-    const [selectedShareReport, setSelectedShareReport] = useState<PublicReport | null>(null);
+    const [reports, setReports] = useState<PublicReport[]>([]);
+    const [activeFilter, setActiveFilter] = useState<Category>('ALL');
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedReportId, setSelectedReportId] = useState<string | null>(() => {
         if (typeof window !== 'undefined') return new URLSearchParams(window.location.search).get('report');
         return null;
     });
-
-    const [reports, setReports] = useState<PublicReport[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [activeFilter, setActiveFilter] = useState<Category>('ALL');
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMorePages, setHasMorePages] = useState(false);
-    const [generatingCardId, setGeneratingCardId] = useState<string | null>(null);
-    const [previewCardUrl, setPreviewCardUrl] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const getRelativeTime = useCallback((dateString: string) => {
-        const date = new Date(dateString);
+    // Share Graphic Modal state
+    const [selectedShareReport, setSelectedShareReport] = useState<PublicReport | null>(null);
+    const [previewCardUrl, setPreviewCardUrl] = useState<string | null>(null);
+    const [generatingCardId, setGeneratingCardId] = useState<string | null>(null);
+
+    const getRelativeTime = useCallback((dateStr: string) => {
         const now = new Date();
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-        if (isNaN(date.getTime()) || diffInSeconds < 0) return 'Recently';
-        if (diffInSeconds < 60) return 'Just now';
-        const diffInMinutes = Math.floor(diffInSeconds / 60);
-        if (diffInMinutes < 60) return `${diffInMinutes} mins ago`;
+        const date = new Date(dateStr);
+        const diffInMs = now.getTime() - date.getTime();
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        if (diffInMinutes < 1) return 'Just now';
+        if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
         const diffInHours = Math.floor(diffInMinutes / 60);
         if (diffInHours < 24) return `${diffInHours} hours ago`;
         const diffInDays = Math.floor(diffInHours / 24);
@@ -326,6 +360,8 @@ export default function HomePage() {
         const dbTitle = item.title || '';
         const dbClaim = item.claim || item.summary || item.details || '';
         const dbSummary = item.summary || item.content || item.details || item.fact || '';
+        const author = item.byline || item.author || item.author_name || (item.fact_checker ? `${item.fact_checker.first_name || ''} ${item.fact_checker.last_name || ''}`.trim() : '') || 'TruthGuard Team';
+        const featuredImage = item.featured_image_url || item.evidence_file || item.image || item.cover_image || item.media_url || item.image_url || null;
 
         return {
             id: String(item.id),
@@ -336,10 +372,13 @@ export default function HomePage() {
             location: item.location || '',
             timestamp: item.created_at ? getRelativeTime(item.created_at) : 'Recently',
             summary: dbSummary,
-            content: item.content || dbSummary,
+            content: item.content || item.details || dbSummary,
+            author,
+            byline: author,
+            featured_image_url: featuredImage,
+            media_url: featuredImage,
+            media_type: item.media_type || (item.video_url ? 'video' : 'image'),
             rawCreatedAt: item.created_at,
-            media_url: item.media_url || item.evidence_file || item.image_url || item.media || item.image || null,
-            media_type: item.media_type || (item.video_url ? 'video' : 'image')
         };
     }, [getRelativeTime]);
 

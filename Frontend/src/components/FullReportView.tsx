@@ -6,32 +6,38 @@ import {
     XCircle,
     AlertTriangle,
     Clock,
-    MapPin
+    MapPin,
+    User
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { RichTextContent } from './RichTextContent';
 import { ReportImage } from './ReportImage';
 import { getAbsoluteImageUrl } from '../utils/imageUrl';
 
-// Updated interface supporting media uploads & metadata
-interface Report {
-    id: string;
+// Updated interface supporting media uploads, byline, and metadata
+export interface FactCheckArticle {
+    id: string | number;
     title: string;
-    claim: string;
-    summary: string;
-    status: 'TRUE' | 'FALSE' | 'MISLEADING' | 'PENDING';
+    claim?: string;
+    content?: string;
+    details?: string;
+    summary?: string;
+    status: 'TRUE' | 'FALSE' | 'MISLEADING' | 'PENDING' | string;
     category?: string;
     location?: string;
-    media_url?: string;
-    image?: string;
+    featured_image_url?: string | null;
     evidence_file?: string | null;
-    evidence_links?: string;
+    image?: string | null;
+    media_url?: string | null;
     media_type?: 'image' | 'video' | 'audio' | string;
-    created_at: string;
+    byline?: string;
+    author?: string;
+    author_name?: string;
+    created_at?: string;
 }
 
 export default function FullReportView({ reportId, onBack }: { reportId: string, onBack: () => void }) {
-    const [report, setReport] = useState<Report | null>(null);
+    const [report, setReport] = useState<FactCheckArticle | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -56,7 +62,7 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
     }, [reportId]);
 
     // Helper for relative time formatting ("1 day ago", "3 hours ago")
-    const getTimeAgo = (dateString: string) => {
+    const getTimeAgo = (dateString?: string) => {
         if (!dateString) return 'Recently';
         const date = new Date(dateString);
         const now = new Date();
@@ -78,13 +84,19 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
 
     if (!report) return <div className="p-8 text-center text-rose-400">Report not found.</div>;
 
+    // 1. Dynamic API key mappings
+    const authorName = report.byline || report.author || report.author_name || 'TruthGuard Team';
+    const featuredImageUrl = report.featured_image_url || report.evidence_file || report.image || report.media_url;
+    const bodyContent = report.content || report.details || report.summary || '';
+
     // Helper for status colors, overlays, and icons
-    const getStatusUI = (status: string) => {
-        switch (status) {
+    const getStatusUI = (status?: string) => {
+        switch (status?.toUpperCase()) {
             case 'TRUE':
+            case 'VERIFIED':
                 return { color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500', label: 'VERIFIED TRUE', icon: CheckCircle };
             case 'FALSE':
-                return { color: 'bg-rose-500/20 text-rose-400 border-rose-500', label: 'FALSE / MISLEADING', icon: XCircle };
+                return { color: 'bg-rose-500/20 text-rose-400 border-rose-500', label: 'FALSE / DEBUNKED', icon: XCircle };
             case 'MISLEADING':
                 return { color: 'bg-amber-500/20 text-amber-400 border-amber-500', label: 'MISLEADING CONTENT', icon: AlertTriangle };
             default:
@@ -92,8 +104,27 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
         }
     };
 
+    // Dynamic verdict header based on article status
+    const getVerdictClaimHeader = (status?: string) => {
+        switch (status?.toUpperCase()) {
+            case 'FALSE':
+                return 'DEBUNKED FALSE CLAIM:';
+            case 'MISLEADING':
+                return 'MISLEADING CLAIM UNDER REVIEW:';
+            case 'TRUE':
+            case 'VERIFIED':
+                return 'VERIFIED FACTUAL CLAIM:';
+            case 'PENDING':
+            case 'UNDER_REVIEW':
+                return 'CLAIM UNDER INVESTIGATION:';
+            default:
+                return 'CLAIM UNDER REVIEW:';
+        }
+    };
+
     const statusInfo = getStatusUI(report.status);
     const StatusIcon = statusInfo.icon;
+    const verdictHeader = getVerdictClaimHeader(report.status);
 
     return (
         <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-20">
@@ -107,29 +138,30 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
             </button>
 
             {/* Blog Article Container */}
-            <article className="bg-card-theme border border-theme rounded-2xl overflow-hidden shadow-xl">
+            <article className="bg-card-theme border border-theme rounded-2xl overflow-hidden shadow-xl space-y-6">
 
-                {/* 1. Featured Media Hero Banner (Image/Video) */}
-                <div className="relative w-full max-h-[420px] bg-subcard-theme overflow-hidden border-b border-theme flex items-center justify-center">
+                {/* 1. Prominent Featured Image Hero Banner */}
+                <div className="relative w-full max-h-[480px] min-h-[320px] aspect-video md:aspect-[16/9] bg-subcard-theme rounded-t-2xl overflow-hidden border-b border-theme flex items-center justify-center shadow-lg group">
                     {report.media_type === 'video' && (report.media_url || report.evidence_file) ? (
                         <video
                             src={getAbsoluteImageUrl(report.media_url || report.evidence_file)}
                             controls
-                            className="w-full max-h-[420px] object-contain mx-auto"
+                            className="w-full h-full max-h-[480px] object-contain mx-auto"
                         />
                     ) : (
                         <ReportImage
+                            src={featuredImageUrl}
                             report={report}
                             alt={report.title}
-                            className="w-full h-full object-cover max-h-[420px]"
-                            wrapperClassName="w-full h-full flex items-center justify-center"
+                            className="object-cover w-full h-full rounded-2xl shadow-lg border border-theme hover:scale-[1.01] transition-transform duration-200"
+                            wrapperClassName="w-full h-full min-h-[320px] max-h-[480px] flex items-center justify-center"
                             fallbackText="No Media Evidence Attached"
                         />
                     )}
 
                     {/* Status Overlay Badge on Media */}
                     <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-black backdrop-blur-md ${statusInfo.color}`}>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-black backdrop-blur-md shadow-md ${statusInfo.color}`}>
                             <StatusIcon className="w-4 h-4" />
                             {statusInfo.label}
                         </span>
@@ -137,15 +169,20 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                 </div>
 
                 {/* 2. Article Body & Metadata */}
-                <div className="p-6 sm:p-8">
+                <div className="p-6 sm:p-8 pt-2">
 
-                    {/* Category & Timestamps */}
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-theme mb-4">
+                    {/* Author Byline, Category & Timestamps */}
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-theme mb-4 pb-4 border-b border-theme/60">
                         {report.category && (
                             <span className="bg-[#1CB5BE]/10 text-[#1CB5BE] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">
                                 {report.category}
                             </span>
                         )}
+
+                        <span className="flex items-center gap-1.5 font-bold text-main-theme">
+                            <User className="w-3.5 h-3.5 text-[#1CB5BE]" />
+                            By {authorName}
+                        </span>
 
                         <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 text-muted-theme" />
@@ -165,25 +202,27 @@ export default function FullReportView({ reportId, onBack }: { reportId: string,
                         {report.title}
                     </h1>
 
-                    {/* Highlighted Claim / Quote Box */}
-                    <div className="bg-slate-100/70 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme my-6 shadow-sm">
-                        <span className="text-[#E05A2B] font-bold text-xs uppercase tracking-wider block mb-2">
-                            Claim Under Review:
-                        </span>
-                        <RichTextContent
-                            content={report.claim}
-                            className="text-base sm:text-lg italic font-medium text-slate-900 dark:text-main-theme"
-                            fallbackText="No claim statement provided."
-                        />
-                    </div>
+                    {/* Highlighted Claim / Quote Box with Dynamic Verdict Header */}
+                    {report.claim && (
+                        <div className="bg-slate-100/70 dark:bg-subcard-theme p-4 sm:p-5 rounded-r-lg border-l-4 border-[#1CB5BE] border-y border-r border-theme my-6 shadow-sm">
+                            <span className="text-[#E05A2B] font-bold text-xs uppercase tracking-wider block mb-2">
+                                {verdictHeader}
+                            </span>
+                            <RichTextContent
+                                content={report.claim}
+                                className="text-base sm:text-lg italic font-medium text-slate-900 dark:text-main-theme"
+                                fallbackText="No claim statement provided."
+                            />
+                        </div>
+                    )}
 
                     {/* Main Fact-Check Analysis Content */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 pt-2">
                         <h2 className="text-lg font-bold text-main-theme border-b border-theme pb-2">
                             Fact-Check Findings & Analysis
                         </h2>
                         <RichTextContent
-                            content={report.summary}
+                            content={bodyContent}
                             className="text-base sm:text-lg"
                             fallbackText="No analysis details provided for this report."
                         />
